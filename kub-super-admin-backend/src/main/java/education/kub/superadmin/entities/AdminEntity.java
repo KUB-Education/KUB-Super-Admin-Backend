@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class AdminEntity {
     @Id
     @GeneratedValue
+    @ColumnDefault("gen_random_uuid()")
     private UUID id;
 
     @OneToOne(cascade = CascadeType.PERSIST)

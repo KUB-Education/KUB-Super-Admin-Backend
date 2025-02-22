@@ -1,6 +1,7 @@
 package education.kub.superadmin.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class UserEntity implements Serializable {
     @Id
     @GeneratedValue
+    @ColumnDefault("gen_random_uuid()")
     private UUID id;
 
     @Column(name = "last_name", nullable = false, length=32)
