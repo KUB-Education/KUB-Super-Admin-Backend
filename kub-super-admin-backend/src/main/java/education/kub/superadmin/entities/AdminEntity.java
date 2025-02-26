@@ -17,9 +17,8 @@ import java.util.UUID;
 @Setter
 public class AdminEntity {
     @Id
-    @GeneratedValue
-    @ColumnDefault("gen_random_uuid()")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")

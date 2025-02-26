@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS public."user"
 (
-    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    id bigserial, -- implicitly adds NOT NULL, creates sequence, assigns DEFAULT according to sequence
     email character varying(64) COLLATE pg_catalog."default" NOT NULL,
     first_name character varying(32) COLLATE pg_catalog."default" NOT NULL,
     last_name character varying(32) COLLATE pg_catalog."default" NOT NULL,
@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public."user"
     status character varying(32) COLLATE pg_catalog."default" NOT NULL,
     temporary_password_expiration timestamp(6) without time zone,
     temporary_password_hashed character varying(64) COLLATE pg_catalog."default",
+    
     CONSTRAINT user_pkey PRIMARY KEY (id),
     CONSTRAINT email_unique UNIQUE (email),
     CONSTRAINT email_check CHECK (email::text <> ''::text) NOT VALID,

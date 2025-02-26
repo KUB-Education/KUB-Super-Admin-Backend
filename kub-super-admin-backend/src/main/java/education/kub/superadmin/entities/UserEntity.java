@@ -19,9 +19,8 @@ import java.util.UUID;
 @Setter
 public class UserEntity implements Serializable {
     @Id
-    @GeneratedValue
-    @ColumnDefault("gen_random_uuid()")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "last_name", nullable = false, length=32)
     private String lastName;
