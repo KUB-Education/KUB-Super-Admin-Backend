@@ -26,25 +26,25 @@ public class GlobalExceptionHandler extends BaseExceptionHandling {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Problem> handleException(BaseException ex, HttpServletRequest request) {
         final Problem problem = buildProblem(request.getRequestURI(), ex.getStatus(), ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problem);
+        return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Problem> handleException(@NonNull final ResponseStatusException ex, final NativeWebRequest request) {
         final Problem problem = buildProblem(Objects.requireNonNull(request.getNativeRequest(HttpServletRequest.class)).getRequestURI(),
                 Status.valueOf(ex.getStatusCode().value()), ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problem);
+        return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<Problem> handleException(HttpClientErrorException ex, HttpServletRequest request) {
         final Problem problem = buildProblem(request.getRequestURI(), Status.valueOf(ex.getStatusCode().value()), ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problem);
+        return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Problem> handleException(Exception ex, HttpServletRequest request) {
         final Problem problem = buildProblem(request.getRequestURI(), Status.INTERNAL_SERVER_ERROR, ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problem);
+        return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 }
