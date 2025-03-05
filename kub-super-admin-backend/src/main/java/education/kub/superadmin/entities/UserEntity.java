@@ -34,7 +34,7 @@ public class UserEntity implements Serializable {
     @Column(name = "email", unique = true, nullable = false, length=64)
     private String email;
 
-    @Column(name = "status", nullable = false, length=32)
+    @Column(name = "status", nullable = true, length=32)
     @Enumerated(EnumType.STRING)
     private Status status;
 

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS public."user"
     last_name character varying(32) COLLATE pg_catalog."default" NOT NULL,
     middle_name character varying(32) COLLATE pg_catalog."default",
     password_hashed character varying(64) COLLATE pg_catalog."default",
-    status character varying(32) COLLATE pg_catalog."default" NOT NULL,
+    status character varying(32) COLLATE pg_catalog."default",
     temporary_password_expiration timestamp(6) without time zone,
     temporary_password_hashed character varying(64) COLLATE pg_catalog."default",
     
