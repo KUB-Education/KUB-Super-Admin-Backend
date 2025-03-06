@@ -1,6 +1,7 @@
 package education.kub.superadmin.services.inter;
 
 import education.kub.superadmin.dto.AdminRequestDTO;
+import education.kub.superadmin.dto.AdminUpdateRequestDTO;
 import education.kub.superadmin.entities.AdminEntity;
 import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
@@ -8,7 +9,6 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 
 public interface AdminService {
-    // edit -- NEED DTO
     // resendPassword -- should be handled by Controller
 
     /**
@@ -20,8 +20,20 @@ public interface AdminService {
      */
     AdminEntity createAdmin(AdminRequestDTO dto);
 
+    /**
+     * Updates Admin entity according to given <code>dto</code> (only non-null fields are considered).
+     * <br/>
+     * Do the same as a {@link UserService#updateUser(Long, AdminUpdateRequestDTO)} method.
+     *
+     * @param id ID of Admin
+     * @param dto
+     * @return updated entity
+     * @throws <code>EntityNotFoundException</code> when admin with given <code>id</code> does not exist
+     */
+    AdminEntity updateAdmin(Long id, AdminUpdateRequestDTO dto);
+
     AdminEntity getAdminById(Long id);
     AdminEntity getAdminByUserId(Long userId);
-    List<AdminEntity> getAllAdmin();
+    List<AdminEntity> getAllAdmins();
     void deleteAdmin(Long id);
 }

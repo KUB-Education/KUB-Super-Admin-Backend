@@ -1,18 +1,13 @@
 package education.kub.superadmin.services.impl;
 
 import education.kub.superadmin.dto.AdminRequestDTO;
+import education.kub.superadmin.dto.AdminUpdateRequestDTO;
 import education.kub.superadmin.entities.AdminEntity;
 import education.kub.superadmin.entities.UserEntity;
-import education.kub.superadmin.generators.password.IPasswordGenerator;
-import education.kub.superadmin.generators.password.impl.PasswordGeneratorImpl;
-import education.kub.superadmin.helpers.hasher.IHasher;
-import education.kub.superadmin.helpers.hasher.impl.extend.BCryptPasswordHasher;
 import education.kub.superadmin.repositories.AdminRepo;
 import education.kub.superadmin.repositories.UserRepo;
-import education.kub.superadmin.services.SmtpService;
 import education.kub.superadmin.services.inter.AdminService;
 import education.kub.superadmin.services.inter.UserService;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -46,6 +41,17 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Transactional
+    public AdminEntity updateAdmin(Long id, AdminUpdateRequestDTO dto) {
+        AdminEntity admin = getAdminById(id);
+
+        userService.updateUser(admin.getUser().getId(), dto);
+
+        // refresh, because admin.user is changed
+        return getAdminById(admin.getId());
+    }
+
+    @Override
     public AdminEntity getAdminById(Long id) {
         AdminEntity admin = adminRepo.findById(id).orElse(null);
         if(admin == null){
@@ -66,7 +72,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<AdminEntity> getAllAdmin() {
+    public List<AdminEntity> getAllAdmins() {
         return adminRepo.findAll();
     }
 
