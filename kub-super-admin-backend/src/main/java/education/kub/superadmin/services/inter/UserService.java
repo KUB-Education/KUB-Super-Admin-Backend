@@ -4,8 +4,11 @@ import education.kub.superadmin.dto.AdminRequestDTO;
 import education.kub.superadmin.dto.AdminUpdateRequestDTO;
 import education.kub.superadmin.entities.AdminEntity;
 import education.kub.superadmin.entities.UserEntity;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
+import javax.naming.ServiceUnavailableException;
 import java.util.List;
 
 public interface UserService {
@@ -16,7 +19,7 @@ public interface UserService {
      * generates temporary password and sends it to <code>dto.email</code>
      * @param dto
      * @return created entity
-     * @throws <code>EntityExistsException</code> when user with given email already exists
+     * @throws EntityExistsException when user with given email already exists
      */
     UserEntity createUser(AdminRequestDTO dto);
 
@@ -32,9 +35,18 @@ public interface UserService {
      * @param id
      * @param dto
      * @return updated entity
-     * @throws <code>EntityNotFoundException</code> when user with given <code>id</code> does not exist
+     * @throws EntityNotFoundException when user with given <code>id</code> does not exist
      */
     UserEntity updateUser(Long id, AdminUpdateRequestDTO dto);
+
+    /**
+     * Resends temporary password to user with given <code>id</code>.
+     * @param id
+     * @return
+     * @throws ServiceUnavailableException if SMTP is not available, or sending email is failed
+     * @throws EntityNotFoundException when user with given <code>id</code> does not exist
+     */
+    UserEntity resendTemporaryPassword(Long id) throws ServiceUnavailableException;
 
     UserEntity getUserById(Long id);
     List<UserEntity> getAllUsers();

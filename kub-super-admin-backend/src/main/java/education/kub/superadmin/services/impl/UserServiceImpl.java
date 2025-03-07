@@ -15,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import javax.naming.ServiceUnavailableException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -151,6 +152,58 @@ public class UserServiceImpl implements UserService {
         // update DB (set temporaryPassword)
         String temporaryPasswordHashed = hasher.createHash(temporaryPassword);
         user.setStatus(UserEntity.Status.ACTIVATION_PENDING);
+        user.setTemporaryPasswordHashed(temporaryPasswordHashed);
+        user.setTemporaryPasswordExpiration(LocalDateTime.now().plusDays(7));
+        userRepo.save(user);
+        return user;
+    }
+
+    @Override
+    public UserEntity resendTemporaryPassword(Long id) throws ServiceUnavailableException {
+        UserEntity user = getUserById(id);
+
+        boolean isUserAlreadyActivated =
+                user.getStatus() == UserEntity.Status.ACTIVATED ||
+                user.getStatus() == UserEntity.Status.RECOVERY_PENDING;
+
+        if(!isUserAlreadyActivated){
+            user.setStatus(null);
+        }
+        user.setTemporaryPasswordHashed(null);
+        user.setTemporaryPasswordExpiration(null);
+        userRepo.save(user);
+
+        // check SMTP connection
+        if(!smtpService.checkConnection()){
+            if(!isUserAlreadyActivated){
+                user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
+                userRepo.save(user);
+            }
+            throw new ServiceUnavailableException("SMTP is unavailable");
+        }
+
+        // send temporary password on email
+        String temporaryPassword = passwordGenerator.generate();
+        boolean sendResult = smtpService.sendEmail(user.getEmail(), TEMPORARY_PASSWORD_EMAIL_SUBJECT,
+                genTemporaryPasswordEmailBody(user.getLastName(), user.getFirstName(),
+                        user.getMiddleName(), temporaryPassword));
+
+        if(!sendResult){
+            if(!isUserAlreadyActivated){
+                user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
+                userRepo.save(user);
+            }
+            throw new ServiceUnavailableException("Sending email is failed");
+        }
+
+        // update DB (set temporaryPassword)
+        String temporaryPasswordHashed = hasher.createHash(temporaryPassword);
+        if(!isUserAlreadyActivated){
+            user.setStatus(UserEntity.Status.ACTIVATION_PENDING);
+        }
+        else{
+            user.setStatus(UserEntity.Status.RECOVERY_PENDING);
+        }
         user.setTemporaryPasswordHashed(temporaryPasswordHashed);
         user.setTemporaryPasswordExpiration(LocalDateTime.now().plusDays(7));
         userRepo.save(user);

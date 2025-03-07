@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import javax.naming.ServiceUnavailableException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -48,7 +49,17 @@ public class AdminServiceImpl implements AdminService {
         userService.updateUser(admin.getUser().getId(), dto);
 
         // refresh, because admin.user is changed
-        return getAdminById(admin.getId());
+        return getAdminById(id);
+    }
+
+    @Override
+    public AdminEntity resendTemporaryPassword(Long id) throws ServiceUnavailableException {
+        AdminEntity admin = getAdminById(id);
+
+        userService.resendTemporaryPassword(admin.getUser().getId());
+
+        // refresh, because admin.user is changed
+        return getAdminById(id);
     }
 
     @Override
