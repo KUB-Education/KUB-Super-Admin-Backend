@@ -8,7 +8,7 @@ import education.kub.superadmin.generators.password.impl.PasswordGeneratorImpl;
 import education.kub.superadmin.helpers.hasher.inter.Hasher;
 import education.kub.superadmin.helpers.hasher.impl.BCryptPasswordHasherImpl;
 import education.kub.superadmin.repositories.UserRepo;
-import education.kub.superadmin.services.SmtpService;
+import education.kub.superadmin.services.inter.SmtpService;
 import education.kub.superadmin.services.inter.UserService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
