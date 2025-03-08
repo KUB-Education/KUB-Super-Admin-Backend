@@ -1,9 +1,9 @@
 package education.kub.superadmin.helpers.hasher.impl;
 
-import education.kub.superadmin.helpers.hasher.IHasher;
+import education.kub.superadmin.helpers.hasher.inter.Hasher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class PasswordHasher implements IHasher
+public class PasswordHasher implements Hasher
 {
     private final PasswordEncoder encoder;
 

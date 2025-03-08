@@ -1,12 +1,13 @@
 package education.kub.superadmin.helpers.hasher;
 
 import education.kub.superadmin.helpers.hasher.impl.extend.BCryptPasswordHasher;
+import education.kub.superadmin.helpers.hasher.inter.Hasher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BCryptPasswordHasherTest {
-    private IHasher hasher;
+    private Hasher hasher;
 
     @BeforeEach
     public void setUp() {
