@@ -1,10 +1,9 @@
-package education.kub.superadmin.helpers.hasher.impl.extend;
+package education.kub.superadmin.helpers.hasher.impl;
 
-import education.kub.superadmin.helpers.hasher.impl.PasswordHasher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-public class BCryptPasswordHasher extends PasswordHasher {
-    public BCryptPasswordHasher() {
+public class BCryptPasswordHasherImpl extends PasswordHasherImpl {
+    public BCryptPasswordHasherImpl() {
         super(new BCryptPasswordEncoder());
     }
 }

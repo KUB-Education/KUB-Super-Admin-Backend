@@ -1,8 +1,8 @@
-package education.kub.superadmin.generators.password;
+package education.kub.superadmin.generators.password.inter;
 
 import java.util.Map;
 
-public interface IPasswordGenerator {
+public interface PasswordGenerator {
     /**
      * Generates a password based on the specified rules and length.
      *

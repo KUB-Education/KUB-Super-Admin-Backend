@@ -3,11 +3,11 @@ package education.kub.superadmin.helpers.hasher.impl;
 import education.kub.superadmin.helpers.hasher.inter.Hasher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class PasswordHasher implements Hasher
+public class PasswordHasherImpl implements Hasher
 {
     private final PasswordEncoder encoder;
 
-    public PasswordHasher(PasswordEncoder encoder) {
+    public PasswordHasherImpl(PasswordEncoder encoder) {
         this.encoder = encoder;
     }
 

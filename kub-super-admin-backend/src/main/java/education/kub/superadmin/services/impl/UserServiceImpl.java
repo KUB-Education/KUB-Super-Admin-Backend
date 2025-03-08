@@ -3,10 +3,10 @@ package education.kub.superadmin.services.impl;
 import education.kub.superadmin.dto.AdminRequestDTO;
 import education.kub.superadmin.dto.AdminUpdateRequestDTO;
 import education.kub.superadmin.entities.UserEntity;
-import education.kub.superadmin.generators.password.IPasswordGenerator;
+import education.kub.superadmin.generators.password.inter.PasswordGenerator;
 import education.kub.superadmin.generators.password.impl.PasswordGeneratorImpl;
-import education.kub.superadmin.helpers.hasher.IHasher;
-import education.kub.superadmin.helpers.hasher.impl.extend.BCryptPasswordHasher;
+import education.kub.superadmin.helpers.hasher.inter.Hasher;
+import education.kub.superadmin.helpers.hasher.impl.BCryptPasswordHasherImpl;
 import education.kub.superadmin.repositories.UserRepo;
 import education.kub.superadmin.services.SmtpService;
 import education.kub.superadmin.services.inter.UserService;
@@ -24,8 +24,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final SmtpService smtpService;
 
-    private final IPasswordGenerator passwordGenerator = new PasswordGeneratorImpl();
-    private final IHasher hasher = new BCryptPasswordHasher();
+    private final PasswordGenerator passwordGenerator = new PasswordGeneratorImpl();
+    private final Hasher hasher = new BCryptPasswordHasherImpl();
 
     private final String REGISTRATION_EMAIL_SUBJECT = "Registration on KUB Education";
     private final String TEMPORARY_PASSWORD_EMAIL_SUBJECT = "Temporary password for KUB Education";

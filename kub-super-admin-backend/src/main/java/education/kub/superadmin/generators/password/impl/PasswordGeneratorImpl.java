@@ -1,13 +1,13 @@
 package education.kub.superadmin.generators.password.impl;
 
-import education.kub.superadmin.generators.password.IPasswordGenerator;
+import education.kub.superadmin.generators.password.inter.PasswordGenerator;
 import org.passay.CharacterData;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
 
 import java.util.*;
 
-public class PasswordGeneratorImpl implements IPasswordGenerator {
+public class PasswordGeneratorImpl implements PasswordGenerator {
     private static final int LENGTH_DEFAULT = 8;
 
     // Rule names
