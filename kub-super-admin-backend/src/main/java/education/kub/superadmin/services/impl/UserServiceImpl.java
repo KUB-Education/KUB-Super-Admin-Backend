@@ -192,7 +192,7 @@ public class UserServiceImpl implements UserService {
                 user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
                 userRepo.save(user);
             }
-            throw new ServiceUnavailableException("Sending email is failed");
+            throw new KubException(ErrorCode.SMTP_FAILURE);
         }
 
         // update DB (set temporaryPassword)
