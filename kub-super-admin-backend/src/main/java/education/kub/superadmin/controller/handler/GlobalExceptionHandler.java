@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
@@ -23,7 +23,7 @@ import java.util.Objects;
 @ConditionalOnClass({ProblemHandling.class})
 @AutoConfigureBefore({ProblemAutoConfiguration.class})
 public class GlobalExceptionHandler extends BaseExceptionHandling {
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(BaseException.class)
     public ResponseEntity<Problem> handleException(BaseException ex, HttpServletRequest request) {
         final Problem problem = buildProblem(request.getRequestURI(), ex.getStatus(), ex);
         return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
@@ -45,6 +45,12 @@ public class GlobalExceptionHandler extends BaseExceptionHandling {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Problem> handleException(Exception ex, HttpServletRequest request) {
         final Problem problem = buildProblem(request.getRequestURI(), Status.INTERNAL_SERVER_ERROR, ex);
+        return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Problem> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        final Problem problem = buildProblem(request.getRequestURI(), Status.UNPROCESSABLE_ENTITY, ex);
         return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 }

@@ -3,6 +3,8 @@ package education.kub.superadmin.services.impl;
 import education.kub.superadmin.dto.AdminRequestDTO;
 import education.kub.superadmin.dto.AdminUpdateRequestDTO;
 import education.kub.superadmin.entities.UserEntity;
+import education.kub.superadmin.exception.ErrorCode;
+import education.kub.superadmin.exception.KubException;
 import education.kub.superadmin.generators.password.inter.PasswordGenerator;
 import education.kub.superadmin.generators.password.impl.PasswordGeneratorImpl;
 import education.kub.superadmin.helpers.hasher.inter.Hasher;
@@ -10,8 +12,6 @@ import education.kub.superadmin.helpers.hasher.impl.BCryptPasswordHasherImpl;
 import education.kub.superadmin.repositories.UserRepo;
 import education.kub.superadmin.services.inter.SmtpService;
 import education.kub.superadmin.services.inter.UserService;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +43,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserEntity createUser(AdminRequestDTO dto){
         if(userRepo.findByEmail(dto.getEmail()).isPresent()){
-            throw new EntityExistsException(
-                    String.format("User with email '%s' already exists", dto.getEmail()));
+            throw new KubException(ErrorCode.CONFLICT);
         }
 
         UserEntity user = new UserEntity(
@@ -179,7 +178,7 @@ public class UserServiceImpl implements UserService {
                 user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
                 userRepo.save(user);
             }
-            throw new ServiceUnavailableException("SMTP is unavailable");
+            throw new KubException(ErrorCode.SMTP_FAILURE);
         }
 
         // send temporary password on email
@@ -224,12 +223,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity getUserById(Long id) {
-        UserEntity user = userRepo.findById(id).orElse(null);
-        if(user == null){
-            throw new EntityNotFoundException(String.format("User with id=%d does not exist", id));
-        }
-
-        return user;
+        return userRepo.findById(id).orElseThrow(() -> new KubException(ErrorCode.NOT_FOUND));
     }
 
     @Override
