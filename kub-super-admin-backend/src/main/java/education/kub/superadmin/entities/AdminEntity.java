@@ -1,13 +1,11 @@
 package education.kub.superadmin.entities;
 
+import education.kub.superadmin.dto.AdminResponseDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "admin")
@@ -23,4 +21,16 @@ public class AdminEntity {
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
     UserEntity user;
+
+    public AdminResponseDTO toAdminResponseDto() {
+        return AdminResponseDTO.builder()
+                .id(this.id)
+                .userId(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .middleName(user.getMiddleName())
+                .email(user.getEmail())
+                .status(user.getStatus())
+                .build();
+    }
 }
