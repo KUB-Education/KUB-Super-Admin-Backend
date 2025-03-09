@@ -82,7 +82,8 @@ public class AdminController {
      */
     @PostMapping("/{id}/resend")
     public ResponseEntity<AdminResponseDTO> resendAdmin(@PathVariable("id") Long id) throws ServiceUnavailableException {
-        adminService.resendTemporaryPassword(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        final AdminEntity adminEntity = adminService.resendTemporaryPassword(id);
+        final AdminResponseDTO adminResponseDTO = adminEntity.toAdminResponseDto();
+        return ResponseEntity.status(HttpStatus.OK).body(adminResponseDTO);
     }
 }
