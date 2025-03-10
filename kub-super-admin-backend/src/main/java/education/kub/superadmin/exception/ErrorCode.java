@@ -7,7 +7,7 @@ import org.zalando.problem.Status;
 public enum ErrorCode {
     UNAUTHORIZED("Unauthorized (Wrong header)", Status.UNAUTHORIZED),
     CONFLICT("User exists", Status.CONFLICT),
-    NOT_FOUNT("Admin not found", Status.NOT_FOUND),
+    NOT_FOUND("Admin not found", Status.NOT_FOUND),
     SMTP_FAILURE("SMTP failure", Status.SERVICE_UNAVAILABLE);
 
     final Status status;
