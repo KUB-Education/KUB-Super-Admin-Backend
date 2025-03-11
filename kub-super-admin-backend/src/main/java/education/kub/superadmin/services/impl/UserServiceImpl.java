@@ -163,7 +163,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity resendTemporaryPassword(Long id) throws ServiceUnavailableException {
+    public UserEntity resendTemporaryPassword(Long id) {
         UserEntity user = getUserById(id);
 
         boolean isUserAlreadyActivated =

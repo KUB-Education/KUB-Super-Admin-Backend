@@ -4,6 +4,7 @@ import education.kub.superadmin.dto.AdminRequestDTO;
 import education.kub.superadmin.dto.AdminUpdateRequestDTO;
 import education.kub.superadmin.entities.AdminEntity;
 import education.kub.superadmin.entities.UserEntity;
+import education.kub.superadmin.exception.KubException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -18,7 +19,7 @@ public interface AdminService {
      * generates temporary password and sends it to <code>dto.email</code>
      * @param dto
      * @return created entity
-     * @throws EntityExistsException when user with given email already exists
+     * @throws KubException (<code>ErrorCode.CONFLICT</code>) - when user with given email already exists
      */
     AdminEntity createAdmin(AdminRequestDTO dto);
 
@@ -30,7 +31,7 @@ public interface AdminService {
      * @param id ID of Admin
      * @param dto
      * @return updated entity
-     * @throws EntityNotFoundException when admin with given <code>id</code> does not exist
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>id</code> does not exist
      */
     AdminEntity updateAdmin(Long id, AdminUpdateRequestDTO dto);
 
@@ -38,13 +39,35 @@ public interface AdminService {
      * Resends temporary password to admin with given <code>id</code>.
      * @param id
      * @return
-     * @throws ServiceUnavailableException if SMTP is not available, or if sending email is failed
-     * @throws EntityNotFoundException when admin with given <code>id</code> does not exist
+     * @throws KubException (<code>ErrorCode.SMTP_FAILURE</code>) - if SMTP is not available, or if sending email is failed;
+     * (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>id</code> does not exist
      */
-    AdminEntity resendTemporaryPassword(Long id) throws ServiceUnavailableException;
+    AdminEntity resendTemporaryPassword(Long id);
 
+    /**
+     * Finds admin by given <code>id</code>
+     * @param id
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>id</code> does not exist
+     */
     AdminEntity getAdminById(Long id);
+
+    /**
+     * Finds admin by given <code>userId</code>
+     * @param userId
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>userId</code> does not exist
+     */
     AdminEntity getAdminByUserId(Long userId);
+
+    /**
+     * Finds all admins
+     * @return
+     */
     List<AdminEntity> getAllAdmins();
+
+    /**
+     * Deletes admin by given <code>id</code>
+     * @param id
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>id</code> does not exist
+     */
     void deleteAdmin(Long id);
 }

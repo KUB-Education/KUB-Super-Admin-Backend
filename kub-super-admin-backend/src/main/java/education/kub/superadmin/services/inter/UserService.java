@@ -4,6 +4,8 @@ import education.kub.superadmin.dto.AdminRequestDTO;
 import education.kub.superadmin.dto.AdminUpdateRequestDTO;
 import education.kub.superadmin.entities.AdminEntity;
 import education.kub.superadmin.entities.UserEntity;
+import education.kub.superadmin.exception.ErrorCode;
+import education.kub.superadmin.exception.KubException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -17,7 +19,7 @@ public interface UserService {
      * generates temporary password and sends it to <code>dto.email</code>
      * @param dto
      * @return created entity
-     * @throws EntityExistsException when user with given email already exists
+     * @throws KubException (<code>ErrorCode.CONFLICT</code>) - when user with given email already exists
      */
     UserEntity createUser(AdminRequestDTO dto);
 
@@ -35,7 +37,7 @@ public interface UserService {
      * @param id
      * @param dto
      * @return updated entity
-     * @throws EntityNotFoundException when user with given <code>id</code> does not exist
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when user with given <code>id</code> does not exist
      */
     UserEntity updateUser(Long id, AdminUpdateRequestDTO dto);
 
@@ -43,12 +45,29 @@ public interface UserService {
      * Resends temporary password to user with given <code>id</code>.
      * @param id
      * @return
-     * @throws ServiceUnavailableException if SMTP is not available, or sending email is failed
-     * @throws EntityNotFoundException when user with given <code>id</code> does not exist
+     * @throws KubException (<code>ErrorCode.SMTP_FAILURE</code>) - if SMTP is not available, or sending email is failed;
+     * (<code>ErrorCode.NOT_FOUND</code>) - when user with given <code>id</code> does not exist
      */
-    UserEntity resendTemporaryPassword(Long id) throws ServiceUnavailableException;
+    UserEntity resendTemporaryPassword(Long id);
 
+    /**
+     * Finds user by given <code>id</code>
+     * @param id
+     * @return
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when user with given <code>id</code> does not exist
+     */
     UserEntity getUserById(Long id);
+
+    /**
+     * Finds all users
+     * @return
+     */
     List<UserEntity> getAllUsers();
+
+    /**
+     * Deletes user with given <code>id</code>
+     * @param id
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when user with given <code>id</code> does not exist
+     */
     void deleteUser(Long id);
 }
