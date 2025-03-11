@@ -12,7 +12,6 @@ import javax.naming.ServiceUnavailableException;
 import java.util.List;
 
 public interface AdminService {
-    // resendPassword -- should be handled by Controller
 
     /**
      * Creates Admin entity and corresponding User entity. Also, if connection to SMTP server is ok,
@@ -24,7 +23,7 @@ public interface AdminService {
     AdminEntity createAdmin(AdminRequestDTO dto);
 
     /**
-     * Updates Admin entity according to given <code>dto</code> (only non-null fields are considered).
+     * Updates Admin entity according to given <code>dto</code>.
      * <br/>
      * Do the same as a {@link UserService#updateUser(Long, AdminUpdateRequestDTO)} method.
      *

@@ -12,8 +12,6 @@ import javax.naming.ServiceUnavailableException;
 import java.util.List;
 
 public interface UserService {
-    // resendPassword -- should be handled by Controller
-
     /**
      * Creates User entity. Also, if connection to SMTP server is ok,
      * generates temporary password and sends it to <code>dto.email</code>
@@ -25,6 +23,8 @@ public interface UserService {
 
     /**
      * Updates User entity according to given <code>dto</code> (only non-null fields are considered).
+     * <br/>
+     * If <code>dto.middleName</code> is empty string, then middleName of user will be set to <code>null</code>.
      * <ol>
      * If email is updated, then:
      *     <li>deletes all tokens from Redis (if such exists)</li>
