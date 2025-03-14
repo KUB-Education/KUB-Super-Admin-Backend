@@ -95,7 +95,6 @@ public class UserServiceImpl implements UserService {
             user.setFirstName(dto.getFirstName());
         }
         if (dto.getMiddleName() != null) {
-            user.setMiddleName(dto.getMiddleName());
             if(dto.getMiddleName().isEmpty()){
                 user.setMiddleName(null);
             }
