@@ -53,7 +53,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AdminEntity resendTemporaryPassword(Long id) throws ServiceUnavailableException {
+    public AdminEntity resendTemporaryPassword(Long id) {
         AdminEntity admin = getAdminById(id);
 
         userService.resendTemporaryPassword(admin.getUser().getId());

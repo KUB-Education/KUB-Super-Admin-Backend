@@ -95,7 +95,12 @@ public class UserServiceImpl implements UserService {
             user.setFirstName(dto.getFirstName());
         }
         if(dto.getMiddleName() != null){
-            user.setMiddleName(dto.getMiddleName());
+            if(dto.getMiddleName().isEmpty()){
+                user.setMiddleName(null);
+            }
+            else{
+                user.setMiddleName(dto.getMiddleName());
+            }
         }
 
         boolean emailUpdated = false;
@@ -158,7 +163,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity resendTemporaryPassword(Long id) throws ServiceUnavailableException {
+    public UserEntity resendTemporaryPassword(Long id) {
         UserEntity user = getUserById(id);
 
         boolean isUserAlreadyActivated =
