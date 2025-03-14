@@ -5,17 +5,13 @@ import education.kub.superadmin.dto.AdminUpdateRequestDTO;
 import education.kub.superadmin.entities.UserEntity;
 import education.kub.superadmin.exception.ErrorCode;
 import education.kub.superadmin.exception.KubException;
-import education.kub.superadmin.generators.password.inter.PasswordGenerator;
-import education.kub.superadmin.generators.password.impl.PasswordGeneratorImpl;
-import education.kub.superadmin.helpers.hasher.inter.Hasher;
-import education.kub.superadmin.helpers.hasher.impl.BCryptPasswordHasherImpl;
 import education.kub.superadmin.repositories.UserRepo;
+import education.kub.superadmin.services.inter.PasswordService;
 import education.kub.superadmin.services.inter.SmtpService;
 import education.kub.superadmin.services.inter.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import javax.naming.ServiceUnavailableException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,8 +20,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final SmtpService smtpService;
 
-    private final PasswordGenerator passwordGenerator = new PasswordGeneratorImpl();
-    private final Hasher hasher = new BCryptPasswordHasherImpl();
+    private final PasswordService passwordService;
 
     private final String REGISTRATION_EMAIL_SUBJECT = "Registration on KUB Education";
     private final String TEMPORARY_PASSWORD_EMAIL_SUBJECT = "Temporary password for KUB Education";
@@ -34,15 +29,20 @@ public class UserServiceImpl implements UserService {
     private final Integer TEMPORARY_PASSWORD_EXPIRATION_DAYS = 7;
 
 
-    public UserServiceImpl(UserRepo userRepo, SmtpService smtpService) {
+    public UserServiceImpl(
+            UserRepo userRepo,
+            SmtpService smtpService,
+            PasswordService passwordService
+    ) {
         this.userRepo = userRepo;
         this.smtpService = smtpService;
+        this.passwordService = passwordService;
     }
 
     @Override
     @Transactional
-    public UserEntity createUser(AdminRequestDTO dto){
-        if(userRepo.findByEmail(dto.getEmail()).isPresent()){
+    public UserEntity createUser(AdminRequestDTO dto) {
+        if (userRepo.findByEmail(dto.getEmail()).isPresent()) {
             throw new KubException(ErrorCode.CONFLICT);
         }
 
@@ -56,26 +56,26 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
 
         // check SMTP connection
-        if(!smtpService.checkConnection()){
+        if (!smtpService.checkConnection()) {
             user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
             userRepo.save(user);
             return user;
         }
 
         // send temporary password on email
-        String temporaryPassword = passwordGenerator.generate();
+        String temporaryPassword = passwordService.generate();
         boolean sendResult = smtpService.sendEmail(dto.getEmail(), REGISTRATION_EMAIL_SUBJECT,
                 genTemporaryPasswordEmailBody(dto.getLastName(), dto.getFirstName(),
                         dto.getMiddleName(), temporaryPassword));
 
-        if(!sendResult){
+        if (!sendResult) {
             user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
             userRepo.save(user);
             return user;
         }
 
         // update DB (set temporaryPassword)
-        String temporaryPasswordHashed = hasher.createHash(temporaryPassword);
+        String temporaryPasswordHashed = passwordService.hash(temporaryPassword);
         user.setStatus(UserEntity.Status.ACTIVATION_PENDING);
         user.setTemporaryPasswordHashed(temporaryPasswordHashed);
         user.setTemporaryPasswordExpiration(LocalDateTime.now().plusDays(7));
@@ -88,13 +88,14 @@ public class UserServiceImpl implements UserService {
     public UserEntity updateUser(Long id, AdminUpdateRequestDTO dto) {
         UserEntity user = getUserById(id);
 
-        if(dto.getLastName() != null){
+        if (dto.getLastName() != null) {
             user.setLastName(dto.getLastName());
         }
-        if(dto.getFirstName() != null){
+        if (dto.getFirstName() != null) {
             user.setFirstName(dto.getFirstName());
         }
-        if(dto.getMiddleName() != null){
+        if (dto.getMiddleName() != null) {
+            user.setMiddleName(dto.getMiddleName());
             if(dto.getMiddleName().isEmpty()){
                 user.setMiddleName(null);
             }
@@ -104,26 +105,26 @@ public class UserServiceImpl implements UserService {
         }
 
         boolean emailUpdated = false;
-        if(dto.getEmail() != null){
-            if(!dto.getEmail().equals(user.getEmail())){
+        if (dto.getEmail() != null) {
+            if (!dto.getEmail().equals(user.getEmail())) {
                 user.setEmail(dto.getEmail());
                 emailUpdated = true;
             }
         }
         userRepo.save(user);
 
-        if(!emailUpdated){
+        if (!emailUpdated) {
             return user;
         }
 
-        if(user.getStatus() == UserEntity.Status.ACTIVATED){
+        if (user.getStatus() == UserEntity.Status.ACTIVATED) {
             /////////////////////////////////////////////////////// NEED TO Blacklist all tokens in Redis
             return user;
         }
 
         // there, account is not ACTIVATED, so need to resend email with temporary password
 
-        if(user.getStatus() == UserEntity.Status.RECOVERY_PENDING){
+        if (user.getStatus() == UserEntity.Status.RECOVERY_PENDING) {
             /////////////////////////////////////////////////////// NEED TO Blacklist all tokens in Redis
         }
 
@@ -135,26 +136,26 @@ public class UserServiceImpl implements UserService {
 
 
         // check SMTP connection
-        if(!smtpService.checkConnection()){
+        if (!smtpService.checkConnection()) {
             user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
             userRepo.save(user);
             return user;
         }
 
         // send temporary password on email
-        String temporaryPassword = passwordGenerator.generate();
+        String temporaryPassword = passwordService.generate();
         boolean sendResult = smtpService.sendEmail(user.getEmail(), TEMPORARY_PASSWORD_EMAIL_SUBJECT,
                 genTemporaryPasswordEmailBody(user.getLastName(), user.getFirstName(),
                         user.getMiddleName(), temporaryPassword));
 
-        if(!sendResult){
+        if (!sendResult) {
             user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
             userRepo.save(user);
             return user;
         }
 
         // update DB (set temporaryPassword)
-        String temporaryPasswordHashed = hasher.createHash(temporaryPassword);
+        String temporaryPasswordHashed = passwordService.hash(temporaryPassword);
         user.setStatus(UserEntity.Status.ACTIVATION_PENDING);
         user.setTemporaryPasswordHashed(temporaryPasswordHashed);
         user.setTemporaryPasswordExpiration(LocalDateTime.now().plusDays(7));
@@ -168,9 +169,9 @@ public class UserServiceImpl implements UserService {
 
         boolean isUserAlreadyActivated =
                 user.getStatus() == UserEntity.Status.ACTIVATED ||
-                user.getStatus() == UserEntity.Status.RECOVERY_PENDING;
+                        user.getStatus() == UserEntity.Status.RECOVERY_PENDING;
 
-        if(!isUserAlreadyActivated){
+        if (!isUserAlreadyActivated) {
             user.setStatus(null);
         }
         user.setTemporaryPasswordHashed(null);
@@ -178,8 +179,8 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
 
         // check SMTP connection
-        if(!smtpService.checkConnection()){
-            if(!isUserAlreadyActivated){
+        if (!smtpService.checkConnection()) {
+            if (!isUserAlreadyActivated) {
                 user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
                 userRepo.save(user);
             }
@@ -187,13 +188,13 @@ public class UserServiceImpl implements UserService {
         }
 
         // send temporary password on email
-        String temporaryPassword = passwordGenerator.generate();
+        String temporaryPassword = passwordService.generate();
         boolean sendResult = smtpService.sendEmail(user.getEmail(), TEMPORARY_PASSWORD_EMAIL_SUBJECT,
                 genTemporaryPasswordEmailBody(user.getLastName(), user.getFirstName(),
                         user.getMiddleName(), temporaryPassword));
 
-        if(!sendResult){
-            if(!isUserAlreadyActivated){
+        if (!sendResult) {
+            if (!isUserAlreadyActivated) {
                 user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
                 userRepo.save(user);
             }
@@ -201,11 +202,10 @@ public class UserServiceImpl implements UserService {
         }
 
         // update DB (set temporaryPassword)
-        String temporaryPasswordHashed = hasher.createHash(temporaryPassword);
-        if(!isUserAlreadyActivated){
+        String temporaryPasswordHashed = passwordService.hash(temporaryPassword);
+        if (!isUserAlreadyActivated) {
             user.setStatus(UserEntity.Status.ACTIVATION_PENDING);
-        }
-        else{
+        } else {
             user.setStatus(UserEntity.Status.RECOVERY_PENDING);
         }
         user.setTemporaryPasswordHashed(temporaryPasswordHashed);
@@ -215,7 +215,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private String genTemporaryPasswordEmailBody(String lastName, String firstName, String middleName,
-                                                 String temporaryPassword){
+                                                 String temporaryPassword) {
         return String.format(TEMPORARY_PASSWORD_EMAIL_BODY_TEMPLATE,
                 lastName,
                 firstName,
