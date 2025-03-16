@@ -24,8 +24,8 @@ public class AdminUpdateRequestDTO {
     private String firstName;
 
     @JsonProperty("middle_name")
-    @Size(min = 1, max = 32, message = "middleName must have length in interval [1,32]")
-    @Pattern(regexp = "^[a-zA-Zа-яА-Я]+$", message = "middleName must contain only Latin or Cyrillic letters")
+    @Size(max = 32, message = "middleName must have length less than or equal to 32")
+    @Pattern(regexp = "^$|^[a-zA-Zа-яА-Я]+$", message = "middleName must contain only Latin or Cyrillic letters")
     private String middleName;
 
     @JsonProperty("email")

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
@@ -51,6 +52,12 @@ public class GlobalExceptionHandler extends BaseExceptionHandling {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Problem> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
         final Problem problem = buildProblem(request.getRequestURI(), Status.UNPROCESSABLE_ENTITY, ex);
+        return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Problem> handleValidationExceptions(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        final Problem problem = buildProblem(request.getRequestURI(), Status.BAD_REQUEST, ex);
         return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 }
