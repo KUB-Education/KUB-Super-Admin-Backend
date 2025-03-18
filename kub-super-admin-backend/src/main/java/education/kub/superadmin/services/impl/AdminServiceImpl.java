@@ -7,26 +7,22 @@ import education.kub.superadmin.entities.UserEntity;
 import education.kub.superadmin.exception.ErrorCode;
 import education.kub.superadmin.exception.KubException;
 import education.kub.superadmin.repositories.AdminRepo;
-import education.kub.superadmin.repositories.UserRepo;
 import education.kub.superadmin.services.inter.AdminService;
 import education.kub.superadmin.services.inter.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import javax.naming.ServiceUnavailableException;
 import java.util.List;
 
 @Service
 public class AdminServiceImpl implements AdminService {
     private final AdminRepo adminRepo;
-    private final UserRepo userRepo;
     private final UserService userService;
 
 
-    public AdminServiceImpl(AdminRepo adminRepo, UserRepo userRepo,
+    public AdminServiceImpl(AdminRepo adminRepo,
                             UserService userService) {
         this.adminRepo = adminRepo;
-        this.userRepo = userRepo;
         this.userService = userService;
     }
 
@@ -80,9 +76,9 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteAdmin(Long id) {
         AdminEntity admin = getAdminById(id);
-        UserEntity user = admin.getUser();
+        Long userId = admin.getUser().getId();
 
         adminRepo.delete(admin);
-        userRepo.delete(user);
+        userService.deleteUser(userId);
     }
 }
