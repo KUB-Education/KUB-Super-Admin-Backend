@@ -14,18 +14,24 @@ import lombok.Setter;
 @Setter
 public class AdminUpdateRequestDTO {
     @JsonProperty("last_name")
-    @Size(min = 1, max = 32, message = "lastName must have length in interval [1,32]")
-    @Pattern(regexp = "^[a-zA-Zа-яА-Я]+$", message = "lastName must contain only Latin or Cyrillic letters")
+    @Size(min = 1, max = 32, message = "last_name must have length in interval [1,32]")
+    @Pattern(regexp = "^(?=.{1,32}$)[A-Za-zАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]" +
+            "+(?:[-'ʼ][A-Za-zАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]+)*$",
+            message = "last_name must contain only Latin or Cyrillic letters, hyphen, apostrophe")
     private String lastName;
 
     @JsonProperty("first_name")
-    @Size(min = 1, max = 32, message = "firstName must have length in interval [1,32]")
-    @Pattern(regexp = "^[a-zA-Zа-яА-Я]+$", message = "firstName must contain only Latin or Cyrillic letters")
+    @Size(min = 1, max = 32, message = "first_name must have length in interval [1,32]")
+    @Pattern(regexp = "^(?=.{1,32}$)[A-Za-zАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]" +
+            "+(?:[-'ʼ][A-Za-zАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]+)*$",
+            message = "first_name must contain only Latin or Cyrillic letters, hyphen, apostrophe")
     private String firstName;
 
     @JsonProperty("middle_name")
-    @Size(max = 32, message = "middleName must have length less than or equal to 32")
-    @Pattern(regexp = "^$|^[a-zA-Zа-яА-Я]+$", message = "middleName must contain only Latin or Cyrillic letters")
+    @Size(max = 32, message = "middle_name must have length less than or equal to 32")
+    @Pattern(regexp = "^$|^(?=.{0,32}$)[A-Za-zАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]" +
+            "+(?:[-'ʼ][A-Za-zАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]+)*$",
+            message = "middle_name must contain only Latin or Cyrillic letters, hyphen, apostrophe")
     private String middleName;
 
     @JsonProperty("email")
