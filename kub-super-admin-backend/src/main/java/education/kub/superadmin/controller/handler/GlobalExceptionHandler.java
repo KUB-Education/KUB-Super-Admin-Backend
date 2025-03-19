@@ -1,10 +1,12 @@
 package education.kub.superadmin.controller.handler;
 
+import education.kub.superadmin.dto.ErrorDTO;
 import education.kub.superadmin.exception.BaseException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,7 +20,9 @@ import org.zalando.problem.Status;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
 import org.zalando.problem.spring.web.autoconfigure.ProblemAutoConfiguration;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @ConditionalOnClass({ProblemHandling.class})
@@ -49,10 +53,20 @@ public class GlobalExceptionHandler extends BaseExceptionHandling {
         return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<Problem> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+//        final Problem problem = buildProblem(request.getRequestURI(), Status.UNPROCESSABLE_ENTITY, ex);
+//        return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+//    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Problem> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        final Problem problem = buildProblem(request.getRequestURI(), Status.UNPROCESSABLE_ENTITY, ex);
-        return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+    public ResponseEntity<ErrorDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<String> errors = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+        return ResponseEntity.unprocessableEntity().body(new ErrorDTO(errors));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
