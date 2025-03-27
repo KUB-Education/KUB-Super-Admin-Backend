@@ -33,15 +33,19 @@ public class TokenStoreServiceImpl implements TokenStoreService {
     }
 
     @Override
-    public boolean isSessionValid(Long userId, String sessionId) {
+    public boolean isAccessTokenValid(Long userId, String sessionId, String accessToken) {
         String accessKey = getAccessTokenKey(userId, sessionId);
-        return Boolean.TRUE.equals(redisTemplate.hasKey(accessKey));
+        String storedAccessToken = redisTemplate.opsForValue().get(accessKey);
+
+        return accessToken.equals(storedAccessToken);
     }
 
     @Override
-    public boolean isRefreshTokenValid(Long userId, String sessionId) {
+    public boolean isRefreshTokenValid(Long userId, String sessionId, String refreshToken) {
         String refreshKey = getRefreshTokenKey(userId, sessionId);
-        return Boolean.TRUE.equals(redisTemplate.hasKey(refreshKey));
+        String storedRefreshToken = redisTemplate.opsForValue().get(refreshKey);
+
+        return refreshToken.equals(storedRefreshToken);
     }
 
     @Override
@@ -66,7 +70,7 @@ public class TokenStoreServiceImpl implements TokenStoreService {
     }
 
     private String getAccessTokenKey(Long userId, String sessionId) {
-        return "session:" + userId + ":" + sessionId;
+        return "access:" + userId + ":" + sessionId;
     }
 
     private String getRefreshTokenKey(Long userId, String sessionId) {
