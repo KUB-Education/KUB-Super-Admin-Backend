@@ -8,6 +8,7 @@ import education.kub.superadmin.exception.KubException;
 import education.kub.superadmin.repositories.UserRepo;
 import education.kub.superadmin.services.inter.PasswordService;
 import education.kub.superadmin.services.inter.SmtpService;
+import education.kub.superadmin.services.inter.TokenStoreService;
 import education.kub.superadmin.services.inter.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordService passwordService;
 
+    private final TokenStoreService tokenStoreService;
+
     private final String REGISTRATION_EMAIL_SUBJECT = "Registration on KUB Education";
     private final String TEMPORARY_PASSWORD_EMAIL_SUBJECT = "Temporary password for KUB Education";
     private final String TEMPORARY_PASSWORD_EMAIL_BODY_TEMPLATE =
@@ -32,11 +35,13 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(
             UserRepo userRepo,
             SmtpService smtpService,
-            PasswordService passwordService
+            PasswordService passwordService,
+            TokenStoreService tokenStoreService
     ) {
         this.userRepo = userRepo;
         this.smtpService = smtpService;
         this.passwordService = passwordService;
+        this.tokenStoreService = tokenStoreService;
     }
 
     @Override
@@ -117,14 +122,12 @@ public class UserServiceImpl implements UserService {
         }
 
         if (user.getStatus() == UserEntity.Status.ACTIVATED) {
-            /////////////////////////////////////////////////////// NEED TO Blacklist all tokens in Redis
+            tokenStoreService.deleteAllSessions(user.getId());
             return user;
         }
 
-        // there, account is not ACTIVATED, so need to resend email with temporary password
-
         if (user.getStatus() == UserEntity.Status.RECOVERY_PENDING) {
-            /////////////////////////////////////////////////////// NEED TO Blacklist all tokens in Redis
+            tokenStoreService.deleteAllSessions(user.getId());
         }
 
         user.setStatus(null);
@@ -238,6 +241,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         UserEntity user = getUserById(id);
+
+        tokenStoreService.deleteAllSessions(user.getId());
+
         userRepo.delete(user);
     }
 }
