@@ -24,25 +24,10 @@ public interface AdminService {
     AdminEntity createAdmin(AdminRequestDTO dto);
 
     /**
-     * Updates Admin entity according to given <code>dto</code>.
-     * <br/>
-     * Do the same as a {@link UserService#updateUser(Long, AdminUpdateRequestDTO)} method.
-     *
-     * @param id ID of Admin
-     * @param dto
-     * @return updated entity
-     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>id</code> does not exist
-     */
-    AdminEntity updateAdmin(Long id, AdminUpdateRequestDTO dto);
-
-    /**
-     * Resends temporary password to admin with given <code>id</code>.
-     * @param id
+     * Finds all admins
      * @return
-     * @throws KubException (<code>ErrorCode.SMTP_FAILURE</code>) - if SMTP is not available, or if sending email is failed;
-     * (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>id</code> does not exist
      */
-    AdminEntity resendTemporaryPassword(Long id);
+    List<AdminEntity> getAllAdmins();
 
     /**
      * Finds admin by given <code>id</code>
@@ -59,10 +44,16 @@ public interface AdminService {
     AdminEntity getAdminByUserId(Long userId);
 
     /**
-     * Finds all admins
-     * @return
+     * Updates Admin entity according to given <code>dto</code>.
+     * <br/>
+     * Do the same as a {@link UserService#updateUser(Long, AdminUpdateRequestDTO)} method.
+     *
+     * @param id ID of Admin
+     * @param dto
+     * @return updated entity
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>id</code> does not exist
      */
-    List<AdminEntity> getAllAdmins();
+    AdminEntity updateAdmin(Long id, AdminUpdateRequestDTO dto);
 
     /**
      * Deletes admin by given <code>id</code>
@@ -70,4 +61,13 @@ public interface AdminService {
      * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>id</code> does not exist
      */
     void deleteAdmin(Long id);
+
+    /**
+     * Resends temporary password to admin with given <code>id</code>.
+     * @param id
+     * @return
+     * @throws KubException (<code>ErrorCode.SMTP_FAILURE</code>) - if SMTP is not available, or if sending email is failed;
+     * (<code>ErrorCode.NOT_FOUND</code>) - when admin with given <code>id</code> does not exist
+     */
+    AdminEntity resendTemporaryPassword(Long id);
 }

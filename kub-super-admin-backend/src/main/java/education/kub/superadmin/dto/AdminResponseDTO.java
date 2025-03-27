@@ -1,31 +1,19 @@
 package education.kub.superadmin.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import education.kub.superadmin.entities.UserEntity;
-import lombok.Builder;
-import lombok.Data;
 
-@Builder
-@Data
-public class AdminResponseDTO {
-    @JsonProperty("id")
-    private Long id;
+public record AdminResponseDTO(
+        Long id,
 
-    @JsonProperty("user_id")
-    private Long userId;
+        Long userId,
 
-    @JsonProperty("last_name")
-    private String lastName;
+        String lastName,
 
-    @JsonProperty("first_name")
-    private String firstName;
+        String firstName,
 
-    @JsonProperty("middle_name")
-    private String middleName;
+        String middleName,
 
-    @JsonProperty("email")
-    private String email;
+        String email,
 
-    @JsonProperty("status")
-    private UserEntity.Status status;
-}
+        UserEntity.Status status
+) {}

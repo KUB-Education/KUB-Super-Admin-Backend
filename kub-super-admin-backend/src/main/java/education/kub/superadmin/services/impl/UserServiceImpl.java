@@ -47,17 +47,21 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserEntity createUser(AdminRequestDTO dto) {
-        if (userRepo.findByEmail(dto.getEmail()).isPresent()) {
+        if (userRepo.findByEmail(dto.email()).isPresent()) {
             throw new KubException(ErrorCode.CONFLICT);
         }
 
         UserEntity user = new UserEntity(
                 null,
-                dto.getLastName(),
-                dto.getFirstName(),
-                dto.getMiddleName(),
-                dto.getEmail(),
-                null, null, null, null);
+                dto.lastName(),
+                dto.firstName(),
+                dto.middleName(),
+                dto.email(),
+                null,
+                null,
+                null,
+                null
+        );
         userRepo.save(user);
 
         // check SMTP connection
@@ -69,9 +73,9 @@ public class UserServiceImpl implements UserService {
 
         // send temporary password on email
         String temporaryPassword = passwordService.generate();
-        boolean sendResult = smtpService.sendEmail(dto.getEmail(), REGISTRATION_EMAIL_SUBJECT,
-                genTemporaryPasswordEmailBody(dto.getLastName(), dto.getFirstName(),
-                        dto.getMiddleName(), temporaryPassword));
+        boolean sendResult = smtpService.sendEmail(dto.email(), REGISTRATION_EMAIL_SUBJECT,
+                genTemporaryPasswordEmailBody(dto.lastName(), dto.firstName(),
+                        dto.middleName(), temporaryPassword));
 
         if (!sendResult) {
             user.setStatus(UserEntity.Status.EMAIL_SENDING_FAILURE);
@@ -89,29 +93,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserEntity> getAllUsers() {
+        return userRepo.findAll();
+    }
+
+    @Override
+    public UserEntity getUserById(Long id) {
+        return userRepo.findById(id).orElseThrow(() -> new KubException(ErrorCode.NOT_FOUND));
+    }
+
+    @Override
     @Transactional
     public UserEntity updateUser(Long id, AdminUpdateRequestDTO dto) {
         UserEntity user = getUserById(id);
 
-        if (dto.getLastName() != null) {
-            user.setLastName(dto.getLastName());
+        if (dto.lastName() != null) {
+            user.setLastName(dto.lastName());
         }
-        if (dto.getFirstName() != null) {
-            user.setFirstName(dto.getFirstName());
+        if (dto.firstName() != null) {
+            user.setFirstName(dto.firstName());
         }
-        if (dto.getMiddleName() != null) {
-            if(dto.getMiddleName().isEmpty()){
+        if (dto.middleName() != null) {
+            if(dto.middleName().isEmpty()){
                 user.setMiddleName(null);
             }
             else{
-                user.setMiddleName(dto.getMiddleName());
+                user.setMiddleName(dto.middleName());
             }
         }
 
         boolean emailUpdated = false;
-        if (dto.getEmail() != null) {
-            if (!dto.getEmail().equals(user.getEmail())) {
-                user.setEmail(dto.getEmail());
+        if (dto.email() != null) {
+            if (!dto.email().equals(user.getEmail())) {
+                user.setEmail(dto.email());
                 emailUpdated = true;
             }
         }
@@ -163,6 +177,15 @@ public class UserServiceImpl implements UserService {
         user.setTemporaryPasswordExpiration(LocalDateTime.now().plusDays(7));
         userRepo.save(user);
         return user;
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        UserEntity user = getUserById(id);
+
+        tokenStoreService.deleteAllSessions(user.getId());
+
+        userRepo.delete(user);
     }
 
     @Override
@@ -225,25 +248,5 @@ public class UserServiceImpl implements UserService {
                 temporaryPassword,
                 TEMPORARY_PASSWORD_EXPIRATION_DAYS
         );
-    }
-
-
-    @Override
-    public UserEntity getUserById(Long id) {
-        return userRepo.findById(id).orElseThrow(() -> new KubException(ErrorCode.NOT_FOUND));
-    }
-
-    @Override
-    public List<UserEntity> getAllUsers() {
-        return userRepo.findAll();
-    }
-
-    @Override
-    public void deleteUser(Long id) {
-        UserEntity user = getUserById(id);
-
-        tokenStoreService.deleteAllSessions(user.getId());
-
-        userRepo.delete(user);
     }
 }

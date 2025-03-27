@@ -23,14 +23,14 @@ public class AdminEntity {
     UserEntity user;
 
     public AdminResponseDTO toAdminResponseDto() {
-        return AdminResponseDTO.builder()
-                .id(this.id)
-                .userId(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .middleName(user.getMiddleName())
-                .email(user.getEmail())
-                .status(user.getStatus())
-                .build();
+        return new AdminResponseDTO(
+                this.id,
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getMiddleName(),
+                user.getEmail(),
+                user.getStatus()
+        );
     }
 }

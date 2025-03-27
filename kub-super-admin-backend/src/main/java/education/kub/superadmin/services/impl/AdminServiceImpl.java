@@ -38,21 +38,16 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public List<AdminEntity> getAllAdmins() {
+        return adminRepo.findAll();
+    }
+
+    @Override
     @Transactional
     public AdminEntity updateAdmin(Long id, AdminUpdateRequestDTO dto) {
         AdminEntity admin = getAdminById(id);
 
         userService.updateUser(admin.getUser().getId(), dto);
-
-        // refresh, because admin.user is changed
-        return getAdminById(id);
-    }
-
-    @Override
-    public AdminEntity resendTemporaryPassword(Long id) {
-        AdminEntity admin = getAdminById(id);
-
-        userService.resendTemporaryPassword(admin.getUser().getId());
 
         // refresh, because admin.user is changed
         return getAdminById(id);
@@ -69,16 +64,21 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<AdminEntity> getAllAdmins() {
-        return adminRepo.findAll();
-    }
-
-    @Override
     public void deleteAdmin(Long id) {
         AdminEntity admin = getAdminById(id);
         Long userId = admin.getUser().getId();
 
         adminRepo.delete(admin);
         userService.deleteUser(userId);
+    }
+
+    @Override
+    public AdminEntity resendTemporaryPassword(Long id) {
+        AdminEntity admin = getAdminById(id);
+
+        userService.resendTemporaryPassword(admin.getUser().getId());
+
+        // refresh, because admin.user is changed
+        return getAdminById(id);
     }
 }
