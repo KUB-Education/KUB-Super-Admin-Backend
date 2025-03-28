@@ -24,6 +24,20 @@ public interface UserService {
     UserEntity createUser(AdminRequestDTO dto);
 
     /**
+     * Finds all users
+     * @return
+     */
+    List<UserEntity> getAllUsers();
+
+    /**
+     * Finds user by given <code>id</code>
+     * @param id
+     * @return
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when user with given <code>id</code> does not exist
+     */
+    UserEntity getUserById(Long id);
+
+    /**
      * Updates User entity according to given <code>dto</code> (only non-null fields are considered).
      * <br/>
      * If <code>dto.middleName</code> is empty string, then middleName of user will be set to <code>null</code>.
@@ -42,6 +56,13 @@ public interface UserService {
     UserEntity updateUser(Long id, AdminUpdateRequestDTO dto);
 
     /**
+     * Deletes user with given <code>id</code>
+     * @param id
+     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when user with given <code>id</code> does not exist
+     */
+    void deleteUser(Long id);
+
+    /**
      * Resends temporary password to user with given <code>id</code>.
      * @param id
      * @return
@@ -49,25 +70,4 @@ public interface UserService {
      * (<code>ErrorCode.NOT_FOUND</code>) - when user with given <code>id</code> does not exist
      */
     UserEntity resendTemporaryPassword(Long id);
-
-    /**
-     * Finds user by given <code>id</code>
-     * @param id
-     * @return
-     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when user with given <code>id</code> does not exist
-     */
-    UserEntity getUserById(Long id);
-
-    /**
-     * Finds all users
-     * @return
-     */
-    List<UserEntity> getAllUsers();
-
-    /**
-     * Deletes user with given <code>id</code>
-     * @param id
-     * @throws KubException (<code>ErrorCode.NOT_FOUND</code>) - when user with given <code>id</code> does not exist
-     */
-    void deleteUser(Long id);
 }
