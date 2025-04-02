@@ -62,6 +62,11 @@ public class UserServiceImpl implements UserService {
                 null,
                 null
         );
+        if (dto.middleName() != null &&
+                dto.middleName().isEmpty()) {
+            user.setMiddleName(null);
+        }
+
         userRepo.save(user);
 
         // check SMTP connection
