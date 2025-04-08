@@ -14,45 +14,16 @@ import java.util.Set;
 public class TokenStoreServiceImpl implements TokenStoreService {
     private final RedisTemplate<String, String> redisTemplate;
 
-    @Value("${jwt.accessTokenExpiration}")
-    private long accessTokenValidityMs;
-
-    @Value("${jwt.refreshTokenExpiration}")
-    private long refreshTokenValidityMs;
-
-    @Override
-    public void storeSessionTokens(Long userId, String sessionId, String accessToken, String refreshToken) {
-        String accessKey = getAccessTokenKey(userId, sessionId);
-        redisTemplate.opsForValue().set(accessKey, accessToken, Duration.ofMillis(accessTokenValidityMs));
-
-        String refreshKey = getRefreshTokenKey(userId, sessionId);
-        redisTemplate.opsForValue().set(refreshKey, refreshToken, Duration.ofMillis(refreshTokenValidityMs));
-
-        String sessionSetKey = getSessionSetKey(userId);
-        redisTemplate.opsForSet().add(sessionSetKey, accessToken);
+    private String getAccessTokenKey(Long userId, String sessionId) {
+        return "access:" + userId + ":" + sessionId;
     }
 
-    @Override
-    public boolean isAccessTokenValid(Long userId, String sessionId, String accessToken) {
-        String accessKey = getAccessTokenKey(userId, sessionId);
-        String storedAccessToken = redisTemplate.opsForValue().get(accessKey);
-
-        return accessToken.equals(storedAccessToken);
+    private String getRefreshTokenKey(Long userId, String sessionId) {
+        return "refresh:" + userId + ":" + sessionId;
     }
 
-    @Override
-    public boolean isRefreshTokenValid(Long userId, String sessionId, String refreshToken) {
-        String refreshKey = getRefreshTokenKey(userId, sessionId);
-        String storedRefreshToken = redisTemplate.opsForValue().get(refreshKey);
-
-        return refreshToken.equals(storedRefreshToken);
-    }
-
-    @Override
-    public void deleteSession(Long userId, String sessionId) {
-        redisTemplate.delete(getAccessTokenKey(userId, sessionId));
-        redisTemplate.delete(getRefreshTokenKey(userId, sessionId));
-        redisTemplate.opsForSet().remove(getSessionSetKey(userId), sessionId);
+    private String getSessionSetKey(Long userId) {
+        return "sessions:" + userId;
     }
 
     @Override
@@ -67,17 +38,5 @@ public class TokenStoreServiceImpl implements TokenStoreService {
             }
             redisTemplate.delete(sessionSetKey);
         }
-    }
-
-    private String getAccessTokenKey(Long userId, String sessionId) {
-        return "access:" + userId + ":" + sessionId;
-    }
-
-    private String getRefreshTokenKey(Long userId, String sessionId) {
-        return "refresh:" + userId + ":" + sessionId;
-    }
-
-    private String getSessionSetKey(Long userId) {
-        return "sessions:" + userId;
     }
 }
