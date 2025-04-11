@@ -1,4 +1,4 @@
-package education.kub.superadmin.config;
+package education.kub.superadmin.app.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
