@@ -1,6 +1,7 @@
-package education.kub.superadmin.entities;
+package education.kub.superadmin.domain.admin.entity;
 
-import education.kub.superadmin.dto.AdminResponseDTO;
+import education.kub.superadmin.domain.admin.model.AdminResponseDTO;
+import education.kub.superadmin.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,8 +29,8 @@ public class AdminEntity implements Serializable {
         return new AdminResponseDTO(
                 this.id,
                 user.getId(),
-                user.getFirstName(),
                 user.getLastName(),
+                user.getFirstName(),
                 user.getMiddleName(),
                 user.getEmail(),
                 user.getStatus()

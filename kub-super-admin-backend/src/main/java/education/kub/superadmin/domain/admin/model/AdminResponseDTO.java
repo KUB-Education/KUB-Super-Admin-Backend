@@ -1,6 +1,6 @@
-package education.kub.superadmin.dto;
+package education.kub.superadmin.domain.admin.model;
 
-import education.kub.superadmin.entities.UserEntity;
+import education.kub.superadmin.domain.user.entity.UserEntity;
 
 public record AdminResponseDTO(
         Long id,
