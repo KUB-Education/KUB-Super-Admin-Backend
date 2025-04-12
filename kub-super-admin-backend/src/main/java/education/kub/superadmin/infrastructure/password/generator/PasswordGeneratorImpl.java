@@ -1,6 +1,5 @@
-package education.kub.superadmin.generators.password.impl;
+package education.kub.superadmin.infrastructure.password.generator;
 
-import education.kub.superadmin.generators.password.inter.PasswordGenerator;
 import org.passay.CharacterData;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
@@ -12,18 +11,15 @@ import java.util.*;
 public class PasswordGeneratorImpl implements PasswordGenerator {
     private static final int LENGTH_DEFAULT = 8;
 
-    // Rule names
     private static final String LOWERCASE_LETTER_RULENAME = "lowerCaseLetter";
     private static final String UPPERCASE_LETTER_RULENAME = "upperCaseLetter";
     private static final String DIGITS_RULENAME = "digits";
     private static final String SPECIAL_CHARS_RULENAME = "specialChars";
 
-
     private static final String MIN_COUNT_KEY = "minCount";
     private static final String SOURCE_KEY = "source"; // key by which string of special characters can be passed
     private static final int MIN_COUNT_DEFAULT = 1;
     private static final String SPECIAL_CHARS_DEFAULT = "~`!@#$%^&*()_-+={}[]|\\:;\"'<>.?/";
-
 
     private static final String ERROR_CODE = "ERRONEOUS_SPECIAL_CHARS";
 
@@ -51,29 +47,6 @@ public class PasswordGeneratorImpl implements PasswordGenerator {
                         SOURCE_KEY, SPECIAL_CHARS_DEFAULT
                 )
         );
-    }
-
-    public String getSpecialCharsDefault() {
-        return SPECIAL_CHARS_DEFAULT;
-    }
-
-    public int getLengthDefault() {
-        return LENGTH_DEFAULT;
-    }
-
-    @Override
-    public String generate(Map<String, Map<String, Object>> rulesConfig) {
-        return this.generate(LENGTH_DEFAULT, rulesConfig);
-    }
-
-    @Override
-    public String generate(int length) {
-        return this.generate(length, getDefaultRules());
-    }
-
-    @Override
-    public String generate() {
-        return this.generate(LENGTH_DEFAULT, getDefaultRules());
     }
 
     @Override
@@ -123,5 +96,15 @@ public class PasswordGeneratorImpl implements PasswordGenerator {
         }
 
         return generator.generatePassword(length, characterRules);
+    }
+
+    @Override
+    public String generate(int length) {
+        return this.generate(length, getDefaultRules());
+    }
+
+    @Override
+    public String generate() {
+        return this.generate(LENGTH_DEFAULT, getDefaultRules());
     }
 }

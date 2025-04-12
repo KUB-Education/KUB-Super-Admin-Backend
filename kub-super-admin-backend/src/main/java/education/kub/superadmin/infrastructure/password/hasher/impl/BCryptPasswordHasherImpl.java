@@ -1,4 +1,4 @@
-package education.kub.superadmin.helpers.hasher.impl;
+package education.kub.superadmin.infrastructure.password.hasher.impl;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
