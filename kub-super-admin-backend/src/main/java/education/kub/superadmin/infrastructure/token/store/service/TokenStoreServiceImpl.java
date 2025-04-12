@@ -1,12 +1,9 @@
-package education.kub.superadmin.services.impl;
+package education.kub.superadmin.infrastructure.token.store.service;
 
-import education.kub.superadmin.services.inter.TokenStoreService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.Set;
 
 @Service
