@@ -1,7 +1,7 @@
-package education.kub.superadmin.controller.handler;
+package education.kub.superadmin.app.exception.handler;
 
-import education.kub.superadmin.dto.ErrorDTO;
-import education.kub.superadmin.exception.BaseException;
+import education.kub.superadmin.app.exception.model.ValidationExceptionErrorDTO;
+import education.kub.superadmin.app.exception.model.BaseException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 @ConditionalOnClass({ProblemHandling.class})
 @AutoConfigureBefore({ProblemAutoConfiguration.class})
-public class GlobalExceptionHandler extends BaseExceptionHandling {
+public class GlobalExceptionHandler extends BaseExceptionHandler {
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<Problem> handleException(BaseException ex, HttpServletRequest request) {
         final Problem problem = buildProblem(request.getRequestURI(), ex.getStatus(), ex);
@@ -48,10 +48,9 @@ public class GlobalExceptionHandler extends BaseExceptionHandling {
         return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 
-    // handles empty request body (https://stackoverflow.com/a/69411467)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Problem> handleException(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        final Problem problem = buildProblem(request.getRequestURI(), Status.valueOf(400), ex);
+        final Problem problem = buildProblem(request.getRequestURI(), Status.BAD_REQUEST, ex);
         return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 
@@ -61,20 +60,14 @@ public class GlobalExceptionHandler extends BaseExceptionHandling {
         return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
     }
 
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<Problem> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
-//        final Problem problem = buildProblem(request.getRequestURI(), Status.UNPROCESSABLE_ENTITY, ex);
-//        return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
-//    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ValidationExceptionErrorDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult()
                 .getAllErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
-        return ResponseEntity.unprocessableEntity().body(new ErrorDTO(errors));
+        return ResponseEntity.unprocessableEntity().body(new ValidationExceptionErrorDTO(errors));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

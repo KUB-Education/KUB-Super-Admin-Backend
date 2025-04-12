@@ -1,4 +1,4 @@
-package education.kub.superadmin.exception;
+package education.kub.superadmin.app.exception.model;
 
 import lombok.Getter;
 import org.zalando.problem.StatusType;
@@ -9,11 +9,13 @@ public class BaseException extends RuntimeException {
 
     public BaseException(StatusType status, String message, Throwable cause) {
         super(message, cause);
+
         this.status = status;
     }
 
     public BaseException(StatusType status, String message) {
         super(message);
+
         this.status = status;
     }
 }

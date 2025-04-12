@@ -1,4 +1,4 @@
-package education.kub.superadmin.controller.handler;
+package education.kub.superadmin.app.exception.handler;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.zalando.problem.Problem;
@@ -8,7 +8,7 @@ import org.zalando.problem.spring.web.advice.ProblemHandling;
 import java.net.URI;
 
 @ConditionalOnClass({ProblemHandling.class})
-public class BaseExceptionHandling {
+public class BaseExceptionHandler {
     protected Problem buildProblem(String uri, StatusType status, Throwable exception) {
         return Problem.builder()
                 .withInstance(URI.create(uri))
