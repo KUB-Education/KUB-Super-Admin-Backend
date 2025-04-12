@@ -1,7 +1,8 @@
-package education.kub.superadmin.entities;
+package education.kub.superadmin.domain.user.entity;
 
+import education.kub.superadmin.domain.admin.model.AdminResponseDTO;
+import education.kub.superadmin.domain.user.model.UserResponseDTO;
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "user")
@@ -47,13 +47,22 @@ public class UserEntity implements Serializable {
     @Column(name = "temporary_password_expiration", nullable = true)
     private LocalDateTime temporaryPasswordExpiration;
 
-
-
-    public enum Status{
+    public enum Status {
         EMAIL_SENDING_FAILURE,
         ACTIVATION_PENDING,
         ACTIVATION_EXPIRED,
         ACTIVATED,
         RECOVERY_PENDING
+    }
+
+    public UserResponseDTO toUserResponseDTO() {
+        return new UserResponseDTO(
+                this.id,
+                this.getLastName(),
+                this.getFirstName(),
+                this.getMiddleName(),
+                this.getEmail(),
+                this.getStatus()
+        );
     }
 }
