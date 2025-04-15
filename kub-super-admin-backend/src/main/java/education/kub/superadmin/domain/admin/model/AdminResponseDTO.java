@@ -5,8 +5,6 @@ import education.kub.superadmin.domain.user.entity.UserEntity;
 public record AdminResponseDTO(
         Long id,
 
-        Long userId,
-
         String lastName,
 
         String firstName,
@@ -15,5 +13,5 @@ public record AdminResponseDTO(
 
         String email,
 
-        UserEntity.Status status
+        UserEntity.Status userStatus
 ) {}

@@ -91,9 +91,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminResponseDTO resendAdminPassword(Long id) {
-        AdminResponseDTO adminResponseDTO = getAdmin(id);
+        AdminEntity adminEntity = adminRepository.findById(id).orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
-        userService.resendUserPassword(adminResponseDTO.userId());
+        userService.resendUserPassword(adminEntity.getUser().getId());
 
         return getAdmin(id);
     }
