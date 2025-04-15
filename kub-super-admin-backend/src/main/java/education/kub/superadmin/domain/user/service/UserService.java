@@ -1,6 +1,5 @@
 package education.kub.superadmin.domain.user.service;
 
-import education.kub.superadmin.domain.user.entity.UserEntity;
 import education.kub.superadmin.domain.user.model.UserRequestDTO;
 import education.kub.superadmin.domain.user.model.UserResponseDTO;
 
