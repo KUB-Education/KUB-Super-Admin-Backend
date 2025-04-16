@@ -28,10 +28,9 @@ public class AdminEntity implements Serializable {
     public AdminResponseDTO toAdminResponseDto() {
         return new AdminResponseDTO(
                 this.id,
-                user.getId(),
                 user.getLastName(),
                 user.getFirstName(),
-                user.getMiddleName(),
+                user.getMiddleName() == null ? "" : user.getMiddleName(),
                 user.getEmail(),
                 user.getStatus()
         );
