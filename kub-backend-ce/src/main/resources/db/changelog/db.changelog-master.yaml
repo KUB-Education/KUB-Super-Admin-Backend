@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/v0001-create-app-states-table.yaml
+  - include:
+      file: db/changelog/v0002-create-users-table.yaml
+  - include:
+      file: db/changelog/v0003-create-roles-table.yaml
+  - include:
+      file: db/changelog/v0004-create-user-roles-table.yaml

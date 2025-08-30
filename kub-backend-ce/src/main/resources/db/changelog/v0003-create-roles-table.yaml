@@ -1,0 +1,94 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0003-create-roles-table
+      author: Pavlo Kilko
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: roles
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_roles
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_roles_name
+
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.roles
+                ADD CONSTRAINT chk_roles_name_not_blank CHECK (TRIM(name) <> '');
+
+        - insert:
+            schemaName: public
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "organizer"
+
+        - insert:
+            schemaName: public
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "sysadmin"
+
+        - insert:
+            schemaName: public
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "admin"
+
+        - insert:
+            schemaName: public
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "lecturer"
+
+        - insert:
+            schemaName: public
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "student"
+
+      rollback:
+        - delete:
+            schemaName: public
+            tableName: roles
+            where: "name in ('organizer','sysadmin','admin','lecturer','student')"
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE public.roles
+                DROP CONSTRAINT IF EXISTS chk_roles_name_not_blank;
+        - dropTable:
+            schemaName: public
+            tableName: roles
+            cascadeConstraints: true
