@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0005-create-lecturers-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: lecturers
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: lecturers
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addAutoIncrement:
+            columnDataType: bigint
+            columnName: id
+            defaultOnNull: false
+            generationType: ALWAYS
+            incrementBy: 1
+            schemaName: public
+            startWith: 1
+            tableName: lecturers
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: lecturers
+            columnNames: id
+            constraintName: pk_lecturers
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: lecturers
+            baseColumnNames: user_id
+            constraintName: fk_lecturer_user
+            referencedTableSchemaName: public
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: lecturers
+            constraintName: fk_lecturer_user
+        - dropTable:
+            schemaName: public
+            tableName: lecturers
+            cascadeConstraints: true
