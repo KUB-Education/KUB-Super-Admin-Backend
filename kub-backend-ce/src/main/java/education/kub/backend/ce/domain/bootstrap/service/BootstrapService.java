@@ -1,5 +1,6 @@
 package education.kub.backend.ce.domain.bootstrap.service;
 
+import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.user.model.UserCreateRequest;
 import education.kub.backend.ce.domain.user.model.UserDetailsResponse;
 import education.kub.backend.ce.domain.user.service.UserService;
@@ -14,7 +15,7 @@ public class BootstrapService {
     public UserDetailsResponse createOrganizerUser(UserCreateRequest userCreateRequest) {
         var userDetailsResponse = userService.createUser(userCreateRequest);
 
-        userDetailsResponse = userService.addRole(userDetailsResponse.id(), "organizer");
+        userDetailsResponse = userService.addUserRole(userDetailsResponse.id(), RoleEntity.Type.ORGANIZER);
 
         return userDetailsResponse;
     }

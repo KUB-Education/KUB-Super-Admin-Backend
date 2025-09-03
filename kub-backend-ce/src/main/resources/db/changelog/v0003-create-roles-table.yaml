@@ -24,70 +24,77 @@ databaseChangeLog:
                     primaryKeyName: pk_roles
                     nullable: false
               - column:
-                  name: name
+                  name: type
                   type: varchar(32)
                   constraints:
                     nullable: false
                     unique: true
-                    uniqueConstraintName: uq_roles_name
+                    uniqueConstraintName: uq_roles_type
 
         - sql:
             dbms: postgresql
             splitStatements: true
             sql: |
               ALTER TABLE public.roles
-                ADD CONSTRAINT chk_roles_name_not_blank CHECK (TRIM(name) <> '');
+                ADD CONSTRAINT chk_roles_type_not_blank CHECK (TRIM(type) <> '');
 
         - insert:
             schemaName: public
             tableName: roles
             columns:
               - column:
-                  name: name
-                  value: "organizer"
+                  name: type
+                  value: "ORGANIZER"
 
         - insert:
             schemaName: public
             tableName: roles
             columns:
               - column:
-                  name: name
-                  value: "sysadmin"
+                  name: type
+                  value: "SYSADMIN"
 
         - insert:
             schemaName: public
             tableName: roles
             columns:
               - column:
-                  name: name
-                  value: "admin"
+                  name: type
+                  value: "ADMIN"
 
         - insert:
             schemaName: public
             tableName: roles
             columns:
               - column:
-                  name: name
-                  value: "lecturer"
+                  name: type
+                  value: "LECTURER"
 
         - insert:
             schemaName: public
             tableName: roles
             columns:
               - column:
-                  name: name
-                  value: "student"
+                  name: type
+                  value: "STUDENT"
+
+        - insert:
+            schemaName: public
+            tableName: roles
+            columns:
+              - column:
+                  name: type
+                  value: "USER"
 
       rollback:
         - delete:
             schemaName: public
             tableName: roles
-            where: "name in ('organizer','sysadmin','admin','lecturer','student')"
         - sql:
             dbms: postgresql
             sql: |
               ALTER TABLE public.roles
-                DROP CONSTRAINT IF EXISTS chk_roles_name_not_blank;
+                DROP CONSTRAINT IF EXISTS chk_roles_type_not_blank;
         - dropTable:
             schemaName: public
             tableName: roles

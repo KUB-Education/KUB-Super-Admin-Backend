@@ -29,7 +29,7 @@ public class BootstrapController {
 
             bootstrapGate.closeAccess();
 
-            return ResponseEntity.status(HttpStatus.OK).body(userDetailsResponse);
+            return ResponseEntity.status(HttpStatus.CREATED).body(userDetailsResponse);
         } else {
             return ResponseEntity.status(HttpStatus.GONE).body(null);
         }

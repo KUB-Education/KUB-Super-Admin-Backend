@@ -19,9 +19,19 @@ public class RoleEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 32)
-    private String name;
+    @Column(name = "type", nullable = false, length = 32)
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
     @ManyToMany(mappedBy = "roles")
     private Set<UserEntity> users = new HashSet<>();
+
+    public enum Type {
+        ORGANIZER,
+        SYSADMIN,
+        ADMIN,
+        LECTURER,
+        STUDENT,
+        USER
+    }
 }
