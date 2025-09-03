@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: v0005-create-lecturers-table
+      id: v0006-create-students-table
       author: Yaroslav Drovolskyi
 
       preConditions:
@@ -8,12 +8,12 @@ databaseChangeLog:
         - not:
             - tableExists:
                 schemaName: public
-                tableName: lecturers
+                tableName: students
 
       changes:
         - createTable:
             schemaName: public
-            tableName: lecturers
+            tableName: students
             columns:
               - column:
                   name: id
@@ -28,13 +28,13 @@ databaseChangeLog:
 
         - addPrimaryKey:
             schemaName: public
-            tableName: lecturers
+            tableName: students
             columnNames: id
-            constraintName: pk_lecturers
+            constraintName: pk_students
 
         - addAutoIncrement:
             schemaName: public
-            tableName: lecturers
+            tableName: students
             columnName: id
             columnDataType: bigint
             startWith: 1
@@ -44,9 +44,9 @@ databaseChangeLog:
 
         - addForeignKeyConstraint:
             baseTableSchemaName: public
-            baseTableName: lecturers
+            baseTableName: students
             baseColumnNames: user_id
-            constraintName: fk_lecturer_user
+            constraintName: fk_student_user
             referencedTableSchemaName: public
             referencedTableName: users
             referencedColumnNames: id
@@ -54,23 +54,23 @@ databaseChangeLog:
 
         - addUniqueConstraint:
             schemaName: public
-            tableName: lecturers
+            tableName: students
             columnNames: user_id
-            constraintName: unique_lecturers_user_id
+            constraintName: unique_students_user_id
 
 
       rollback:
         - dropUniqueConstraint:
             schemaName: public
-            tableName: lecturers
-            constraintName: unique_lecturers_user_id
+            tableName: students
+            constraintName: unique_students_user_id
 
         - dropForeignKeyConstraint:
             baseTableSchemaName: public
-            baseTableName: lecturers
-            constraintName: fk_lecturer_user
+            baseTableName: students
+            constraintName: fk_student_user
 
         - dropTable:
             schemaName: public
-            tableName: lecturers
+            tableName: students
             cascadeConstraints: true

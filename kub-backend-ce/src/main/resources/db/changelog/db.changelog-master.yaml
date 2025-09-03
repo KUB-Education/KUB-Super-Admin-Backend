@@ -9,3 +9,5 @@ databaseChangeLog:
       file: db/changelog/v0004-create-user-roles-table.yaml
   - include:
       file: db/changelog/v0005-create-lecturers-table.yaml
+  - include:
+      file: db/changelog/v0006-create-students-table.yaml
