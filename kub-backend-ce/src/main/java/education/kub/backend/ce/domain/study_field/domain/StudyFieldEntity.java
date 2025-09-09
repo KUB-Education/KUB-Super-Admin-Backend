@@ -1,16 +1,17 @@
 package education.kub.backend.ce.domain.study_field.domain;
 
+import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "study_fields")
 @NoArgsConstructor
-////////////////////////////////////////@AllArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
@@ -27,8 +28,8 @@ public class StudyFieldEntity {
     @NotEmpty
     private String name;
 
-/*    @OneToMany(mappedBy = "studyField", fetch = FetchType.LAZY)
-    private List<SpecialtyEntity> specialties;*/
+    @OneToMany(mappedBy = "studyField", fetch = FetchType.LAZY)
+    private List<SpecialtyEntity> specialties = new ArrayList<>();
 
     public StudyFieldEntity(Long id, String code, String name){
         this.id = id;
