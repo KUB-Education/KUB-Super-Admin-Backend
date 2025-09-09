@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0009-create-academic-titles-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: academic_titles
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: academic_titles
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: academic_titles
+            columnNames: id
+            constraintName: pk_academic_titles
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: academic_titles
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: academic_titles
+            columnNames: name
+            constraintName: unique_academic_titles_name
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.academic_titles
+                ADD CONSTRAINT chk_academic_titles_name_not_blank CHECK (TRIM(name) <> '');
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: academic_titles
+            cascadeConstraints: true

@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0010-create-lecturer-academic-titles-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: lecturer_academic_titles
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: lecturer_academic_titles
+            columns:
+              - column:
+                  name: lecturer_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: academic_title_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: lecturer_academic_titles
+            columnNames: lecturer_id, academic_title_id
+            constraintName: pk_lecturer_academic_titles
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: lecturer_academic_titles
+            baseColumnNames: lecturer_id
+            constraintName: fk_lecturer_academic_titles_lecturer
+            referencedTableSchemaName: public
+            referencedTableName: lecturers
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: lecturer_academic_titles
+            baseColumnNames: academic_title_id
+            constraintName: fk_lecturer_academic_titles_academic_title
+            referencedTableSchemaName: public
+            referencedTableName: academic_titles
+            referencedColumnNames: id
+            onDelete: CASCADE
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: lecturer_academic_titles
+            cascadeConstraints: true
