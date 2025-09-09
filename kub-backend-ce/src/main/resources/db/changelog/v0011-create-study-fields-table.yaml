@@ -1,0 +1,70 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0011-create-study-fields-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: study_fields
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: study_fields
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: study_fields
+            columnNames: id
+            constraintName: pk_study_fields
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: study_fields
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: study_fields
+            columnNames: code
+            constraintName: unique_study_fields_code
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.study_fields
+                ADD CONSTRAINT chk_study_fields_code_not_empty CHECK (code <> ''),
+                ADD CONSTRAINT chk_study_fields_name_not_empty CHECK (name <> '');
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: study_fields
+            cascadeConstraints: true
