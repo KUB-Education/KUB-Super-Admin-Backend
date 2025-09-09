@@ -1,0 +1,100 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0008-create-department-lecturers-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: department_lecturers
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: department_lecturers
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lecturer_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: department_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: department_lecturers
+            columnNames: id
+            constraintName: pk_department_lecturers
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: department_lecturers
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: department_lecturers
+            baseColumnNames: lecturer_id
+            constraintName: fk_department_lecturers_lecturer
+            referencedTableSchemaName: public
+            referencedTableName: lecturers
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: department_lecturers
+            baseColumnNames: department_id
+            constraintName: fk_department_lecturers_department
+            referencedTableSchemaName: public
+            referencedTableName: departments
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: department_lecturers
+            columnNames: lecturer_id, department_id
+            constraintName: unique_department_lecturers_department_id_lecturer_id
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.department_lecturers
+                ADD CONSTRAINT chk_department_lecturers_position CHECK (position IN ('ASSISTANT', 'ASSOCIATE_PROFESSOR', 'PROFESSOR')),
+                ADD CONSTRAINT chk_department_lecturers_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'TERMINATED'));
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: department_lecturers
+            cascadeConstraints: true

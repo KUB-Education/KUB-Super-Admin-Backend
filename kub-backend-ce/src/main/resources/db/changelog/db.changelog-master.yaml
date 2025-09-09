@@ -13,3 +13,5 @@ databaseChangeLog:
       file: db/changelog/v0006-create-students-table.yaml
   - include:
       file: db/changelog/v0007-create-departments-table.yaml
+  - include:
+      file: db/changelog/v0008-create-department-lecturers-table.yaml
