@@ -1,0 +1,110 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0014-create-student-educational-programs-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: student_educational_programs
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: student_educational_programs
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: student_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: educational_program_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: finish_date
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tuition
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: student_educational_programs
+            columnNames: id
+            constraintName: pk_student_educational_programs
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: student_educational_programs
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: student_educational_programs
+            baseColumnNames: student_id
+            constraintName: fk_student_educational_programs_students
+            referencedTableSchemaName: public
+            referencedTableName: students
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: student_educational_programs
+            baseColumnNames: educational_program_id
+            constraintName: fk_student_educational_programs_educational_programs
+            referencedTableSchemaName: public
+            referencedTableName: educational_programs
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: student_educational_programs
+            columnNames: student_id, educational_program_id
+            constraintName: unique_student_educational_programs_student_id_educational_program_id
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.student_educational_programs
+                ADD CONSTRAINT chk_student_educational_programs_tuition CHECK (tuition IN ('BUDGET', 'CONTRACT')),
+                ADD CONSTRAINT chk_student_educational_programs_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'TERMINATED', 'GRADUATED'));
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: student_educational_programs
+            cascadeConstraints: true

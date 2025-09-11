@@ -25,3 +25,5 @@ databaseChangeLog:
       file: db/changelog/v0012-create-specialties-table.yaml
   - include:
       file: db/changelog/v0013-create-educational-programs-table.yaml
+  - include:
+      file: db/changelog/v0014-create-student-educational-programs-table.yaml

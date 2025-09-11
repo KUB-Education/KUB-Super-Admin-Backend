@@ -1,6 +1,7 @@
 package education.kub.backend.ce.domain.educational_program.domain;
 
 import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
+import education.kub.backend.ce.domain.student_educational_program.domain.StudentEducationalProgramEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -42,8 +43,8 @@ public class EducationalProgramEntity {
 /*    @OneToMany(mappedBy = "educationalProgram", fetch = FetchType.LAZY)
     private List<TermEntity> terms;*/
 
-/*    @OneToMany(mappedBy = "educationalProgram", fetch = FetchType.LAZY)
-    private List<StudentEducationalProgramEntity> studentEducationalPrograms;*/
+    @OneToMany(mappedBy = "educationalProgram", fetch = FetchType.LAZY)
+    private List<StudentEducationalProgramEntity> studentEducationalPrograms;
 
 
     public enum DegreeType {
