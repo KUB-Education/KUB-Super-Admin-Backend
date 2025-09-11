@@ -23,3 +23,5 @@ databaseChangeLog:
       file: db/changelog/v0011-create-study-fields-table.yaml
   - include:
       file: db/changelog/v0012-create-specialties-table.yaml
+  - include:
+      file: db/changelog/v0013-create-educational-programs-table.yaml

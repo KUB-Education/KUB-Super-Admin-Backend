@@ -1,0 +1,97 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0013-create-educational-programs-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: educational_programs
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: educational_programs
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: specialty_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: degree_type
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: study_form
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: duration # in months
+                  type: smallint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: educational_programs
+            columnNames: id
+            constraintName: pk_educational_programs
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: educational_programs
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: educational_programs
+            baseColumnNames: specialty_id
+            constraintName: fk_educational_programs_specialties
+            referencedTableSchemaName: public
+            referencedTableName: specialties
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: educational_programs
+            columnNames: name
+            constraintName: unique_educational_programs_name
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.educational_programs
+                ADD CONSTRAINT chk_educational_programs_name_not_blank CHECK (TRIM(name) <> ''),
+                ADD CONSTRAINT chk_educational_programs_degree_type CHECK (degree_type IN ('BACHELOR', 'MASTER', 'POSTGRADUATE')),
+                ADD CONSTRAINT chk_educational_programs_study_form CHECK (study_form IN ('FULL_TIME', 'PART_TIME', 'ONLINE')),
+                ADD CONSTRAINT chk_educational_programs_duration_not_negative CHECK (duration >= 0);
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: educational_programs
+            cascadeConstraints: true
