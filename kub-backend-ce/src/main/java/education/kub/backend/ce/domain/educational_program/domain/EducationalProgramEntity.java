@@ -2,8 +2,8 @@ package education.kub.backend.ce.domain.educational_program.domain;
 
 import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
 import education.kub.backend.ce.domain.student_educational_program.domain.StudentEducationalProgramEntity;
+import education.kub.backend.ce.domain.term.domain.TermEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
@@ -40,8 +40,8 @@ public class EducationalProgramEntity {
     @PositiveOrZero
     private Short duration; // in months
 
-/*    @OneToMany(mappedBy = "educationalProgram", fetch = FetchType.LAZY)
-    private List<TermEntity> terms;*/
+    @OneToMany(mappedBy = "educationalProgram", fetch = FetchType.LAZY)
+    private List<TermEntity> terms;
 
     @OneToMany(mappedBy = "educationalProgram", fetch = FetchType.LAZY)
     private List<StudentEducationalProgramEntity> studentEducationalPrograms;
