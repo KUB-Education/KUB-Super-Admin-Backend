@@ -29,3 +29,5 @@ databaseChangeLog:
       file: db/changelog/v0014-create-student-educational-programs-table.yaml
   - include:
       file: db/changelog/v0015-create-terms-table.yaml
+  - include:
+      file: db/changelog/v0016-create-subjects-table.yaml

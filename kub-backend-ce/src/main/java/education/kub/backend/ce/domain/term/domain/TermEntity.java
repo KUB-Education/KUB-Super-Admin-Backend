@@ -1,6 +1,7 @@
 package education.kub.backend.ce.domain.term.domain;
 
 import education.kub.backend.ce.domain.educational_program.domain.EducationalProgramEntity;
+import education.kub.backend.ce.domain.subject.domain.SubjectEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
@@ -27,6 +28,6 @@ public class TermEntity {
     @PositiveOrZero
     private Short number;
 
-/*    @OneToMany(mappedBy = "term", fetch = FetchType.LAZY)
-    private List<SubjectEntity> subjects;*/
+    @OneToMany(mappedBy = "term", fetch = FetchType.LAZY)
+    private List<SubjectEntity> subjects;
 }
