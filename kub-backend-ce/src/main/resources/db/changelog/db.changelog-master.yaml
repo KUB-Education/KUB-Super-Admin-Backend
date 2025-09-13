@@ -33,3 +33,5 @@ databaseChangeLog:
       file: db/changelog/v0016-create-subjects-table.yaml
   - include:
       file: db/changelog/v0017-create-subject-activities-table.yaml
+  - include:
+      file: db/changelog/v0018-create-groups-table.yaml
