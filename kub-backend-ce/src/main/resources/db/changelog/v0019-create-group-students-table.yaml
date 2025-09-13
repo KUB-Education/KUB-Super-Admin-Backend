@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0019-create-group-students-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: group_students
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: group_students
+            columns:
+              - column:
+                  name: student_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: group_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: group_students
+            columnNames: student_id, group_id
+            constraintName: pk_group_students
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: group_students
+            baseColumnNames: student_id
+            constraintName: fk_group_students_students
+            referencedTableSchemaName: public
+            referencedTableName: students
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: group_students
+            baseColumnNames: group_id
+            constraintName: fk_group_students_groups
+            referencedTableSchemaName: public
+            referencedTableName: groups
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: group_students
+            cascadeConstraints: true
