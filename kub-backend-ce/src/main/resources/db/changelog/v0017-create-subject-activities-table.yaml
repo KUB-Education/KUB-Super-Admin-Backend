@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0017-create-subject-activities-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: subject_activities
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: subject_activities
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: subject_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: academic_hours
+                  type: smallint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: subject_activities
+            columnNames: id
+            constraintName: pk_subject_activities
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: subject_activities
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: subject_activities
+            baseColumnNames: subject_id
+            constraintName: fk_subject_activities_subjects
+            referencedTableSchemaName: public
+            referencedTableName: subjects
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.subject_activities
+                ADD CONSTRAINT chk_subject_activities_type CHECK (type IN ('LECTURE', 'LABORATORY', 
+                                                                            'SEMINAR', 'EXAM', 'CREDIT', 'RESUBMISSION', 
+                                                                            'COMMISSION', 'CONSULTATION')),
+                ADD CONSTRAINT chk_subject_activities_academic_hours_not_negative CHECK (academic_hours >= 0);
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: subject_activities
+            cascadeConstraints: true
