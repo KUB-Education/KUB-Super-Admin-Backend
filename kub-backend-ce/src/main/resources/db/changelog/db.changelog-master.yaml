@@ -37,3 +37,5 @@ databaseChangeLog:
       file: db/changelog/v0018-create-groups-table.yaml
   - include:
       file: db/changelog/v0019-create-group-students-table.yaml
+  - include:
+      file: db/changelog/v0020-create-timetables-table.yaml

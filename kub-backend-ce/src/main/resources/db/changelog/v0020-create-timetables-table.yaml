@@ -1,0 +1,89 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0020-create-timetables-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: timetables
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: timetables
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: group_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time_start
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time_end
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: timetables
+            columnNames: id
+            constraintName: pk_timetables
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: timetables
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: timetables
+            baseColumnNames: group_id
+            constraintName: fk_timetables_groups
+            referencedTableSchemaName: public
+            referencedTableName: groups
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.timetables
+                ADD CONSTRAINT chk_timetables_status CHECK (status IN ('DRAFT', 'STAGED', 'PUBLISHED', 'ARCHIVED')),
+                ADD CONSTRAINT chk_timetables_name_not_blank CHECK (TRIM(name) <> '');
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: timetables
+            cascadeConstraints: true

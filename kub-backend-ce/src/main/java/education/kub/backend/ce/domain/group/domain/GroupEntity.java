@@ -3,12 +3,15 @@ package education.kub.backend.ce.domain.group.domain;
 import education.kub.backend.ce.domain.academic_title.entity.AcademicTitleEntity;
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.student.entity.StudentEntity;
+import education.kub.backend.ce.domain.subject.domain.SubjectEntity;
+import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,6 +40,9 @@ public class GroupEntity {
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     private Set<StudentEntity> students = new HashSet<>();
+
+    @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)
+    private List<TimetableEntity> timetables;
 
 
     public void addStudent(StudentEntity student) {
