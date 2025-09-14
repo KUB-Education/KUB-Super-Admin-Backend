@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0021-create-rooms-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: rooms
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: rooms
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: location
+                  type: varchar(256)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: capacity
+                  type: smallint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: details
+                  type: text
+                  constraints:
+                    nullable: true
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: rooms
+            columnNames: id
+            constraintName: pk_rooms
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: rooms
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: rooms
+            columnNames: location
+            constraintName: unique_location
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.rooms
+                ADD CONSTRAINT chk_rooms_location_not_blank CHECK (TRIM(location) <> ''),
+                ADD CONSTRAINT chk_rooms_details_not_blank CHECK (TRIM(details) <> ''),
+                ADD CONSTRAINT chk_rooms_capacity_not_negative CHECK (capacity >= 0);
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: rooms
+            cascadeConstraints: true
