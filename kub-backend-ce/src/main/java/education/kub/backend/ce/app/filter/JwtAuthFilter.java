@@ -68,10 +68,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             .map(SimpleGrantedAuthority::new)
                             .toList();
 
-            for (var a : authorities) {
-                System.out.println(a);
-            }
-
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(tokenDto.userId(), null, authorities);
 

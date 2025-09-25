@@ -25,9 +25,9 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/bootstrap/organizer-user").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/user/recovery-password").permitAll()
+                        .requestMatchers("/api/v1/bootstrap/organizer-user").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/user/recovery-password").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
