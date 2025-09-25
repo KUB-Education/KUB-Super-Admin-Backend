@@ -4,5 +4,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "app.security")
 public record AppSecurityProperties(
-        String superAdminHeaderSecret
+        String secretKey,
+
+        long accessTokenValidityMs,
+
+        long refreshTokenValidityMs
 ) {}
