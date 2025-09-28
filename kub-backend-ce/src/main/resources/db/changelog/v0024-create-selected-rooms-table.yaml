@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0024-create-selected-rooms-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: selected_rooms
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: selected_rooms
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timetable_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: room_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: selected_rooms
+            columnNames: id
+            constraintName: pk_selected_rooms
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: selected_rooms
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: selected_rooms
+            baseColumnNames: timetable_id
+            constraintName: fk_selected_rooms_timetables
+            referencedTableSchemaName: public
+            referencedTableName: timetables
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: selected_rooms
+            baseColumnNames: room_id
+            constraintName: fk_selected_rooms_rooms
+            referencedTableSchemaName: public
+            referencedTableName: rooms
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: selected_rooms
+            columnNames: timetable_id, room_id
+            constraintName: unique_selected_rooms_timetable_id_room_id
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: selected_rooms
+            cascadeConstraints: true
