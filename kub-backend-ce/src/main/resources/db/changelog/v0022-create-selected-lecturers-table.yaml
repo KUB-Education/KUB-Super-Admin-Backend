@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0022-create-selected-lecturers-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: selected_lecturers
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: selected_lecturers
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timetable_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lecturer_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: selected_lecturers
+            columnNames: id
+            constraintName: pk_selected_lecturers
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: selected_lecturers
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: selected_lecturers
+            baseColumnNames: timetable_id
+            constraintName: fk_selected_lecturers_timetables
+            referencedTableSchemaName: public
+            referencedTableName: timetables
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: selected_lecturers
+            baseColumnNames: lecturer_id
+            constraintName: fk_selected_lecturers_lecturers
+            referencedTableSchemaName: public
+            referencedTableName: lecturers
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: selected_lecturers
+            columnNames: timetable_id, lecturer_id
+            constraintName: unique_selected_lecturers_timetable_id_lecturer_id
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: selected_lecturers
+            cascadeConstraints: true

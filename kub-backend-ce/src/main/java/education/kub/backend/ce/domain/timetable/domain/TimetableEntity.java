@@ -1,11 +1,15 @@
 package education.kub.backend.ce.domain.timetable.domain;
 
 import education.kub.backend.ce.domain.group.domain.GroupEntity;
+import education.kub.backend.ce.domain.selected_lecturer.domain.SelectedLecturerEntity;
+import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "timetables")
@@ -36,6 +40,9 @@ public class TimetableEntity {
     @Column(name = "status", nullable = false, length = 32)
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @OneToMany(mappedBy = "timetable", fetch = FetchType.LAZY)
+    private List<SelectedLecturerEntity> selectedLecturers = new ArrayList<>();
     
 
     public enum Status{

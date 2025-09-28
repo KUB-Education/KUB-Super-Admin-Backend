@@ -1,13 +1,10 @@
 package education.kub.backend.ce.domain.room.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
-import java.util.List;
 
 @Entity
 @Table(name = "rooms")
