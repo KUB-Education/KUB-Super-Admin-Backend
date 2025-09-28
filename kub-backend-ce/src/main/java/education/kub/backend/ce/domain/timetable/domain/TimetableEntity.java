@@ -2,6 +2,7 @@ package education.kub.backend.ce.domain.timetable.domain;
 
 import education.kub.backend.ce.domain.group.domain.GroupEntity;
 import education.kub.backend.ce.domain.selected_lecturer.domain.SelectedLecturerEntity;
+import education.kub.backend.ce.domain.selected_subject_activity.domain.SelectedSubjectActivityEntity;
 import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -43,6 +44,9 @@ public class TimetableEntity {
 
     @OneToMany(mappedBy = "timetable", fetch = FetchType.LAZY)
     private List<SelectedLecturerEntity> selectedLecturers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "timetable", fetch = FetchType.LAZY)
+    private List<SelectedSubjectActivityEntity> selectedSubjectActivities = new ArrayList<>();
     
 
     public enum Status{

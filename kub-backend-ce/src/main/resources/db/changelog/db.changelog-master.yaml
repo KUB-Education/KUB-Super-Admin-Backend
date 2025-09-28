@@ -43,3 +43,5 @@ databaseChangeLog:
       file: db/changelog/v0021-create-rooms-table.yaml
   - include:
       file: db/changelog/v0022-create-selected-lecturers-table.yaml
+  - include:
+      file: db/changelog/v0023-create-selected-subject-activities-table.yaml
