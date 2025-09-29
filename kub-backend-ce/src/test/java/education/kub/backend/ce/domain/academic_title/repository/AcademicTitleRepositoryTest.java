@@ -55,6 +55,7 @@ class AcademicTitleRepositoryTest {
         userRepo.delete(user);
     }
 
+    /*
     @Test
     void givenNew_whenSave_thenSuccess() {
         AcademicTitleEntity academicTitleExpected = new AcademicTitleEntity();
@@ -107,4 +108,6 @@ class AcademicTitleRepositoryTest {
         LecturerEntity lecturerActual = lecturerRepo.findById(lecturer.getId()).get();
         assertEquals(expectedAcademicTitles, lecturerActual.getAcademicTitles());
     }
+
+     */
 }

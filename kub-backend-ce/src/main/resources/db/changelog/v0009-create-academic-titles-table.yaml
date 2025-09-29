@@ -54,7 +54,137 @@ databaseChangeLog:
             splitStatements: true
             sql: |
               ALTER TABLE public.academic_titles
-                ADD CONSTRAINT chk_academic_titles_name_not_blank CHECK (TRIM(name) <> '');
+                ADD CONSTRAINT chk_academic_titles_name CHECK (name IN (
+                                                            'CANDIDATE_OF_ARCHITECTURE',
+                                                            'CANDIDATE_OF_BIOLOGICAL_SCIENCES',
+                                                            'CANDIDATE_OF_VETERINARY_SCIENCES',
+                                                            'CANDIDATE_OF_MILITARY_SCIENCES',
+                                                            'CANDIDATE_OF_GEOGRAPHICAL_SCIENCES',
+                                                            'CANDIDATE_OF_GEOLOGICAL_SCIENCES',
+                                                            'CANDIDATE_OF_SCIENCES_IN_PUBLIC_ADMINISTRATION',
+                                                            'CANDIDATE_OF_ECONOMIC_SCIENCES',
+                                                            'CANDIDATE_OF_HISTORICAL_SCIENCES',
+                                                            'CANDIDATE_OF_CULTUROLOGY',
+                                                            'CANDIDATE_OF_MEDICAL_SCIENCES',
+                                                            'CANDIDATE_OF_ARTS',
+                                                            'CANDIDATE_OF_PEDAGOGICAL_SCIENCES',
+                                                            'CANDIDATE_OF_POLITICAL_SCIENCES',
+                                                            'CANDIDATE_OF_PSYCHOLOGICAL_SCIENCES',
+                                                            'CANDIDATE_OF_AGRICULTURAL_SCIENCES',
+                                                            'CANDIDATE_OF_SCIENCES_IN_SOCIAL_COMMUNICATIONS',
+                                                            'CANDIDATE_OF_SOCIOLOGICAL_SCIENCES',
+                                                            'CANDIDATE_OF_TECHNICAL_SCIENCES',
+                                                            'CANDIDATE_OF_PHYSICAL_AND_MATHEMATICAL_SCIENCES',
+                                                            'CANDIDATE_OF_PHARMACEUTICAL_SCIENCES',
+                                                            'CANDIDATE_OF_SCIENCES_IN_PHYSICAL_EDUCATION_AND_SPORT',
+                                                            'CANDIDATE_OF_PHILOLOGICAL_SCIENCES',
+                                                            'CANDIDATE_OF_PHILOSOPHY',
+                                                            'CANDIDATE_OF_CHEMICAL_SCIENCES',
+                                                            'CANDIDATE_OF_LAW',
+                                                            'DOCTOR_OF_ARCHITECTURE',
+                                                            'DOCTOR_OF_BIOLOGICAL_SCIENCES',
+                                                            'DOCTOR_OF_VETERINARY_SCIENCES',
+                                                            'DOCTOR_OF_MILITARY_SCIENCES',
+                                                            'DOCTOR_OF_GEOGRAPHICAL_SCIENCES',
+                                                            'DOCTOR_OF_GEOLOGICAL_SCIENCES',
+                                                            'DOCTOR_OF_SCIENCES_IN_PUBLIC_ADMINISTRATION',
+                                                            'DOCTOR_OF_ECONOMIC_SCIENCES',
+                                                            'DOCTOR_OF_HISTORICAL_SCIENCES',
+                                                            'DOCTOR_OF_CULTUROLOGY',
+                                                            'DOCTOR_OF_MEDICAL_SCIENCES',
+                                                            'DOCTOR_OF_ARTS',
+                                                            'DOCTOR_OF_PEDAGOGICAL_SCIENCES',
+                                                            'DOCTOR_OF_POLITICAL_SCIENCES',
+                                                            'DOCTOR_OF_PSYCHOLOGICAL_SCIENCES',
+                                                            'DOCTOR_OF_AGRICULTURAL_SCIENCES',
+                                                            'DOCTOR_OF_SCIENCES_IN_SOCIAL_COMMUNICATIONS',
+                                                            'DOCTOR_OF_SOCIOLOGICAL_SCIENCES',
+                                                            'DOCTOR_OF_TECHNICAL_SCIENCES',
+                                                            'DOCTOR_OF_PHYSICAL_AND_MATHEMATICAL_SCIENCES',
+                                                            'DOCTOR_OF_PHARMACEUTICAL_SCIENCES',
+                                                            'DOCTOR_OF_SCIENCES_IN_PHYSICAL_EDUCATION_AND_SPORT',
+                                                            'DOCTOR_OF_PHILOLOGICAL_SCIENCES',
+                                                            'DOCTOR_OF_PHILOSOPHY',
+                                                            'DOCTOR_OF_CHEMICAL_SCIENCES',
+                                                            'DOCTOR_OF_LAW',
+                                                            'PHD_OF_MATHEMATICS',
+                                                            'PHD_OF_STATISTICS',
+                                                            'PHD_OF_APPLIED_MATH',
+                                                            'PHD_OF_SOFTWARE_ENGINEERING',
+                                                            'PHD_OF_COMPUTER_SCIENCES',
+                                                            'PHD_OF_SYSTEM_ANALYSIS',
+                                                            'PHD_OF_CYBERSECURITY',
+                                                            'PHD_OF_INFORMATION_SYSTEMS_AND_TECHNOLOGIES',
+                                                            'PHD_OF_COMPUTER_ENGINEERING'));
+
+        # populate created table with data
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_ARCHITECTURE');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_BIOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_VETERINARY_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_MILITARY_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_GEOGRAPHICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_GEOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_SCIENCES_IN_PUBLIC_ADMINISTRATION');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_ECONOMIC_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_HISTORICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_CULTUROLOGY');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_MEDICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_ARTS');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_PEDAGOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_POLITICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_PSYCHOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_AGRICULTURAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_SCIENCES_IN_SOCIAL_COMMUNICATIONS');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_SOCIOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_TECHNICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_PHYSICAL_AND_MATHEMATICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_PHARMACEUTICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_SCIENCES_IN_PHYSICAL_EDUCATION_AND_SPORT');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_PHILOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_PHILOSOPHY');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_CHEMICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('CANDIDATE_OF_LAW');
+              
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_ARCHITECTURE');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_BIOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_VETERINARY_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_MILITARY_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_GEOGRAPHICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_GEOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_SCIENCES_IN_PUBLIC_ADMINISTRATION');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_ECONOMIC_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_HISTORICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_CULTUROLOGY');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_MEDICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_ARTS');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_PEDAGOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_POLITICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_PSYCHOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_AGRICULTURAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_SCIENCES_IN_SOCIAL_COMMUNICATIONS');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_SOCIOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_TECHNICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_PHYSICAL_AND_MATHEMATICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_PHARMACEUTICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_SCIENCES_IN_PHYSICAL_EDUCATION_AND_SPORT');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_PHILOLOGICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_PHILOSOPHY');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_CHEMICAL_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('DOCTOR_OF_LAW');
+              
+              INSERT INTO public.academic_titles(name) VALUES('PHD_OF_MATHEMATICS');
+              INSERT INTO public.academic_titles(name) VALUES('PHD_OF_STATISTICS');
+              INSERT INTO public.academic_titles(name) VALUES('PHD_OF_APPLIED_MATH');
+              INSERT INTO public.academic_titles(name) VALUES('PHD_OF_SOFTWARE_ENGINEERING');
+              INSERT INTO public.academic_titles(name) VALUES('PHD_OF_COMPUTER_SCIENCES');
+              INSERT INTO public.academic_titles(name) VALUES('PHD_OF_SYSTEM_ANALYSIS');
+              INSERT INTO public.academic_titles(name) VALUES('PHD_OF_CYBERSECURITY');
+              INSERT INTO public.academic_titles(name) VALUES('PHD_OF_INFORMATION_SYSTEMS_AND_TECHNOLOGIES');
+              INSERT INTO public.academic_titles(name) VALUES('PHD_OF_COMPUTER_ENGINEERING');
               
 
       rollback:
