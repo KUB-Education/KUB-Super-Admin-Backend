@@ -5,6 +5,7 @@ import education.kub.backend.ce.domain.selected_lecturer.domain.SelectedLecturer
 import education.kub.backend.ce.domain.selected_room.domain.SelectedRoomEntity;
 import education.kub.backend.ce.domain.selected_subject_activity.domain.SelectedSubjectActivityEntity;
 import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
+import education.kub.backend.ce.domain.timetable_class.entity.TimetableClassEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -33,10 +34,10 @@ public class TimetableEntity {
     @JoinColumn(name = "group_id", nullable = false)
     private GroupEntity group;
 
-    @Column(name = "time_start", columnDefinition = "timestamptz")
+    @Column(name = "time_start", columnDefinition = "timestamptz", nullable = false)
     private Instant timeStart;
 
-    @Column(name = "time_end", columnDefinition = "timestamptz")
+    @Column(name = "time_end", columnDefinition = "timestamptz", nullable = false)
     private Instant timeEnd;
 
     @Column(name = "status", nullable = false, length = 32)
@@ -51,6 +52,9 @@ public class TimetableEntity {
 
     @OneToMany(mappedBy = "timetable", fetch = FetchType.LAZY)
     private List<SelectedRoomEntity> selectedRooms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "timetable", fetch = FetchType.LAZY)
+    private List<TimetableClassEntity> classes = new ArrayList<>();
     
 
     public enum Status{

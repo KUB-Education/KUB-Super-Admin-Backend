@@ -49,3 +49,5 @@ databaseChangeLog:
       file: db/changelog/v0024-create-selected-rooms-table.yaml
   - include:
       file: db/changelog/v0025-create-selected-subj-act-groups-table.yaml
+  - include:
+      file: db/changelog/v0026-create-classes-table.yaml
