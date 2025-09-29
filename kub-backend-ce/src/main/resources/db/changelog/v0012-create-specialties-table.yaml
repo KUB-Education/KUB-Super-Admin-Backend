@@ -1,0 +1,85 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0012-create-specialties-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: specialties
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: specialties
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: study_field_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: specialties
+            columnNames: id
+            constraintName: pk_specialties
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: specialties
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: specialties
+            baseColumnNames: study_field_id
+            constraintName: fk_specialties_study_fields
+            referencedTableSchemaName: public
+            referencedTableName: study_fields
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: specialties
+            columnNames: code
+            constraintName: unique_specialties_code
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.specialties
+                ADD CONSTRAINT chk_specialties_code_not_empty CHECK (code <> ''),
+                ADD CONSTRAINT chk_specialties_name_not_empty CHECK (name <> '');
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: specialties
+            cascadeConstraints: true

@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0001-create-app-states-table
+      author: Pavlo Kilko
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: app_states
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: app_states
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_app_states
+                    nullable: false
+              - column:
+                  name: key
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_app_states_key
+              - column:
+                  name: value
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.app_states
+                ADD CONSTRAINT chk_app_states_key_not_blank CHECK (TRIM(key) <> ''),
+                ADD CONSTRAINT chk_app_states_value_not_blank CHECK (TRIM(value) <> '');
+              
+        - insert:
+            schemaName: public
+            tableName: app_states
+            columns:
+              - column:
+                  name: key
+                  value: "bootstrapped"
+              - column:
+                  name: value
+                  value: "false"
+              
+      rollback:
+        - delete:
+            schemaName: public
+            tableName: app_states
+            where: "key = 'bootstrapped'"
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE public.app_states
+                DROP CONSTRAINT IF EXISTS chk_app_states_key_not_blank,
+                DROP CONSTRAINT IF EXISTS chk_app_states_value_not_blank;
+        - dropTable:
+            schemaName: public
+            tableName: app_states
+            cascadeConstraints: true

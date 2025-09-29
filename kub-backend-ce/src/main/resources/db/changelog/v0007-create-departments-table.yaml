@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0007-create-departments-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: departments
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: departments
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: departments
+            columnNames: id
+            constraintName: pk_departments
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: departments
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.departments
+                ADD CONSTRAINT chk_departments_name_not_blank CHECK (TRIM(name) <> '');
+
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: departments
+            cascadeConstraints: true

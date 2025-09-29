@@ -1,0 +1,79 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0016-create-subjects-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: subjects
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: subjects
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: term_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: subjects
+            columnNames: id
+            constraintName: pk_subjects
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: subjects
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: subjects
+            baseColumnNames: term_id
+            constraintName: fk_subjects_terms
+            referencedTableSchemaName: public
+            referencedTableName: terms
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.subjects
+                ADD CONSTRAINT chk_subjects_name_not_empty CHECK (name <> ''),
+                ADD CONSTRAINT chk_subjects_type CHECK (type IN ('MANDATORY', 'ELECTIVE'));
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: subjects
+            cascadeConstraints: true

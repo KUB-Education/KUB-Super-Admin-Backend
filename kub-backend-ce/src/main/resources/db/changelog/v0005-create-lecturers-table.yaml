@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0005-create-lecturers-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: lecturers
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: lecturers
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: lecturers
+            columnNames: id
+            constraintName: pk_lecturers
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: lecturers
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: lecturers
+            baseColumnNames: user_id
+            constraintName: fk_lecturer_user
+            referencedTableSchemaName: public
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: lecturers
+            columnNames: user_id
+            constraintName: unique_lecturers_user_id
+
+
+      rollback:
+        - dropUniqueConstraint:
+            schemaName: public
+            tableName: lecturers
+            constraintName: unique_lecturers_user_id
+
+        - dropForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: lecturers
+            constraintName: fk_lecturer_user
+
+        - dropTable:
+            schemaName: public
+            tableName: lecturers
+            cascadeConstraints: true

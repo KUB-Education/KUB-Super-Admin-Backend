@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0023-create-selected-subject-activities-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: selected_subject_activities
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: selected_subject_activities
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timetable_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: subject_activity_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: selected_subject_activities
+            columnNames: id
+            constraintName: pk_selected_subject_activities
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: selected_subject_activities
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: selected_subject_activities
+            baseColumnNames: timetable_id
+            constraintName: fk_selected_subject_activities_timetables
+            referencedTableSchemaName: public
+            referencedTableName: timetables
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: selected_subject_activities
+            baseColumnNames: subject_activity_id
+            constraintName: fk_selected_subject_activities_subject_activities
+            referencedTableSchemaName: public
+            referencedTableName: subject_activities
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: selected_subject_activities
+            columnNames: timetable_id, subject_activity_id
+            constraintName: unique_selected_subject_activities_timetable_subject_activity # more characters will be trimmed by PostgreSQL
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: selected_subject_activities
+            cascadeConstraints: true

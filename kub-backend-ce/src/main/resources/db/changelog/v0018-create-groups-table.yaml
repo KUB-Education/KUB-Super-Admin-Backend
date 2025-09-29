@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0018-create-groups-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: groups
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: groups
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: groups
+            columnNames: id
+            constraintName: pk_groups
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: groups
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.groups
+                ADD CONSTRAINT chk_groups_name_not_blank CHECK (TRIM(name) <> '');
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: groups
+            cascadeConstraints: true

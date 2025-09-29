@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0004-create-user-roles-table
+      author: Pavlo Kilko
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: user_roles
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: user_roles
+            columnNames: user_id, role_id
+            constraintName: pk_user_roles
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: user_roles
+            baseColumnNames: user_id
+            constraintName: fk_user_roles_user
+            referencedTableSchemaName: public
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: user_roles
+            baseColumnNames: role_id
+            constraintName: fk_user_roles_role
+            referencedTableName: roles
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: user_roles
+            constraintName: fk_user_roles_user
+        - dropForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: user_roles
+            constraintName: fk_user_roles_role
+        - dropTable:
+            schemaName: public
+            tableName: user_roles
+            cascadeConstraints: true

@@ -1,0 +1,73 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0015-create-terms-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: terms
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: terms
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: educational_program_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number
+                  type: smallint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: terms
+            columnNames: id
+            constraintName: pk_terms
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: terms
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: terms
+            baseColumnNames: educational_program_id
+            constraintName: fk_terms_educational_programs
+            referencedTableSchemaName: public
+            referencedTableName: educational_programs
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.terms
+                ADD CONSTRAINT chk_terms_number_not_negative CHECK (number >= 0);
+              
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: terms
+            cascadeConstraints: true
