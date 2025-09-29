@@ -18,13 +18,12 @@ import education.kub.backend.ce.domain.selected_subject_activity_group.domain.Se
 import education.kub.backend.ce.domain.selected_subject_activity_group.repository.SelectedSubjectActivityGroupRepository;
 import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
 import education.kub.backend.ce.domain.specialty.repository.SpecialtyRepository;
-import education.kub.backend.ce.domain.student.entity.StudentEntity;
 import education.kub.backend.ce.domain.study_field.domain.StudyFieldEntity;
 import education.kub.backend.ce.domain.study_field.repository.StudyFieldRepository;
 import education.kub.backend.ce.domain.subject.domain.SubjectEntity;
 import education.kub.backend.ce.domain.subject.repository.SubjectRepository;
-import education.kub.backend.ce.domain.subject_ativity.domain.SubjectActivityEntity;
-import education.kub.backend.ce.domain.subject_ativity.repository.SubjectActivityRepository;
+import education.kub.backend.ce.domain.subject_activity.domain.SubjectActivityEntity;
+import education.kub.backend.ce.domain.subject_activity.repository.SubjectActivityRepository;
 import education.kub.backend.ce.domain.term.domain.TermEntity;
 import education.kub.backend.ce.domain.term.repository.TermRepository;
 import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
@@ -42,7 +41,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest

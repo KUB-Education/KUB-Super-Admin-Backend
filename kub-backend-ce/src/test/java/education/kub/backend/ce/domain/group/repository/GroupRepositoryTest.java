@@ -1,7 +1,6 @@
 package education.kub.backend.ce.domain.group.repository;
 
 import education.kub.backend.ce.domain.group.domain.GroupEntity;
-import education.kub.backend.ce.domain.subject_ativity.domain.SubjectActivityEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

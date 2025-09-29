@@ -1,4 +1,4 @@
-package education.kub.backend.ce.domain.subject_ativity.repository;
+package education.kub.backend.ce.domain.subject_activity.repository;
 
 import education.kub.backend.ce.domain.educational_program.domain.EducationalProgramEntity;
 import education.kub.backend.ce.domain.educational_program.repository.EducationalProgramRepository;
@@ -8,7 +8,7 @@ import education.kub.backend.ce.domain.study_field.domain.StudyFieldEntity;
 import education.kub.backend.ce.domain.study_field.repository.StudyFieldRepository;
 import education.kub.backend.ce.domain.subject.domain.SubjectEntity;
 import education.kub.backend.ce.domain.subject.repository.SubjectRepository;
-import education.kub.backend.ce.domain.subject_ativity.domain.SubjectActivityEntity;
+import education.kub.backend.ce.domain.subject_activity.domain.SubjectActivityEntity;
 import education.kub.backend.ce.domain.term.domain.TermEntity;
 import education.kub.backend.ce.domain.term.repository.TermRepository;
 import org.junit.jupiter.api.AfterEach;

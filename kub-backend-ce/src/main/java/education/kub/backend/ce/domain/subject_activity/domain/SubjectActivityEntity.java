@@ -1,4 +1,4 @@
-package education.kub.backend.ce.domain.subject_ativity.domain;
+package education.kub.backend.ce.domain.subject_activity.domain;
 
 import education.kub.backend.ce.domain.subject.domain.SubjectEntity;
 import jakarta.persistence.*;
