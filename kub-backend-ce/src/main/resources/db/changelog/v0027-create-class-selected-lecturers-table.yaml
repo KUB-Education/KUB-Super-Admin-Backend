@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0027-create-class-selected-lecturers-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: class_selected_lecturers
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: class_selected_lecturers
+            columns:
+              - column:
+                  name: selected_lecturer_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: class_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: class_selected_lecturers
+            columnNames: selected_lecturer_id, class_id
+            constraintName: pk_class_selected_lecturers
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: class_selected_lecturers
+            baseColumnNames: selected_lecturer_id
+            constraintName: fk_class_selected_lecturers_selected_lecturers
+            referencedTableSchemaName: public
+            referencedTableName: selected_lecturers
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: class_selected_lecturers
+            baseColumnNames: class_id
+            constraintName: fk_class_selected_lecturers_classes
+            referencedTableSchemaName: public
+            referencedTableName: classes
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: class_selected_lecturers
+            cascadeConstraints: true

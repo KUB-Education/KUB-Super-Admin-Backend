@@ -1,13 +1,16 @@
 package education.kub.backend.ce.domain.timetable_class.entity;
 
-import education.kub.backend.ce.domain.group.domain.GroupEntity;
+import education.kub.backend.ce.domain.selected_lecturer.domain.SelectedLecturerEntity;
 import education.kub.backend.ce.domain.selected_room.domain.SelectedRoomEntity;
 import education.kub.backend.ce.domain.selected_subject_activity_group.domain.SelectedSubjectActivityGroupEntity;
+import education.kub.backend.ce.domain.student.entity.StudentEntity;
 import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "classes")
@@ -42,6 +45,26 @@ public class TimetableClassEntity {
 
     @Column(name = "time_end", columnDefinition = "timestamptz", nullable = false)
     private Instant timeEnd;
+
+    @ManyToMany
+    @JoinTable(
+            name = "class_selected_lecturers",
+            joinColumns = @JoinColumn(name = "class_id"),
+            inverseJoinColumns = @JoinColumn(name = "selected_lecturer_id")
+    )
+    private Set<SelectedLecturerEntity> selectedLecturers = new HashSet<>();
+
+
+    public void addSelectedLecturer(SelectedLecturerEntity selectedLecturer) {
+        selectedLecturers.add(selectedLecturer);
+        selectedLecturer.getClasses().add(this);
+    }
+
+    public void removeSelectedLecturer(SelectedLecturerEntity selectedLecturer) {
+        selectedLecturers.remove(selectedLecturer);
+        selectedLecturer.getClasses().remove(this);
+    }
+
 
 
     public enum Type {

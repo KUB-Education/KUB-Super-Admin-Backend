@@ -4,7 +4,6 @@ import education.kub.backend.ce.domain.group.domain.GroupEntity;
 import education.kub.backend.ce.domain.group.repository.GroupRepository;
 import education.kub.backend.ce.domain.student.entity.StudentEntity;
 import education.kub.backend.ce.domain.student.repository.StudentRepository;
-import education.kub.backend.ce.domain.subject_ativity.domain.SubjectActivityEntity;
 import education.kub.backend.ce.domain.user.entity.UserEntity;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
