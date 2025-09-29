@@ -1,0 +1,73 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0025-create-selected-subj-act-groups-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: selected_subj_act_groups
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: selected_subj_act_groups
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: selected_subject_activity_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: selected_subj_act_groups
+            columnNames: id
+            constraintName: pk_selected_subj_act_groups
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: selected_subj_act_groups
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: selected_subj_act_groups
+            baseColumnNames: selected_subject_activity_id
+            constraintName: fk_selected_subj_act_groups_selected_subj_act
+            referencedTableSchemaName: public
+            referencedTableName: selected_subject_activities
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        # check constraints
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.selected_subj_act_groups
+                ADD CONSTRAINT chk_selected_subj_act_groups_name_not_blank CHECK (TRIM(name) <> '');
+
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: selected_subj_act_groups
+            cascadeConstraints: true
