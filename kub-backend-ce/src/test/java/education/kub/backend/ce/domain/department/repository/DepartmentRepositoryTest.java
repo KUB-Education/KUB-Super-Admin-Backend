@@ -15,24 +15,24 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class DepartmentRepositoryTest {
     @Autowired
-    private DepartmentRepository departmentRepo;
+    private DepartmentRepository DepartmentRepository;
 
     @Test
     @Rollback(false)
     void givenNewDepartment_whenSave_thenSuccess() {
         DepartmentEntity d = new DepartmentEntity();
         d.setName("New Department");
-        departmentRepo.save(d);
+        DepartmentRepository.save(d);
 
-        assertThat(departmentRepo.findById(d.getId()).orElse(null)).isEqualTo(d);
-        assertThat(departmentRepo.findById(d.getId()).orElse(null).getName()).isEqualTo(d.getName());
+        assertThat(DepartmentRepository.findById(d.getId()).orElse(null)).isEqualTo(d);
+        assertThat(DepartmentRepository.findById(d.getId()).orElse(null).getName()).isEqualTo(d.getName());
     }
 
     @Test
     void givenNewDepartmentWithNullName_whenSave_thenException() {
         DepartmentEntity d = new DepartmentEntity();
 
-        assertThrows(RuntimeException.class, () -> departmentRepo.save(d));
+        assertThrows(RuntimeException.class, () -> DepartmentRepository.save(d));
     }
 
     @Test
@@ -40,7 +40,7 @@ class DepartmentRepositoryTest {
         DepartmentEntity d = new DepartmentEntity();
         d.setName("");
 
-        assertThrows(RuntimeException.class, () -> departmentRepo.save(d));
+        assertThrows(RuntimeException.class, () -> DepartmentRepository.save(d));
     }
 
     @Test
@@ -48,7 +48,7 @@ class DepartmentRepositoryTest {
         DepartmentEntity d = new DepartmentEntity();
         d.setName("         ");
 
-        assertThrows(RuntimeException.class, () -> departmentRepo.save(d));
+        assertThrows(RuntimeException.class, () -> DepartmentRepository.save(d));
     }
 
 }
