@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/departments")
+@RequestMapping("/api/v1/departments")
 @RequiredArgsConstructor
 @Validated
 public class DepartmentController {
