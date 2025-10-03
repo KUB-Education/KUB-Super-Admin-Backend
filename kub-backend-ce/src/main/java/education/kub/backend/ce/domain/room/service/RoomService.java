@@ -6,12 +6,13 @@ import education.kub.backend.ce.domain.room.mapper.RoomMapper;
 import education.kub.backend.ce.domain.room.model.RoomCreateRequest;
 import education.kub.backend.ce.domain.room.model.RoomDto;
 import education.kub.backend.ce.domain.room.model.RoomRequestFilter;
+import education.kub.backend.ce.domain.room.model.RoomUpdateRequest;
 import education.kub.backend.ce.domain.room.repository.RoomRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class RoomService {
     private final RoomRepository roomRepo;
     private final RoomMapper roomMapper;
 
+    @Transactional
     public RoomDto createRoom(RoomCreateRequest createRoomRequest) {
         if (roomRepo.existsByLocation(createRoomRequest.location())) { // location must be unique
             throw new KubException(KubException.ErrorCode.CONFLICT);
@@ -62,43 +64,44 @@ public class RoomService {
         return roomMapper.toDtoList(rooms);
     }
 
-    /*
-    @Override
-    public Optional<RoomResponseDTO> updateRoom(Long id, RoomUpdateRequestDTO roomUpdateRequest) {
-        return roomRepo.findById(id).map(room -> {
+    @Transactional
+    public RoomDto updateRoom(Long id, RoomUpdateRequest roomUpdateRequest) {
+        RoomEntity room = roomRepo.findById(id)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
-            if (roomUpdateRequest.location() != null &&
-                    !room.getLocation().equals(roomUpdateRequest.location()) &&
-                    roomRepo.existsByLocation(roomUpdateRequest.location())) {
-                throw new KubException(ErrorCode.CONFLICT);
+        if(roomUpdateRequest.location() != null) {
+            // if same location exists and do not belong to room that is under updating
+            if(roomRepo.existsByLocation(roomUpdateRequest.location()) &&
+                !room.getLocation().equals(roomUpdateRequest.location())) {
+                throw new KubException(KubException.ErrorCode.CONFLICT);
             }
-
-            if (roomUpdateRequest.location() != null) {
-                room.setLocation(roomUpdateRequest.location());
-            }
-            if (roomUpdateRequest.capacity() != null) {
-                room.setCapacity(roomUpdateRequest.capacity());
-            }
-
-            RoomEntity updatedRoom = roomRepo.save(room);
-
-            return convertToDTO(updatedRoom);
-        });
-    }
-
-    @Override
-    public boolean deleteRoom(Long id) {
-        if (roomRepo.existsById(id)) {
-            roomRepo.deleteById(id);
-            return true;
+            room.setLocation(roomUpdateRequest.location());
         }
 
-        return false;
+        if(roomUpdateRequest.capacity() != null) {
+            room.setCapacity(roomUpdateRequest.capacity());
+        }
+
+        if(roomUpdateRequest.details() != null) {
+            if(roomUpdateRequest.details().isEmpty()){
+                room.setDetails(null);
+            }
+            else{
+                room.setDetails(roomUpdateRequest.details());
+            }
+        }
+
+        roomRepo.save(room);
+
+        return roomMapper.toDto(room);
     }
 
-    private RoomResponseDTO convertToDTO(RoomEntity room) {
-        return new RoomResponseDTO(room.getId(), room.getLocation(), room.getCapacity());
+
+    public void deleteRoom(Long id) {
+        RoomEntity room = roomRepo.findById(id)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        roomRepo.delete(room);
     }
 
-     */
 }
