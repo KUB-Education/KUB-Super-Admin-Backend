@@ -1,0 +1,19 @@
+{
+    "$schema": "RefreshResponse.json",
+    "title": "RefreshResponse",
+    "type": "object",
+    "RefreshResponse": {
+        "type": "object",
+        "properties": {
+            "access_token": {
+                "type": "string",
+                "description": "New JWT access token."
+            },
+            "refresh_token": {
+                "type": "string",
+                "description": "New JWT refresh token."
+            }
+        }
+    },
+    "required": ["access_token", "refresh_token"]
+}
