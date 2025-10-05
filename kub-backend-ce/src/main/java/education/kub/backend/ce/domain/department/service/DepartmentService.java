@@ -3,6 +3,7 @@ package education.kub.backend.ce.domain.department.service;
 import education.kub.backend.ce.app.exception.model.KubException;
 import education.kub.backend.ce.app.exception.model.KubException.ErrorCode;
 import education.kub.backend.ce.domain.department.entity.DepartmentEntity;
+import education.kub.backend.ce.domain.department.mapper.DepartmentMapper;
 import education.kub.backend.ce.domain.department.model.DepartmentRequest;
 import education.kub.backend.ce.domain.department.model.DepartmentUpdateRequest;
 import education.kub.backend.ce.domain.department.repository.DepartmentRepository;
@@ -17,6 +18,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class DepartmentService{
+
+    private final DepartmentMapper departmentMapper;
+
     private final DepartmentRepository departmentRepository;
 
     public DepartmentResponse createDepartment(DepartmentRequest departmentRequest) {
@@ -29,24 +33,19 @@ public class DepartmentService{
 
         DepartmentEntity savedDepartment = departmentRepository.save(newDepartment);
 
-        return convertToDTO(savedDepartment);
+        return departmentMapper.toDepartmentResponse(savedDepartment);
     }
 
     public List<DepartmentResponse> getAllDepartments() {
-        return departmentRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .toList();
+        return departmentMapper.toDepartmentResponseList(departmentRepository.findAll());
     }
 
     public List<DepartmentResponse> getDepartmentsByNameContaining(String nameSubstring) {
-        return departmentRepository.findByNameContainingIgnoreCase(nameSubstring).stream()
-                .map(this::convertToDTO)
-                .toList();
+        return departmentMapper.toDepartmentResponseList(departmentRepository.findByNameContainingIgnoreCase(nameSubstring));
     }
 
     public Optional<DepartmentResponse> getDepartmentById(Long id) {
-        return departmentRepository.findById(id)
-                .map(this::convertToDTO);
+        return departmentMapper.toDepartmentResponseOptional(departmentRepository.findById(id));
     }
 
     public Optional<DepartmentResponse> updateDepartment(Long id, DepartmentUpdateRequest departmentUpdateRequest) {
@@ -64,7 +63,7 @@ public class DepartmentService{
 
                     DepartmentEntity updatedDepartment = departmentRepository.save(department);
 
-                    return convertToDTO(updatedDepartment);
+                    return departmentMapper.toDepartmentResponse(updatedDepartment);
                 });
     }
 
@@ -75,12 +74,5 @@ public class DepartmentService{
         }
 
         return false;
-    }
-
-    private DepartmentResponse convertToDTO(DepartmentEntity department) {
-        return new DepartmentResponse(
-                department.getId(),
-                department.getName()
-        );
     }
 }

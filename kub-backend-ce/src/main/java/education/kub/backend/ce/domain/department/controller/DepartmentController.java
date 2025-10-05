@@ -22,7 +22,7 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<DepartmentResponse> createDepartment(@Valid @RequestBody DepartmentRequest departmentRequest) {
         DepartmentResponse createdDepartment = departmentService.createDepartment(departmentRequest);
 
@@ -30,7 +30,7 @@ public class DepartmentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('admin', 'lecturer', 'student')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER', 'STUDENT')")
     public ResponseEntity<List<DepartmentResponse>> getAllDepartments(
             @RequestParam(required = false) String name
     ) {
@@ -45,7 +45,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('admin', 'lecturer', 'student')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER', 'STUDENT')")
     public ResponseEntity<DepartmentResponse> getDepartmentById(@PathVariable Long id) {
         return departmentService.getDepartmentById(id)
                 .map(ResponseEntity::ok)
@@ -53,7 +53,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<DepartmentResponse> updateDepartment(
             @PathVariable Long id,
             @Valid @RequestBody DepartmentUpdateRequest departmentUpdateRequest
@@ -64,7 +64,7 @@ public class DepartmentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
         return departmentService.deleteDepartment(id)
                 ? ResponseEntity.noContent().build()
