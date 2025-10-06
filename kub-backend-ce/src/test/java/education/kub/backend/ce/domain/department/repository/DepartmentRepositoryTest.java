@@ -1,7 +1,6 @@
 package education.kub.backend.ce.domain.department.repository;
 
 import education.kub.backend.ce.domain.department.entity.DepartmentEntity;
-import education.kub.backend.ce.domain.student.entity.StudentEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -15,24 +14,24 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class DepartmentRepositoryTest {
     @Autowired
-    private DepartmentRepository departmentRepo;
+    private DepartmentRepository departmentRepository;
 
     @Test
     @Rollback(false)
     void givenNewDepartment_whenSave_thenSuccess() {
         DepartmentEntity d = new DepartmentEntity();
         d.setName("New Department");
-        departmentRepo.save(d);
+        departmentRepository.save(d);
 
-        assertThat(departmentRepo.findById(d.getId()).orElse(null)).isEqualTo(d);
-        assertThat(departmentRepo.findById(d.getId()).orElse(null).getName()).isEqualTo(d.getName());
+        assertThat(departmentRepository.findById(d.getId()).orElse(null)).isEqualTo(d);
+        assertThat(departmentRepository.findById(d.getId()).orElse(null).getName()).isEqualTo(d.getName());
     }
 
     @Test
     void givenNewDepartmentWithNullName_whenSave_thenException() {
         DepartmentEntity d = new DepartmentEntity();
 
-        assertThrows(RuntimeException.class, () -> departmentRepo.save(d));
+        assertThrows(RuntimeException.class, () -> departmentRepository.save(d));
     }
 
     @Test
@@ -40,7 +39,7 @@ class DepartmentRepositoryTest {
         DepartmentEntity d = new DepartmentEntity();
         d.setName("");
 
-        assertThrows(RuntimeException.class, () -> departmentRepo.save(d));
+        assertThrows(RuntimeException.class, () -> departmentRepository.save(d));
     }
 
     @Test
@@ -48,7 +47,7 @@ class DepartmentRepositoryTest {
         DepartmentEntity d = new DepartmentEntity();
         d.setName("         ");
 
-        assertThrows(RuntimeException.class, () -> departmentRepo.save(d));
+        assertThrows(RuntimeException.class, () -> departmentRepository.save(d));
     }
 
 }
