@@ -11,99 +11,85 @@ import java.util.Map;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@SpringBootTest(classes = BackendApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-//        properties = {"server.port=10000"})
 public class AuthProvider {
     public static String Login(MockMvc mvc, String uri, Map<String, Object> request_body, String bearer_token,
-                                 int expectedStatusCode, String JsonValidationSchema) {
-        HttpHeaders headers = new HttpHeaders();
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("application/json");
-        headers.put("Content-Type", list);
-
-        if (bearer_token != null) {
-            list.clear();
-            list.add("Bearer " + bearer_token);
-            headers.put("Authorization", list);
-        }
-        JSONObject jsonObject = new JSONObject(request_body);
-        String JsonBody = jsonObject.toString();
-
+                               int expectedStatusCode, String JsonValidationSchema) {
         try {
-            ResultActions result = mvc.perform(MockMvcRequestBuilders
-                            .post(uri + "/auth/login")
+            var request = MockMvcRequestBuilders
+                            .post(uri + "/api/v1/auth/login")
                             .contentType("application/json")
-                            .headers(headers)
-                            .content(JsonBody)
-                            .accept(APPLICATION_JSON))
-                            .andExpect(status().is(expectedStatusCode))
-                            .andExpect(content().string(matchesJsonSchemaInClasspath(JsonValidationSchema)));
-            return result.andReturn().getResponse().toString();
-        }
-        catch (Exception e) {
-                throw new RuntimeException(e);
-        }
-//        Response response = given()
-//                .baseUri(uri)
-//                .contentType("application/json")
-//                .headers(headers)
-//                .body(request_body)
-//                .when()
-//                .post("/auth/login");
-//        response.then()
-//                .statusCode(expectedStatusCode)
-//                .body(matchesJsonSchemaInClasspath(JsonValidationSchema));
-    }
+                            .accept(APPLICATION_JSON);
+            if (bearer_token != null) {
+                HttpHeaders headers = new HttpHeaders();
+                ArrayList<String> list = new ArrayList<String>();
+                list.add("Bearer " + bearer_token);
+                headers.put("Authorization", list);
+                request.headers(headers);
+            }
 
-    public static void Logout(MockMvc mvc, String uri, String access_token, int expectedStatusCode) {
-        HttpHeaders headers = new HttpHeaders();
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("Bearer " + access_token);
-        headers.put("Authorization", list);
-
-        try {
-            mvc.perform(MockMvcRequestBuilders
-                            .post(uri+"/auth/logout")
-                            .headers(headers))
-                    .andExpect(status().is(expectedStatusCode));
+            if (request_body != null) {
+                JSONObject jsonObject = new JSONObject(request_body);
+                var JsonBody = jsonObject.toString();
+                request.content(JsonBody);
+            }
+            ResultActions result = mvc.perform(request).andDo(print()).andExpect(status().is(expectedStatusCode));
+            if (expectedStatusCode == 200) {
+                result.andExpect(content().string(matchesJsonSchemaInClasspath(JsonValidationSchema)));
+            }
+            return result.andReturn().getResponse().getContentAsString();
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
-//        given()
-//                .baseUri(uri)
-//                .header("Authorization", "Bearer " + access_token)
-//                .when()
-//                .post("/auth/logout")
-//                .then()
-//                .statusCode(expectedStatusCode);
     }
 
-    public static String Refresh(MockMvc mvc, Map<String, Object> request_body, String uri,
-                                   int expectedStatusCode, String JsonValidationSchema) {
-        JSONObject jsonObject = new JSONObject(request_body);
-        String JsonBody = jsonObject.toString();
+    public static void Logout(MockMvc mvc, String uri, String access_token, int expectedStatusCode, boolean autorization) {
+        try {
+            var request = MockMvcRequestBuilders
+                                    .post(uri+"/api/v1/auth/logout")
+                                    .contentType("application/json")
+                                    .accept(APPLICATION_JSON);
+            if (autorization) {
+                HttpHeaders headers = new HttpHeaders();
+                ArrayList<String> list = new ArrayList<String>();
+                list.add("Bearer " + ((access_token != null)? access_token: ""));
+                headers.put("Authorization", list);
+                request.headers(headers);
+            }
+           mvc.perform(request).andDo(print()).andExpect(status().is(expectedStatusCode));
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String Refresh(MockMvc mvc, String uri, Map<String, Object> request_body,
+                                 int expectedStatusCode, String JsonValidationSchema) {
+        String JsonBody = "";
+        if  (request_body != null) {
+            JSONObject jsonObject = new JSONObject(request_body);
+            JsonBody = jsonObject.toString();
+        }
+
         try {
             ResultActions result = mvc.perform(MockMvcRequestBuilders
-                                    .post(uri + "/auth/refresh")
-                                    .content(JsonBody))
-                                    .andExpect(status().is(expectedStatusCode))
-                                    .andExpect(content().string(matchesJsonSchemaInClasspath(JsonValidationSchema)));
+                                        .post(uri + "/api/v1/auth/refresh")
+                                        .contentType("application/json")
+                                        .content(JsonBody)
+                                        .accept(APPLICATION_JSON))
+                                        .andDo(print())
+                                        .andExpect(status().is(expectedStatusCode));
+            if (expectedStatusCode == 200) {
+                result.andExpect(content().string(matchesJsonSchemaInClasspath(JsonValidationSchema)));
+            }
             return result.andReturn().getResponse().toString();
         }
         catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-//        Response response = given()
-//                    .baseUri(uri)
-//                    .body(request_body)
-//                    .when()
-//                    .post("/auth/refresh");
-//        response.then()
-//                .statusCode(expectedStatusCode)
-//                .body(matchesJsonSchemaInClasspath(JsonValidationSchema));
+            throw new RuntimeException(e);
+        }
     }
 }
