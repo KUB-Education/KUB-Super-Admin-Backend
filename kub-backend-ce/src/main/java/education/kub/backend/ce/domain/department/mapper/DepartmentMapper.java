@@ -13,6 +13,4 @@ public interface DepartmentMapper {
     DepartmentResponse toDepartmentResponse(DepartmentEntity entity);
 
     List<DepartmentResponse> toDepartmentResponseList(Iterable<DepartmentEntity> entities);
-
-    Optional<DepartmentResponse> toDepartmentResponseOptional(Optional<DepartmentEntity> entity);
 }

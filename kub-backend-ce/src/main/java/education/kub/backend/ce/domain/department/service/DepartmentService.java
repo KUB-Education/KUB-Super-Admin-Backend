@@ -45,7 +45,12 @@ public class DepartmentService{
     }
 
     public Optional<DepartmentResponse> getDepartmentById(Long id) {
-        return departmentMapper.toDepartmentResponseOptional(departmentRepository.findById(id));
+        return Optional.of(
+                departmentMapper.toDepartmentResponse(
+                        departmentRepository.findById(id)
+                                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND))
+                )
+        );
     }
 
     public Optional<DepartmentResponse> updateDepartment(Long id, DepartmentUpdateRequest departmentUpdateRequest) {
