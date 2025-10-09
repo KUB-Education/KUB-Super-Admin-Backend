@@ -1,6 +1,7 @@
 package education.kub.backend.ce.domain.bootstrap.service;
 
 import education.kub.backend.ce.app.exception.model.KubException;
+import education.kub.backend.ce.app.properties.AppSecurityProperties;
 import education.kub.backend.ce.domain.appstate.repository.AppStateRepository;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
 import education.kub.backend.ce.infrastructure.password.service.PasswordService;
@@ -26,10 +27,16 @@ public class BootstrapGate {
     private final UserRepository userRepository;
     private final PasswordService passwordService;
 
+    private final AppSecurityProperties appSecurityProperties;
+
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         if (isBootstrappingAllowed()) {
-            var token = passwordService.generate();
+//            For production
+//            var token = passwordService.generate();
+
+//            FOR DEVELOPMENT AND STAGING ENVIRONMENTS, REMOVE BEFORE RELEASING PRODUCTION BUILD
+            var token = appSecurityProperties.secretKey();
             var tokenHashed = passwordService.hash(token);
 
             var file = new File("bootstrap.token");
