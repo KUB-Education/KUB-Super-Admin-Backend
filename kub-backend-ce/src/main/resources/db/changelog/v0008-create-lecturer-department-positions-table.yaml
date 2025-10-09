@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: v0008-create-department-lecturers-table
+      id: v0008-create-lecturer-department-positions-table
       author: Yaroslav Drovolskyi
 
       preConditions:
@@ -8,12 +8,12 @@ databaseChangeLog:
         - not:
             - tableExists:
                 schemaName: public
-                tableName: department_lecturers
+                tableName: lecturer_department_positions
 
       changes:
         - createTable:
             schemaName: public
-            tableName: department_lecturers
+            tableName: lecturer_department_positions
             columns:
               - column:
                   name: id
@@ -31,8 +31,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: position
-                  type: varchar(64)
+                  name: position_id
+                  type: bigint
                   constraints:
                     nullable: false
               - column:
@@ -43,13 +43,13 @@ databaseChangeLog:
 
         - addPrimaryKey:
             schemaName: public
-            tableName: department_lecturers
+            tableName: lecturer_department_positions
             columnNames: id
-            constraintName: pk_department_lecturers
+            constraintName: pk_lecturer_department_positions
 
         - addAutoIncrement:
             schemaName: public
-            tableName: department_lecturers
+            tableName: lecturer_department_positions
             columnName: id
             columnDataType: bigint
             startWith: 1
@@ -59,9 +59,9 @@ databaseChangeLog:
 
         - addForeignKeyConstraint:
             baseTableSchemaName: public
-            baseTableName: department_lecturers
+            baseTableName: lecturer_department_positions
             baseColumnNames: lecturer_id
-            constraintName: fk_department_lecturers_lecturer
+            constraintName: fk_lecturer_department_positions_lecturers
             referencedTableSchemaName: public
             referencedTableName: lecturers
             referencedColumnNames: id
@@ -69,32 +69,41 @@ databaseChangeLog:
 
         - addForeignKeyConstraint:
             baseTableSchemaName: public
-            baseTableName: department_lecturers
+            baseTableName: lecturer_department_positions
             baseColumnNames: department_id
-            constraintName: fk_department_lecturers_department
+            constraintName: fk_lecturer_department_positions_departments
             referencedTableSchemaName: public
             referencedTableName: departments
             referencedColumnNames: id
             onDelete: CASCADE
 
+        - addForeignKeyConstraint:
+            baseTableSchemaName: public
+            baseTableName: lecturer_department_positions
+            baseColumnNames: position_id
+            constraintName: fk_lecturer_department_positions_positions
+            referencedTableSchemaName: public
+            referencedTableName: positions
+            referencedColumnNames: id
+            onDelete: CASCADE
+
         - addUniqueConstraint:
             schemaName: public
-            tableName: department_lecturers
+            tableName: lecturer_department_positions
             columnNames: lecturer_id, department_id
-            constraintName: unique_department_lecturers_department_id_lecturer_id
+            constraintName: unique_lecturer_department_positions_department_id_lecturer_id
 
-        # add check constrains
+        # add check constraints
         - sql:
             dbms: postgresql
             splitStatements: true
             sql: |
-              ALTER TABLE public.department_lecturers
-                ADD CONSTRAINT chk_department_lecturers_position CHECK (position IN ('ASSISTANT', 'ASSOCIATE_PROFESSOR', 'PROFESSOR')),
-                ADD CONSTRAINT chk_department_lecturers_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'TERMINATED'));
+              ALTER TABLE public.lecturer_department_positions
+                ADD CONSTRAINT chk_lecturer_department_positions_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'TERMINATED'));
               
 
       rollback:
         - dropTable:
             schemaName: public
-            tableName: department_lecturers
+            tableName: lecturer_department_positions
             cascadeConstraints: true
