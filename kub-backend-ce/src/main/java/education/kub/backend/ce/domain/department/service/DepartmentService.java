@@ -68,7 +68,7 @@ public class DepartmentService{
     }
 
     public void deleteDepartment(Long id) {
-        if (departmentRepository.existsById(id)) {
+        if (!departmentRepository.existsById(id)) {
             throw new KubException(KubException.ErrorCode.NOT_FOUND);
         }
 
