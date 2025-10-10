@@ -1,37 +1,29 @@
 package education.kub.backend.ce.domain.auth.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import education.kub.backend.ce.app.exception.handler.GlobalExceptionHandler;
+import education.kub.backend.ce.app.filter.JwtAuthFilter;
 import education.kub.backend.ce.domain.auth.service.AuthService;
-import education.kub.backend.ce.infrastructure.password.service.PasswordService;
-import education.kub.backend.ce.domain.user.repository.UserRepository;
-import education.kub.backend.ce.domain.auth.controller.helpers.AuthProvider;
-import education.kub.backend.ce.domain.role.entity.RoleEntity;
-import education.kub.backend.ce.domain.user.entity.UserEntity;
-
-import education.kub.backend.ce.infrastructure.token.provider.JwtTokenProvider;
-import education.kub.backend.ce.infrastructure.token.store.service.TokenStoreService;
-
-import io.restassured.path.json.JsonPath;
+import education.kub.backend.ce.helpers.users.UserProvider;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import org.mockito.Spy;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.*;
@@ -42,111 +34,48 @@ import java.util.*;
 @EnableJpaRepositories(basePackages={"education"})
 @AutoConfigureMockMvc
 @TestPropertySource(locations = {"classpath:test.application.properties"})
-public class AuthControllerTests {
+public class AuthControllerTests extends UserProvider {
 
-    @Value("${server.port}")
-    private String port;
-    @Value("${server.host}")
-    private String host;
-    @Value("${server.protocol}")
-    private String protocol;
-    private String backend_url;
-
-    private final String last_name = "Doe";
-    private final String first_name = "John";
-    private final String middle_name = "Edward";
-    private final String email = "allex.nevedrov@example.com";
-    private final String password = "~NewPass456";
-
-    private final long user_id = 0;
-
-    private String accessToken;
-    private String refreshToken;
-
-    private MockMvc mockMvc;
     @Autowired
-    private TokenStoreService tokenStoreService;
-    @Spy
-    private UserRepository userRepo;
+    private GlobalExceptionHandler globalExceptionHandler;
     @Autowired
-    private PasswordService passwordService;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    GlobalExceptionHandler globalExceptionHandler;
+    private JwtAuthFilter jwtAuthFilter;
 
     @BeforeEach
     public void initializeMocks() {
-        backend_url = String.format("%s://%s:%s", protocol, host, port);
-        Mockito.doAnswer(invocation -> {
-            if (userRepo.findById(user_id).isPresent()) {
-                return Optional.of(userRepo.findById(user_id).get());
-            }
-            else {
-                UserEntity user = new UserEntity();
-                user.setId(user_id);
-                user.setLastName(last_name);
-                user.setFirstName(first_name);
-                user.setMiddleName(middle_name);
-                user.setEmail(email);
-                user.setPasswordHashed(passwordService.hash(password));
-                user.setStatus(UserEntity.Status.ACTIVATED);
-                user.setTemporaryPasswordHashed(null);
-                user.setTemporaryPasswordExpiresAt(null);
-                user.setCreatedAt(null);
-                user.setUpdatedAt(null);
-                user.setDeletedAt(null);
-                var userSet = new HashSet<UserEntity>();
-                userSet.add(user);
-                RoleEntity role = new RoleEntity(user_id, RoleEntity.Type.ADMIN, userSet);
-                var roles = new HashSet<RoleEntity>();
-                roles.add(role);
-                userRepo.save(user);
-                return Optional.of(user);
-            }
-        }).when(userRepo).findWithRolesByEmailAndDeletedAtIsNull(email);
+        createUser();
+        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new
+                MappingJackson2HttpMessageConverter();
+        mappingJackson2HttpMessageConverter.setObjectMapper( new ObjectMapper().setPropertyNamingStrategy(namingStrategy));
         mockMvc = MockMvcBuilders.standaloneSetup(new AuthController(
                 new AuthService(userRepo, passwordService,
-                        tokenStoreService, jwtTokenProvider))).setControllerAdvice(globalExceptionHandler).build();
+                        tokenStoreService, jwtTokenProvider)))
+                .addFilter(jwtAuthFilter)
+                .setControllerAdvice(globalExceptionHandler)
+                .setMessageConverters(mappingJackson2HttpMessageConverter)
+                .build();
     }
 
-    public String ValidateLogin(Map<String, Object> request_map, String bearer_token, int expectedStatusCode) {
-        return AuthProvider.Login(mockMvc, backend_url, request_map, bearer_token,
-                expectedStatusCode, "schemas/LoginResponse.json");
-    }
-
-    public void FirstLogin() {
-        String response = ValidateLogin(Map.of("email", email, "password", password),
-                null,200);
-
-        JsonPath jsonPath = JsonPath.with(response);
-        boolean is_first_login = jsonPath.get("first_login");
-        assertFalse(is_first_login, "First login field must be set to false at not first login attempt");
-
-        accessToken = jsonPath.get("access_token");
-        refreshToken = jsonPath.get("refresh_token");
-    }
-
-    public void ValidateLogout(int expectedStatusCode) {
+    public void ValidateLogout(HttpStatusCode expectedStatusCode) {
         AuthProvider.Logout(mockMvc, backend_url, accessToken, expectedStatusCode, true);
     }
 
     public void Logout() {
-        ValidateLogout(204);
+        ValidateLogout(HttpStatus.NO_CONTENT);
     }
 
-    public void ValidateRefresh(Map<String, Object> request_body, int expectedStatusCode) {
+    public void ValidateRefresh(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
         AuthProvider.Refresh(mockMvc, backend_url, request_body, expectedStatusCode,
                 "schemas/RefreshResponse.json");
     }
 
-    public void Refresh(int expectedStatusCode) {
+    public void Refresh(HttpStatusCode expectedStatusCode) {
         AuthProvider.Refresh(mockMvc, backend_url, Map.of("refresh_token", refreshToken), expectedStatusCode,
                 "schemas/RefreshResponse.json");
     }
 
     public void Refresh() {
-        Refresh(200);
+        Refresh(HttpStatus.OK);
     }
 
     @Nested
@@ -160,30 +89,30 @@ public class AuthControllerTests {
         @Test
         public void TestLoginWithInvalidToken() {
             ValidateLogin(Map.of("email", email, "password", password),
-                    "afdfasfda", 200);
+                    "afdfasfda", HttpStatus.UNAUTHORIZED);
         }
 
         @Test
-        public void TestLoginWithInvalidPassword() {
+        public void TestLoginWithWrongPassword() {
             ValidateLogin(Map.of("email", email, "password", "dagagdg"),
-                    "afdfasfda", 401);
+                    "afdfasfda", HttpStatus.UNAUTHORIZED);
         }
 
         @Test
         public void TestLoginWithWrongEmail() {
             ValidateLogin(Map.of("email", email, "password", "dagagdg"),
-                    accessToken, 401);
+                    accessToken, HttpStatus.UNAUTHORIZED);
         }
 
         @Test
         public void TestLoginWithInvalidBody() {
             ValidateLogin(Map.of("afafsfs", email, "fdfdf", password),
-                    accessToken, 401);
+                    accessToken, HttpStatus.BAD_REQUEST);
         }
 
         @Test
         public void TestLogoutWithoutBody() {
-            ValidateLogin(null, null, 400);
+            ValidateLogin(null, null, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -198,23 +127,23 @@ public class AuthControllerTests {
 
         @Test
         public void TestLogoutWithoutBearerToken() {
-            AuthProvider.Logout(mockMvc, backend_url, null, 401, true);
+            AuthProvider.Logout(mockMvc, backend_url, null, HttpStatus.UNAUTHORIZED, true);
         }
 
         @Test
         public void TestLogoutWithoutAuthorizationHeader() {
-            AuthProvider.Logout(mockMvc, backend_url, null, 400, false);
+            AuthProvider.Logout(mockMvc, backend_url, null, HttpStatus.UNAUTHORIZED, false);
         }
 
         @Test
         public void TestLogoutWithInvalidToken() {
             accessToken = "adsgadgdg";
-            ValidateLogout(401);
+            ValidateLogout(HttpStatus.UNAUTHORIZED);
         }
 
         @Test
         public void TestLogoutWithoutLogin() {
-            ValidateLogout(401);
+            ValidateLogout(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -230,14 +159,14 @@ public class AuthControllerTests {
         @Test
         public void TestWithoutBody() {
             FirstLogin();
-            ValidateRefresh(null, 400);
+            ValidateRefresh(null, HttpStatus.BAD_REQUEST);
         }
 
         @Test
         public void TestWithInvalidRefreshToken() {
             FirstLogin();
             refreshToken = "adsgadgdg";
-            Refresh(401);
+            Refresh(HttpStatus.UNAUTHORIZED);
         }
     }
 }
