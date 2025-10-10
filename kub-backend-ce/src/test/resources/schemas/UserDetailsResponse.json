@@ -1,0 +1,40 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "UserChangePasswordResponse",
+    "type": "object",
+        "properties": {
+            "id": {
+                "type": ["integer", "null"],
+                "format": "int64"
+            },
+            "last_name": {
+                "type": ["string", "null"]
+            },
+            "first_name": {
+                "type": ["string", "null"]
+            },
+            "middle_name": {
+                "type": ["string", "null"]
+            },
+            "email": {
+                "type": ["string", "null"]
+            },
+            "status": {
+                "type": ["string", "null"],
+                "enum": [
+                  "EMAIL_SENDING_FAILURE",
+                  "ACTIVATION_PENDING",
+                  "ACTIVATION_EXPIRED",
+                  "ACTIVATED",
+                  "RECOVERY_PENDING"
+                ]
+            },
+            "roles": {
+                "type": ["array","null"],
+                "items": {
+                  "$ref": "RoleDto.json"
+                }
+            }
+      },
+      "required": ["id", "last_name", "first_name", "middle_name", "email", "status", "roles"]
+}

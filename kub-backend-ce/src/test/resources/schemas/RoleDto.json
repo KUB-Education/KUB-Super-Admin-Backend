@@ -1,0 +1,23 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "RoleDto",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": ["integer","null"],
+            "format": "int64"
+        },
+        "^type$": {
+            "type": ["string","null"],
+            "enum": [
+              "ORGANIZER",
+              "SYSADMIN",
+              "ADMIN",
+              "LECTURER",
+              "STUDENT",
+              "USER"
+            ]
+        }
+    },
+    "required": ["id", "type"]
+}
