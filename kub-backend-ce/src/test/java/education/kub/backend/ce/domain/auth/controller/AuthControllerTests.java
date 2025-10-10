@@ -2,8 +2,6 @@ package education.kub.backend.ce.domain.auth.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import education.kub.backend.ce.app.exception.handler.GlobalExceptionHandler;
 import education.kub.backend.ce.app.filter.JwtAuthFilter;
 import education.kub.backend.ce.domain.auth.service.AuthService;
