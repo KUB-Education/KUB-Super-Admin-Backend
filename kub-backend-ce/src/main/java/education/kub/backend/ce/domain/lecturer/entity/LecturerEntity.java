@@ -2,6 +2,7 @@ package education.kub.backend.ce.domain.lecturer.entity;
 
 import education.kub.backend.ce.domain.academic_title.entity.AcademicTitleEntity;
 import education.kub.backend.ce.domain.lecturer_department_position.entity.LecturerDepartmentPositionEntity;
+import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,7 +27,7 @@ public class LecturerEntity {
     UserEntity user;
 
     @OneToMany(mappedBy = "lecturer", fetch = FetchType.LAZY)
-    private Set<LecturerDepartmentPositionEntity> lecturerDepartmentPositions;
+    private Set<LecturerDepartmentPositionEntity> lecturerDepartmentPositions = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -35,4 +36,16 @@ public class LecturerEntity {
             inverseJoinColumns = @JoinColumn(name = "academic_title_id")
     )
     private Set<AcademicTitleEntity> academicTitles = new HashSet<>();
+
+    public boolean hasAcademicTitle(AcademicTitleEntity academicTitle) {
+        return academicTitles.contains(academicTitle);
+    }
+
+    public void addAcademicTitle(AcademicTitleEntity academicTitle) {
+        academicTitles.add(academicTitle);
+    }
+
+    public void removeAcademicTitle(AcademicTitleEntity academicTitle) {
+        academicTitles.remove(academicTitle);
+    }
 }

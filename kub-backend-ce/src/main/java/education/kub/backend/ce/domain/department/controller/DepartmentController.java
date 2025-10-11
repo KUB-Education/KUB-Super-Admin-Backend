@@ -1,7 +1,7 @@
 package education.kub.backend.ce.domain.department.controller;
 
+import education.kub.backend.ce.domain.department.model.DepartmentDetailsResponse;
 import education.kub.backend.ce.domain.department.model.DepartmentRequest;
-import education.kub.backend.ce.domain.department.model.DepartmentResponse;
 import education.kub.backend.ce.domain.department.model.DepartmentUpdateRequest;
 import education.kub.backend.ce.domain.department.service.DepartmentService;
 import jakarta.validation.Valid;
@@ -23,30 +23,30 @@ public class DepartmentController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<DepartmentResponse> createDepartment(@Valid @RequestBody DepartmentRequest departmentRequest) {
-        DepartmentResponse createdDepartment = departmentService.createDepartment(departmentRequest);
+    public ResponseEntity<DepartmentDetailsResponse> createDepartment(@Valid @RequestBody DepartmentRequest departmentRequest) {
+        DepartmentDetailsResponse createdDepartment = departmentService.createDepartment(departmentRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartment);
     }
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER', 'STUDENT')")
-    public ResponseEntity<List<DepartmentResponse>> getAllDepartments(
+    public ResponseEntity<List<DepartmentDetailsResponse>> getAllDepartments(
             @RequestParam(required = false) String name
     ) {
         if (name != null && !name.isEmpty()) {
-            List<DepartmentResponse> filteredDepartments = departmentService.getDepartmentsByNameContaining(name);
+            List<DepartmentDetailsResponse> filteredDepartments = departmentService.getDepartmentsByNameContaining(name);
             return ResponseEntity.ok(filteredDepartments);
         }
         
-        List<DepartmentResponse> departments = departmentService.getAllDepartments();
+        List<DepartmentDetailsResponse> departments = departmentService.getAllDepartments();
 
         return ResponseEntity.ok(departments);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER', 'STUDENT')")
-    public ResponseEntity<DepartmentResponse> getDepartmentById(@PathVariable Long id) {
+    public ResponseEntity<DepartmentDetailsResponse> getDepartmentById(@PathVariable Long id) {
         return departmentService.getDepartmentById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -54,7 +54,7 @@ public class DepartmentController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<DepartmentResponse> updateDepartment(
+    public ResponseEntity<DepartmentDetailsResponse> updateDepartment(
             @PathVariable Long id,
             @Valid @RequestBody DepartmentUpdateRequest departmentUpdateRequest
     ) {

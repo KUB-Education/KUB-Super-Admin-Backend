@@ -4,10 +4,10 @@ import education.kub.backend.ce.app.exception.model.KubException;
 import education.kub.backend.ce.app.exception.model.KubException.ErrorCode;
 import education.kub.backend.ce.domain.department.entity.DepartmentEntity;
 import education.kub.backend.ce.domain.department.mapper.DepartmentMapper;
+import education.kub.backend.ce.domain.department.model.DepartmentDetailsResponse;
 import education.kub.backend.ce.domain.department.model.DepartmentRequest;
 import education.kub.backend.ce.domain.department.model.DepartmentUpdateRequest;
 import education.kub.backend.ce.domain.department.repository.DepartmentRepository;
-import education.kub.backend.ce.domain.department.model.DepartmentResponse;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class DepartmentService{
 
     private final DepartmentRepository departmentRepository;
 
-    public DepartmentResponse createDepartment(DepartmentRequest departmentRequest) {
+    public DepartmentDetailsResponse createDepartment(DepartmentRequest departmentRequest) {
         if (departmentRepository.existsByName(departmentRequest.name())) {
             throw new KubException(ErrorCode.CONFLICT);
         }
@@ -33,27 +33,27 @@ public class DepartmentService{
 
         DepartmentEntity savedDepartment = departmentRepository.save(newDepartment);
 
-        return departmentMapper.toDepartmentResponse(savedDepartment);
+        return departmentMapper.toDetailsResponse(savedDepartment);
     }
 
-    public List<DepartmentResponse> getAllDepartments() {
-        return departmentMapper.toDepartmentResponseList(departmentRepository.findAll());
+    public List<DepartmentDetailsResponse> getAllDepartments() {
+        return departmentMapper.toDetailsResponseList(departmentRepository.findAll());
     }
 
-    public List<DepartmentResponse> getDepartmentsByNameContaining(String nameSubstring) {
-        return departmentMapper.toDepartmentResponseList(departmentRepository.findByNameContainingIgnoreCase(nameSubstring));
+    public List<DepartmentDetailsResponse> getDepartmentsByNameContaining(String nameSubstring) {
+        return departmentMapper.toDetailsResponseList(departmentRepository.findByNameContainingIgnoreCase(nameSubstring));
     }
 
-    public Optional<DepartmentResponse> getDepartmentById(Long id) {
+    public Optional<DepartmentDetailsResponse> getDepartmentById(Long id) {
         return Optional.of(
-                departmentMapper.toDepartmentResponse(
+                departmentMapper.toDetailsResponse(
                         departmentRepository.findById(id)
                                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND))
                 )
         );
     }
 
-    public Optional<DepartmentResponse> updateDepartment(Long id, DepartmentUpdateRequest departmentUpdateRequest) {
+    public Optional<DepartmentDetailsResponse> updateDepartment(Long id, DepartmentUpdateRequest departmentUpdateRequest) {
         return departmentRepository.findById(id)
                 .map(department -> {
                     if (departmentUpdateRequest.name() != null &&
@@ -68,7 +68,7 @@ public class DepartmentService{
 
                     DepartmentEntity updatedDepartment = departmentRepository.save(department);
 
-                    return departmentMapper.toDepartmentResponse(updatedDepartment);
+                    return departmentMapper.toDetailsResponse(updatedDepartment);
                 });
     }
 
