@@ -49,8 +49,7 @@ public class LecturerService {
 
         // actually create lecturer
         LecturerEntity lecturer = new LecturerEntity();
-//        lecturer.setUser(userRepository.findWithRolesById(user.id()).get()); //////////////////////
-        lecturer.setUser(userRepository.getReferenceById(user.id()));
+        lecturer.setUser(userRepository.findWithRolesById(user.id()).get());
         lecturerRepository.save(lecturer);
         // error in Optional.get() results in Exception -> HTTP 500, it is correct
 
@@ -84,10 +83,6 @@ public class LecturerService {
         return getLecturerFullById(lecturerId);
     }
 
-    public void deleteDepartmentPosition(Long lecturerId, Long departmentId){
-        lecturerDepartmentPositionService.deleteLecturerDepartmentPosition(lecturerId, departmentId);
-    }
-
     public LecturerDetailsResponse addAcademicTitle(Long lecturerId,
                                                     LecturerAddAcademicTitleRequest addRequest) {
         LecturerEntity lecturer = lecturerRepository.findFullEntityById(lecturerId)
@@ -105,6 +100,8 @@ public class LecturerService {
         return lecturerMapper.toDetailsResponse(lecturer);
     }
 
+    // use case: when lecturer updates his academic title from candidate to doctor os science
+    @Transactional
     public LecturerDetailsResponse replaceAcademicTitle(Long lecturerId,
                                                     LecturerReplaceAcademicTitleRequest replaceRequest) {
         LecturerEntity lecturer = lecturerRepository.findFullEntityById(lecturerId)
@@ -117,6 +114,9 @@ public class LecturerService {
         if(!lecturer.hasAcademicTitle(oldAcademicTitle)){
             throw new KubException(KubException.ErrorCode.NOT_FOUND);
         }
+        if(lecturer.hasAcademicTitle(newAcademicTitle)){
+            throw new KubException(KubException.ErrorCode.CONFLICT);
+        }
 
         lecturer.removeAcademicTitle(oldAcademicTitle);
         lecturer.addAcademicTitle(newAcademicTitle);
@@ -125,7 +125,7 @@ public class LecturerService {
         return lecturerMapper.toDetailsResponse(lecturer);
     }
 
-    public void deleteAcademicTitle(Long lecturerId, Long academicTitleId) {
+    public LecturerDetailsResponse deleteAcademicTitle(Long lecturerId, Long academicTitleId) {
         LecturerEntity lecturer = lecturerRepository.findFullEntityById(lecturerId)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
         AcademicTitleEntity academicTitle = academicTitleRepository.findById(academicTitleId)
@@ -137,16 +137,18 @@ public class LecturerService {
 
         lecturer.removeAcademicTitle(academicTitle);
         lecturerRepository.save(lecturer);
+
+        return lecturerMapper.toDetailsResponse(lecturer);
     }
 
     
     public void deleteLecturer(Long id) {
         LecturerEntity lecturer = lecturerRepository.findById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-
         Long userId = lecturer.getUser().getId();
 
         lecturerRepository.delete(lecturer);
-        userService.deleteUser(userId);
+
+        userService.removeUserRole(userId, RoleEntity.Type.LECTURER);
     }
 }
