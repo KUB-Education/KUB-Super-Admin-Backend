@@ -12,13 +12,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Map;
 
+import static education.kub.backend.ce.helpers.attachments.AttachmentBuilder.AttachRequest;
+import static education.kub.backend.ce.helpers.attachments.AttachmentBuilder.AttachResponse;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class RequestExecutor {
+
+    protected MockMvc mvc;
+
      static MockHttpServletRequestBuilder createRequest(Method method, String uri) {
         return switch (method) {
             case GET -> MockMvcRequestBuilders.get(uri);
@@ -64,52 +68,58 @@ public class RequestExecutor {
         return request;
     }
 
-    static String GetAndValidateResponse(MockMvc mvc, MockHttpServletRequestBuilder request,
+    String GetAndValidateResponse(MockHttpServletRequestBuilder request,
                                          HttpStatusCode expectedStatusCode, String JsonValidationSchema) {
         try {
-            var result = mvc.perform(request)
-                    .andDo(print());
+            var response = mvc.perform(request);
+
+            var result = response.andReturn();
+            var result_request = result.getRequest();
+            var result_response = result.getResponse();
+
+            AttachRequest(result_request);
+            AttachResponse(result_response);
 
             if (expectedStatusCode != null) {
-                result.andExpect(status().is(expectedStatusCode.value()));
+                response.andExpect(status().is(expectedStatusCode.value()));
             }
 
             if (JsonValidationSchema != null) {
-                result.andExpect(content().string(matchesJsonSchemaInClasspath(JsonValidationSchema)));
+                response.andExpect(content().string(matchesJsonSchemaInClasspath(JsonValidationSchema)));
             }
 
-            return result.andReturn().getResponse().getContentAsString();
+            return result_response.getContentAsString();
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-     static String ExecuteRequestImpl(MockMvc mvc, Method method, String uri,
-                                        String contentType, MediaType acceptMediaType,
-                                        Map<String, String> request_body,
-                                        Map<String, String> headers,
-                                        HttpStatusCode expectedStatusCode, String JsonValidationSchema) {
+    String ExecuteRequestImpl(Method method, String uri,
+                                String contentType, MediaType acceptMediaType,
+                                Map<String, String> request_body,
+                                Map<String, String> headers,
+                                HttpStatusCode expectedStatusCode, String JsonValidationSchema) {
         MockHttpServletRequestBuilder request = BuildRequest(method, uri, contentType, acceptMediaType, request_body, headers);
-        return GetAndValidateResponse(mvc, request, expectedStatusCode, JsonValidationSchema);
+        return GetAndValidateResponse(request, expectedStatusCode, JsonValidationSchema);
     }
 
-    public static String ExecuteRequest(MockMvc mvc, Method method, String uri,
-                                                       String contentType, MediaType acceptMediaType,
-                                                       Map<String, String> request_body,
-                                                       Map<String, String> headers,
-                                                       HttpStatusCode expectedStatusCode, String JsonValidationSchema) {
+    public String ExecuteRequest(Method method, String uri,
+                                   String contentType, MediaType acceptMediaType,
+                                   Map<String, String> request_body,
+                                   Map<String, String> headers,
+                                   HttpStatusCode expectedStatusCode, String JsonValidationSchema) {
         if (expectedStatusCode == HttpStatus.OK)  {
-            return ExecuteRequestImpl(mvc, method, uri,  contentType, acceptMediaType, request_body,
+            return ExecuteRequestImpl(method, uri,  contentType, acceptMediaType, request_body,
                     headers, expectedStatusCode, JsonValidationSchema);
         }
-        return ExecuteRequestImpl(mvc, method, uri,  contentType, acceptMediaType, request_body,
+        return ExecuteRequestImpl(method, uri,  contentType, acceptMediaType, request_body,
                 headers, expectedStatusCode, null);
     }
 
-    public static String CommonRequest(MockMvc mvc, String uri, Map<String, String> request_body,
+    public String CommonRequest(String uri, Map<String, String> request_body,
                                 Map<String, String> headers, HttpStatusCode expectedStatusCode, String JsonValidationSchema) {
-        return ExecuteRequest(mvc, Method.POST, uri, "application/json", APPLICATION_JSON,
+        return ExecuteRequest(Method.POST, uri, "application/json", APPLICATION_JSON,
                 request_body, headers, expectedStatusCode, JsonValidationSchema);
     }
 }
