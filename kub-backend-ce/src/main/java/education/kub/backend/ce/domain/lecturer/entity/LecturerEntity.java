@@ -22,9 +22,9 @@ public class LecturerEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "user_id")
-    UserEntity user;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private UserEntity user;
 
     @OneToMany(mappedBy = "lecturer", fetch = FetchType.LAZY)
     private Set<LecturerDepartmentPositionEntity> lecturerDepartmentPositions = new HashSet<>();

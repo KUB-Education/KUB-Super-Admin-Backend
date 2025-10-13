@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface LecturerRepository extends JpaRepository<LecturerEntity, Long> {
-    @EntityGraph(attributePaths = {"lecturerDepartmentPositions", "academicTitles"})
+    @EntityGraph(attributePaths = {"user", "lecturerDepartmentPositions", "academicTitles"})
     Optional<LecturerEntity> findFullEntityById(Long id);
 
-    @EntityGraph(attributePaths = {"lecturerDepartmentPositions", "academicTitles"})
+    @EntityGraph(attributePaths = {"user", "lecturerDepartmentPositions", "academicTitles"})
     Optional<LecturerEntity> findFullEntityByUserId(Long userId);
 }
