@@ -1,11 +1,10 @@
 package education.kub.backend.ce.domain.department.service;
 
 import education.kub.backend.ce.app.exception.model.KubException;
-import education.kub.backend.ce.app.exception.model.KubException.ErrorCode;
 import education.kub.backend.ce.domain.department.entity.DepartmentEntity;
 import education.kub.backend.ce.domain.department.mapper.DepartmentMapper;
+import education.kub.backend.ce.domain.department.model.DepartmentCreateRequest;
 import education.kub.backend.ce.domain.department.model.DepartmentDetailsResponse;
-import education.kub.backend.ce.domain.department.model.DepartmentRequest;
 import education.kub.backend.ce.domain.department.model.DepartmentUpdateRequest;
 import education.kub.backend.ce.domain.department.repository.DepartmentRepository;
 
@@ -13,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,61 +21,57 @@ public class DepartmentService{
 
     private final DepartmentRepository departmentRepository;
 
-    public DepartmentDetailsResponse createDepartment(DepartmentRequest departmentRequest) {
-        if (departmentRepository.existsByName(departmentRequest.name())) {
-            throw new KubException(ErrorCode.CONFLICT);
+    public DepartmentDetailsResponse createDepartment(DepartmentCreateRequest departmentCreateRequest) {
+        if (departmentRepository.existsByName(departmentCreateRequest.name())) {
+            throw new KubException(KubException.ErrorCode.CONFLICT);
         }
 
-        DepartmentEntity newDepartment = new DepartmentEntity();
-        newDepartment.setName(departmentRequest.name());
+        var department = new DepartmentEntity();
+        department.setName(departmentCreateRequest.name());
 
-        DepartmentEntity savedDepartment = departmentRepository.save(newDepartment);
+        departmentRepository.save(department);
 
-        return departmentMapper.toDetailsResponse(savedDepartment);
+        return departmentMapper.toDetailsResponse(department);
     }
 
     public List<DepartmentDetailsResponse> getAllDepartments() {
-        return departmentMapper.toDetailsResponseList(departmentRepository.findAll());
+        var departments = departmentRepository.findAll();
+
+        return departmentMapper.toDetailsResponseList(departments);
     }
 
     public List<DepartmentDetailsResponse> getDepartmentsByNameContaining(String nameSubstring) {
-        return departmentMapper.toDetailsResponseList(departmentRepository.findByNameContainingIgnoreCase(nameSubstring));
+        var departments = departmentRepository.findByNameContainingIgnoreCase(nameSubstring);
+
+        return departmentMapper.toDetailsResponseList(departments);
     }
 
-    public Optional<DepartmentDetailsResponse> getDepartmentById(Long id) {
-        return Optional.of(
-                departmentMapper.toDetailsResponse(
-                        departmentRepository.findById(id)
-                                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND))
-                )
-        );
+    public DepartmentDetailsResponse getDepartmentById(Long id) {
+        var department = departmentRepository.findById(id)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        return departmentMapper.toDetailsResponse(department);
     }
 
-    public Optional<DepartmentDetailsResponse> updateDepartment(Long id, DepartmentUpdateRequest departmentUpdateRequest) {
-        return departmentRepository.findById(id)
-                .map(department -> {
-                    if (departmentUpdateRequest.name() != null &&
-                            !department.getName().equals(departmentUpdateRequest.name()) &&
-                            departmentRepository.existsByName(departmentUpdateRequest.name())) {
-                        throw new KubException(ErrorCode.CONFLICT);
-                    }
-
-                    if (departmentUpdateRequest.name() != null) {
-                        department.setName(departmentUpdateRequest.name());
-                    }
-
-                    DepartmentEntity updatedDepartment = departmentRepository.save(department);
-
-                    return departmentMapper.toDetailsResponse(updatedDepartment);
-                });
-    }
-
-    public boolean deleteDepartment(Long id) {
-        if (departmentRepository.existsById(id)) {
-            departmentRepository.deleteById(id);
-            return true;
+    public DepartmentDetailsResponse updateDepartment(Long id, DepartmentUpdateRequest departmentUpdateRequest) {
+        if (departmentRepository.existsByName(departmentUpdateRequest.name())) {
+            throw new KubException(KubException.ErrorCode.CONFLICT);
         }
 
-        return false;
+        var department = departmentRepository.findById(id)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        department.setName(departmentUpdateRequest.name());
+        departmentRepository.save(department);
+
+        return departmentMapper.toDetailsResponse(department);
+    }
+
+    public void deleteDepartment(Long id) {
+        if (!departmentRepository.existsById(id)) {
+            throw new KubException(KubException.ErrorCode.NOT_FOUND);
+        }
+
+        departmentRepository.deleteById(id);
     }
 }

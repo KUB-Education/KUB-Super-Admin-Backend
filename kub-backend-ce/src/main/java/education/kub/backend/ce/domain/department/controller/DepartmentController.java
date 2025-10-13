@@ -1,7 +1,7 @@
 package education.kub.backend.ce.domain.department.controller;
 
+import education.kub.backend.ce.domain.department.model.DepartmentCreateRequest;
 import education.kub.backend.ce.domain.department.model.DepartmentDetailsResponse;
-import education.kub.backend.ce.domain.department.model.DepartmentRequest;
 import education.kub.backend.ce.domain.department.model.DepartmentUpdateRequest;
 import education.kub.backend.ce.domain.department.service.DepartmentService;
 import jakarta.validation.Valid;
@@ -23,14 +23,14 @@ public class DepartmentController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<DepartmentDetailsResponse> createDepartment(@Valid @RequestBody DepartmentRequest departmentRequest) {
-        DepartmentDetailsResponse createdDepartment = departmentService.createDepartment(departmentRequest);
+    public ResponseEntity<DepartmentDetailsResponse> createDepartment(@Valid @RequestBody DepartmentCreateRequest departmentCreateRequest) {
+        DepartmentDetailsResponse createdDepartment = departmentService.createDepartment(departmentCreateRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartment);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER', 'STUDENT')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<List<DepartmentDetailsResponse>> getAllDepartments(
             @RequestParam(required = false) String name
     ) {
@@ -45,11 +45,11 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LECTURER', 'STUDENT')")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<DepartmentDetailsResponse> getDepartmentById(@PathVariable Long id) {
-        return departmentService.getDepartmentById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        var departmentDetails = departmentService.getDepartmentById(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(departmentDetails);
     }
 
     @PutMapping("/{id}")
@@ -58,16 +58,16 @@ public class DepartmentController {
             @PathVariable Long id,
             @Valid @RequestBody DepartmentUpdateRequest departmentUpdateRequest
     ) {
-        return departmentService.updateDepartment(id, departmentUpdateRequest)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        var departmentDetails = departmentService.updateDepartment(id, departmentUpdateRequest);
+
+        return ResponseEntity.status(HttpStatus.OK).body(departmentDetails);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
-        return departmentService.deleteDepartment(id)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        departmentService.deleteDepartment(id);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 }
