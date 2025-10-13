@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.lecturer_department_position.model;
 
-import education.kub.backend.ce.domain.department.model.DepartmentShortDetailsResponse;
+import education.kub.backend.ce.domain.department.model.DepartmentDetailsResponse;
 import education.kub.backend.ce.domain.lecturer_department_position.entity.LecturerDepartmentPositionEntity;
 import education.kub.backend.ce.domain.position.model.PositionDto;
 
@@ -9,7 +9,7 @@ import education.kub.backend.ce.domain.position.model.PositionDto;
 public record DepartmentPositionDto(
         Long id,
 
-        DepartmentShortDetailsResponse department,
+        DepartmentDetailsResponse department,
 
         PositionDto position,
 
