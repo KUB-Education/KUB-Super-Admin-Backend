@@ -88,7 +88,8 @@ public class UserControllerTests extends UserProvider {
 
     @BeforeEach
     public void Setup() {
-        SuiteHierarchyProvider.SetAllureTestHierarhy();
+        SuiteHierarchyProvider.SetAllureTestHierarchy();
+        Allure.suite("Account API Controller Tests");
         CreateUser();
         InitializeMocks();
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -151,8 +152,8 @@ public class UserControllerTests extends UserProvider {
         }
 
         @Test
-        @DisplayName("When request is valid, /api/v1/account/change-password returns 200 and valid response")
-        @Description("When request is valid, /api/v1/account/change-password returns 200 and valid response.")
+        @DisplayName("When request is valid, /api/v1/account/change-password returns 204 and valid response")
+        @Description("When request is valid, /api/v1/account/change-password returns 204 and valid response.")
         public void ChangePasswordSuccess() {
             SetAllureTestSubSuite();
             FirstLogin();

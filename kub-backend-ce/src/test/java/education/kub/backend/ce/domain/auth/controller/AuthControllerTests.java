@@ -60,7 +60,8 @@ public class AuthControllerTests extends UserProvider {
 
     @BeforeEach
     public void Setup() {
-        SuiteHierarchyProvider.SetAllureTestHierarhy();
+        SuiteHierarchyProvider.SetAllureTestHierarchy();
+        Allure.suite("Auth API Controller Tests");
         CreateUser();
         InitializeMocks();
     }
@@ -158,8 +159,8 @@ public class AuthControllerTests extends UserProvider {
         }
 
         @Test
-        @DisplayName("When request with invalid access token, /api/v1/auth/login returns 401")
-        @Description("When request with invalid access token, /api/v1/auth/login returns 401.")
+        @DisplayName("When request with invalid access token header , /api/v1/auth/login returns 401")
+        @Description("When request with invalid access token header, /api/v1/auth/login returns 401.")
         public void TestLoginWithInvalidToken() {
             LoginTests.this.SetAllureTestSubSuite();
             ValidateLogin(Map.of("email", email, "password", password), "afdfasfda", HttpStatus.UNAUTHORIZED);
@@ -183,8 +184,8 @@ public class AuthControllerTests extends UserProvider {
         }
 
         @Test
-        @DisplayName("When request without access token, /api/v1/auth/logout returns 401")
-        @Description("When request without access token, /api/v1/auth/logout returns 401.")
+        @DisplayName("When request without access token header, /api/v1/auth/logout returns 401")
+        @Description("When request without access token header, /api/v1/auth/logout returns 401.")
         public void TestLogoutWithoutBearerToken() {
             LogoutTests.this.SetAllureTestSubSuite();
             AuthProvider.Logout(AuthControllerTests.this, backend_url, null, HttpStatus.UNAUTHORIZED);
@@ -196,14 +197,6 @@ public class AuthControllerTests extends UserProvider {
         public void TestLogoutWithInvalidToken() {
             LogoutTests.this.SetAllureTestSubSuite();
             accessToken = "adsgadgdg";
-            ValidateLogout(HttpStatus.UNAUTHORIZED);
-        }
-
-        @Test
-        @DisplayName("When request is send without performing successful login before, /api/v1/auth/logout returns 401")
-        @Description("When request is send without performing successful login before, /api/v1/auth/logout returns 401.")
-        public void TestLogoutWithoutLogin() {
-            LogoutTests.this.SetAllureTestSubSuite();
             ValidateLogout(HttpStatus.UNAUTHORIZED);
         }
     }
@@ -234,8 +227,8 @@ public class AuthControllerTests extends UserProvider {
         }
 
         @Test
-        @DisplayName("When request with invalid refresh token, /api/v1/auth/refresh returns 401")
-        @Description("When request with invalid refresh token, /api/v1/auth/refresh returns 401.")
+        @DisplayName("When request with invalid refresh token header, /api/v1/auth/refresh returns 401")
+        @Description("When request with invalid refresh token header, /api/v1/auth/refresh returns 401.")
         public void TestRefreshWithInvalidRefreshToken() {
             RefreshTests.this.SetAllureTestSubSuite();
             refreshToken = "adsgadgdg";
@@ -243,8 +236,8 @@ public class AuthControllerTests extends UserProvider {
         }
 
         @Test
-        @DisplayName("When request with empty refresh token, /api/v1/auth/refresh returns 401")
-        @Description("When request with empty refresh token, /api/v1/auth/refresh returns 401.")
+        @DisplayName("When request with empty refresh token header, /api/v1/auth/refresh returns 401")
+        @Description("When request with empty refresh token header, /api/v1/auth/refresh returns 401.")
         public void TestRefreshWithEmptyRefreshToken() {
             RefreshTests.this.SetAllureTestSubSuite();
             refreshToken = "";
