@@ -23,7 +23,7 @@ public class LecturerDepartmentPositionService {
     private final DepartmentRepository departmentRepository;
     private final PositionRepository positionRepository;
     private final LecturerDepartmentPositionRepository lecturerDepartmentPositionRepository;
-    LecturerDepartmentPositionMapper lecturerDepartmentPositionMapper;
+    private final LecturerDepartmentPositionMapper lecturerDepartmentPositionMapper;
 
     public LecturerDepartmentPositionDto createLecturerDepartmentPosition(
             LecturerDepartmentPositionCreateRequest createRequest){
