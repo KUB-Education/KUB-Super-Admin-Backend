@@ -30,9 +30,9 @@ public class UserProvider extends LoginProvider {
     @Autowired
     protected JwtTokenProvider jwtTokenProvider;
 
-    protected void createUser() {
+    protected void CreateUser() {
+        userRepo.deleteAll();
         UserEntity user = new UserEntity();
-        user.setId(id);
         user.setLastName(last_name);
         user.setFirstName(first_name);
         user.setMiddleName(middle_name);
