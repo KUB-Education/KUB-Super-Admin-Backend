@@ -10,6 +10,7 @@ import education.kub.backend.ce.domain.lecturer_department_position.entity.Lectu
 import education.kub.backend.ce.domain.lecturer_department_position.mapper.LecturerDepartmentPositionMapper;
 import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionCreateRequest;
 import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionDto;
+import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionUpdateRequest;
 import education.kub.backend.ce.domain.lecturer_department_position.repository.LecturerDepartmentPositionRepository;
 import education.kub.backend.ce.domain.position.entity.PositionEntity;
 import education.kub.backend.ce.domain.position.repository.PositionRepository;
@@ -26,34 +27,69 @@ public class LecturerDepartmentPositionService {
     private final LecturerDepartmentPositionMapper lecturerDepartmentPositionMapper;
 
     public LecturerDepartmentPositionDto createLecturerDepartmentPosition(
-            LecturerDepartmentPositionCreateRequest createRequest){
+            LecturerDepartmentPositionCreateRequest createRequest
+    ){
+        if(!lecturerRepository.existsById(createRequest.lecturerId())){
+            throw new KubException(KubException.ErrorCode.NOT_FOUND);
+        }
         if(lecturerDepartmentPositionRepository.existsByLecturerIdAndDepartmentId(
                 createRequest.lecturerId(), createRequest.departmentId())){
             throw new KubException(KubException.ErrorCode.CONFLICT);
         }
 
-        LecturerEntity lecturer = lecturerRepository.findById(createRequest.lecturerId())
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+        LecturerEntity lecturerRef = lecturerRepository.getReferenceById(createRequest.lecturerId());
         DepartmentEntity department = departmentRepository.findById(createRequest.departmentId())
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
         PositionEntity position = positionRepository.findById(createRequest.positionId())
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
         LecturerDepartmentPositionEntity lecturerDepartmentPosition = new LecturerDepartmentPositionEntity();
-        lecturerDepartmentPosition.setLecturer(lecturer);
+        lecturerDepartmentPosition.setLecturer(lecturerRef);
         lecturerDepartmentPosition.setDepartment(department);
         lecturerDepartmentPosition.setPosition(position);
-        lecturerDepartmentPosition.setStatus(createRequest.status());
+        lecturerDepartmentPosition.setStatus(LecturerDepartmentPositionEntity.Status.ACTIVE);
+        
         lecturerDepartmentPositionRepository.save(lecturerDepartmentPosition);
 
         return lecturerDepartmentPositionMapper.toDto(lecturerDepartmentPosition);
     }
 
+    public LecturerDepartmentPositionDto updateLecturerDepartmentPosition(
+            Long id, LecturerDepartmentPositionUpdateRequest updateRequest
+    ){
+        LecturerDepartmentPositionEntity lecturerDepartmentPosition =
+                lecturerDepartmentPositionRepository.findById(id)
+                        .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        // update
+        if(updateRequest.status() != null){
+            lecturerDepartmentPosition.setStatus(updateRequest.status());
+        }
+        if(updateRequest.positionId() != null){
+            PositionEntity position = positionRepository.findById(updateRequest.positionId())
+                    .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+            lecturerDepartmentPosition.setPosition(position);
+        }
+
+        lecturerDepartmentPositionRepository.save(lecturerDepartmentPosition);
+
+        return lecturerDepartmentPositionMapper.toDto(lecturerDepartmentPosition);
+    }
+
+    public void deleteLecturerDepartmentPosition(Long id){
+        LecturerDepartmentPositionEntity lecturerDepartmentPosition =
+                lecturerDepartmentPositionRepository.findById(id)
+                        .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        lecturerDepartmentPositionRepository.delete(lecturerDepartmentPosition);
+    }
+
     public void deleteLecturerDepartmentPosition(Long lecturerId, Long departmentId){
-        LecturerDepartmentPositionEntity lecturerDepartmentPositionEntity =
+        LecturerDepartmentPositionEntity lecturerDepartmentPosition =
                 lecturerDepartmentPositionRepository.findByLecturerIdAndDepartmentId(lecturerId, departmentId)
                         .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
-        lecturerDepartmentPositionRepository.delete(lecturerDepartmentPositionEntity);
+        lecturerDepartmentPositionRepository.delete(lecturerDepartmentPosition);
     }
 }

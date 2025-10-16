@@ -7,8 +7,9 @@ import education.kub.backend.ce.domain.lecturer.entity.LecturerEntity;
 import education.kub.backend.ce.domain.lecturer.mapper.LecturerMapper;
 import education.kub.backend.ce.domain.lecturer.model.*;
 import education.kub.backend.ce.domain.lecturer.repository.LecturerRepository;
-import education.kub.backend.ce.domain.lecturer_department_position.entity.LecturerDepartmentPositionEntity;
 import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionCreateRequest;
+import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionUpdateRequest;
+import education.kub.backend.ce.domain.lecturer_department_position.repository.LecturerDepartmentPositionRepository;
 import education.kub.backend.ce.domain.lecturer_department_position.service.LecturerDepartmentPositionService;
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.user.model.UserCreateRequest;
@@ -36,6 +37,8 @@ public class LecturerService {
 
     private final AcademicTitleRepository academicTitleRepository;
 
+    private final LecturerDepartmentPositionRepository lecturerDepartmentPositionRepository;
+
 
     @Transactional
     public LecturerDetailsResponse createLecturer(LecturerCreateRequest lecturerCreateRequest) {
@@ -60,7 +63,7 @@ public class LecturerService {
         return lecturerMapper.toDetailsResponseList(lecturerRepository.findAll());
     }
 
-    public LecturerDetailsResponse getLecturerFullById(Long id) {
+    public LecturerDetailsResponse getLecturerById(Long id) {
         return lecturerMapper.toDetailsResponse(lecturerRepository.findFullEntityById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND)));
     }
@@ -70,17 +73,38 @@ public class LecturerService {
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND)));
     }
 
-
     public LecturerDetailsResponse addDepartmentPosition(Long lecturerId,
                                                          LecturerAddDepartmentPositionRequest addRequest) {
         lecturerDepartmentPositionService.createLecturerDepartmentPosition(new LecturerDepartmentPositionCreateRequest(
                 lecturerId,
                 addRequest.departmentId(),
-                addRequest.positionId(),
-                LecturerDepartmentPositionEntity.Status.ACTIVE
+                addRequest.positionId()
         ));
 
-        return getLecturerFullById(lecturerId);
+        return getLecturerById(lecturerId);
+    }
+
+    public LecturerDetailsResponse updateDepartmentPosition(Long lecturerId, Long departmentPositionId,
+                                                            LecturerDepartmentPositionUpdateRequest updateRequest){
+        // check if given Lecturer has given LecturerDepartmentPosition
+        if(!lecturerDepartmentPositionRepository.existsByIdAndLecturerId(departmentPositionId, lecturerId)){
+            throw new KubException(KubException.ErrorCode.NOT_FOUND);
+        }
+
+        lecturerDepartmentPositionService.updateLecturerDepartmentPosition(departmentPositionId, updateRequest);
+
+        return getLecturerById(lecturerId);
+    }
+
+    public LecturerDetailsResponse deleteDepartmentPosition(Long lecturerId, Long departmentPositionId){
+        // check if given Lecturer has given LecturerDepartmentPosition
+        if(!lecturerDepartmentPositionRepository.existsByIdAndLecturerId(departmentPositionId, lecturerId)){
+            throw new KubException(KubException.ErrorCode.NOT_FOUND);
+        }
+
+        lecturerDepartmentPositionService.deleteLecturerDepartmentPosition(departmentPositionId);
+
+        return getLecturerById(lecturerId);
     }
 
     public LecturerDetailsResponse addAcademicTitle(Long lecturerId,
@@ -100,21 +124,22 @@ public class LecturerService {
         return lecturerMapper.toDetailsResponse(lecturer);
     }
 
-    // use case: when lecturer updates his academic title from candidate to doctor os science
+    // use case: when lecturer updates his academic title from candidate to doctor of science
     @Transactional
-    public LecturerDetailsResponse replaceAcademicTitle(Long lecturerId,
-                                                    LecturerReplaceAcademicTitleRequest replaceRequest) {
+    public LecturerDetailsResponse updateAcademicTitle(Long lecturerId, Long academicTitleId,
+                                                       LecturerUpdateAcademicTitleRequest updateRequest) {
         LecturerEntity lecturer = lecturerRepository.findFullEntityById(lecturerId)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-        AcademicTitleEntity oldAcademicTitle = academicTitleRepository.findById(replaceRequest.oldAcademicTitleId())
+        AcademicTitleEntity oldAcademicTitle = academicTitleRepository.findById(academicTitleId)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-        AcademicTitleEntity newAcademicTitle = academicTitleRepository.findById(replaceRequest.newAcademicTitleId())
+        AcademicTitleEntity newAcademicTitle = academicTitleRepository.findById(updateRequest.newAcademicTitleId())
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
         if(!lecturer.hasAcademicTitle(oldAcademicTitle)){
             throw new KubException(KubException.ErrorCode.NOT_FOUND);
         }
-        if(lecturer.hasAcademicTitle(newAcademicTitle)){
+        if(lecturer.hasAcademicTitle(newAcademicTitle) &&
+                !oldAcademicTitle.equals(newAcademicTitle)){
             throw new KubException(KubException.ErrorCode.CONFLICT);
         }
 
@@ -143,7 +168,7 @@ public class LecturerService {
 
     
     public void deleteLecturer(Long id) {
-        LecturerEntity lecturer = lecturerRepository.findById(id)
+        LecturerEntity lecturer = lecturerRepository.findFullEntityById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
         Long userId = lecturer.getUser().getId();
 

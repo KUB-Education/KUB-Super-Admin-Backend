@@ -2,8 +2,7 @@ package education.kub.backend.ce.domain.lecturer.controller;
 
 import education.kub.backend.ce.domain.lecturer.model.*;
 import education.kub.backend.ce.domain.lecturer.service.LecturerService;
-import education.kub.backend.ce.domain.room.model.RoomDto;
-import education.kub.backend.ce.domain.room.model.RoomUpdateRequest;
+import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,19 +29,19 @@ public class LecturerController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN', 'LECTURER', 'STUDENT')")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<LecturerDetailsResponse>> getAllLecturers() {
         return ResponseEntity.ok(lecturerService.getAllLecturers());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN', 'LECTURER', 'STUDENT')")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<LecturerDetailsResponse> getLecturerById(@PathVariable Long id) {
-        return ResponseEntity.ok(lecturerService.getLecturerFullById(id));
+        return ResponseEntity.ok(lecturerService.getLecturerById(id));
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN', 'LECTURER', 'STUDENT')")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<LecturerDetailsResponse> getLecturerByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(lecturerService.getLecturerByUserId(userId));
     }
@@ -60,6 +59,32 @@ public class LecturerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedLecturer);
     }
 
+    @PutMapping("/{lecturerId}/department-positions/{departmentPositionId}")
+    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
+    public ResponseEntity<LecturerDetailsResponse> updateDepartmentPosition(
+            @PathVariable Long lecturerId,
+            @PathVariable Long departmentPositionId,
+            @Valid @RequestBody LecturerDepartmentPositionUpdateRequest updateRequest
+    ){
+        LecturerDetailsResponse updatedLecturer = lecturerService.updateDepartmentPosition(
+                lecturerId, departmentPositionId, updateRequest);
+
+        return ResponseEntity.ok(updatedLecturer);
+    }
+
+    @DeleteMapping("/{lecturerId}/department-positions/{departmentPositionId}")
+    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
+    public ResponseEntity<LecturerDetailsResponse> deleteDepartmentPosition(
+            @PathVariable Long lecturerId,
+            @PathVariable Long departmentPositionId
+    ){
+        LecturerDetailsResponse updatedLecturer =
+                lecturerService.deleteDepartmentPosition(lecturerId, departmentPositionId);
+
+        return ResponseEntity.ok().body(updatedLecturer);
+    }
+
+
     @PostMapping("/{id}/academic-titles")
     @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
     public ResponseEntity<LecturerDetailsResponse> addAcademicTitle(
@@ -69,6 +94,19 @@ public class LecturerController {
         LecturerDetailsResponse updatedLecturer = lecturerService.addAcademicTitle(id, addRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedLecturer);
+    }
+
+    @PutMapping("/{lecturerId}/academic-titles/{academicTitleId}")
+    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
+    public ResponseEntity<LecturerDetailsResponse> updateAcademicTitle(
+            @PathVariable Long lecturerId,
+            @PathVariable Long academicTitleId,
+            @Valid @RequestBody LecturerUpdateAcademicTitleRequest updateRequest
+    ){
+        LecturerDetailsResponse updatedLecturer = lecturerService.updateAcademicTitle(
+                lecturerId, academicTitleId, updateRequest);
+
+        return ResponseEntity.ok(updatedLecturer);
     }
 
     @DeleteMapping("/{lecturerId}/academic-titles/{academicTitleId}")

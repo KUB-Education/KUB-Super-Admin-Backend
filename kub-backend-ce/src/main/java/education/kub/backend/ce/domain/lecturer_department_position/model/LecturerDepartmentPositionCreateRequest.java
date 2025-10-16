@@ -11,9 +11,6 @@ public record LecturerDepartmentPositionCreateRequest(
         Long departmentId,
 
         @NotNull(message = "position ID can't be null")
-        Long positionId,
-
-        @NotNull(message = "status can't be null")
-        LecturerDepartmentPositionEntity.Status status
+        Long positionId
 ) {
 }

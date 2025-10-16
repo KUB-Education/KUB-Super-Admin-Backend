@@ -11,7 +11,7 @@ public record LecturerDetailsResponse(
 
         UserDetailsResponse user,
 
-        List<DepartmentPositionDto> lecturerDepartmentPositions,
+        List<DepartmentPositionDto> departmentPositions,
 
         List<AcademicTitleDto> academicTitles
 ){

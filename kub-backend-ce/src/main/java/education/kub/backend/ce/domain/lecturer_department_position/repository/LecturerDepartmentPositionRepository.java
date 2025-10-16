@@ -9,5 +9,7 @@ public interface LecturerDepartmentPositionRepository
         extends JpaRepository<LecturerDepartmentPositionEntity, Long> {
     boolean existsByLecturerIdAndDepartmentId(Long lecturerId, Long departmentId);
 
+    boolean existsByIdAndLecturerId(Long id, Long lecturerId);
+
     Optional<LecturerDepartmentPositionEntity> findByLecturerIdAndDepartmentId(Long lecturerId, Long departmentId);
 }
