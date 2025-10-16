@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.educational_program.domain;
 
-import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
+import education.kub.backend.ce.domain.specialty.entity.SpecialtyEntity;
 import education.kub.backend.ce.domain.student_educational_program.domain.StudentEducationalProgramEntity;
 import education.kub.backend.ce.domain.term.domain.TermEntity;
 import jakarta.persistence.*;

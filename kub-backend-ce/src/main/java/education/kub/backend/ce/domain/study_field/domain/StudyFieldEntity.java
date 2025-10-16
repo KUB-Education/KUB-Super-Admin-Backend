@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.study_field.domain;
 
-import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
+import education.kub.backend.ce.domain.specialty.entity.SpecialtyEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
