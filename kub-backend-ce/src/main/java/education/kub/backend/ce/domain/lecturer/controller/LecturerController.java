@@ -19,7 +19,7 @@ public class LecturerController {
     private final LecturerService lecturerService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<LecturerDetailsResponse> createLecturer(
             @Valid @RequestBody LecturerCreateRequest createLecturerRequest
     ){
@@ -46,10 +46,9 @@ public class LecturerController {
         return ResponseEntity.ok(lecturerService.getLecturerByUserId(userId));
     }
 
-
-
+    
     @PostMapping("/{id}/department-positions")
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<LecturerDetailsResponse> addDepartmentPosition(
             @PathVariable Long id,
             @Valid @RequestBody LecturerAddDepartmentPositionRequest addRequest
@@ -60,7 +59,7 @@ public class LecturerController {
     }
 
     @PutMapping("/{lecturerId}/department-positions/{departmentPositionId}")
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<LecturerDetailsResponse> updateDepartmentPosition(
             @PathVariable Long lecturerId,
             @PathVariable Long departmentPositionId,
@@ -73,7 +72,7 @@ public class LecturerController {
     }
 
     @DeleteMapping("/{lecturerId}/department-positions/{departmentPositionId}")
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<LecturerDetailsResponse> deleteDepartmentPosition(
             @PathVariable Long lecturerId,
             @PathVariable Long departmentPositionId
@@ -81,50 +80,37 @@ public class LecturerController {
         LecturerDetailsResponse updatedLecturer =
                 lecturerService.deleteDepartmentPosition(lecturerId, departmentPositionId);
 
-        return ResponseEntity.ok().body(updatedLecturer);
+        return ResponseEntity.ok(updatedLecturer);
     }
 
-
-    @PostMapping("/{id}/academic-titles")
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
-    public ResponseEntity<LecturerDetailsResponse> addAcademicTitle(
-            @PathVariable Long id,
-            @Valid @RequestBody LecturerAddAcademicTitleRequest addRequest
-    ){
-        LecturerDetailsResponse updatedLecturer = lecturerService.addAcademicTitle(id, addRequest);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(updatedLecturer);
-    }
 
     @PutMapping("/{lecturerId}/academic-titles/{academicTitleId}")
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
-    public ResponseEntity<LecturerDetailsResponse> updateAcademicTitle(
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<LecturerDetailsResponse> addAcademicTitle(
             @PathVariable Long lecturerId,
-            @PathVariable Long academicTitleId,
-            @Valid @RequestBody LecturerUpdateAcademicTitleRequest updateRequest
+            @PathVariable Long academicTitleId
     ){
-        LecturerDetailsResponse updatedLecturer = lecturerService.updateAcademicTitle(
-                lecturerId, academicTitleId, updateRequest);
+        LecturerDetailsResponse updatedLecturer = lecturerService.addAcademicTitle(lecturerId, academicTitleId);
 
         return ResponseEntity.ok(updatedLecturer);
     }
 
     @DeleteMapping("/{lecturerId}/academic-titles/{academicTitleId}")
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<LecturerDetailsResponse> deleteAcademicTitle(
             @PathVariable Long lecturerId,
             @PathVariable Long academicTitleId
     ){
         LecturerDetailsResponse updatedLecturer = lecturerService.deleteAcademicTitle(lecturerId, academicTitleId);
 
-        return ResponseEntity.ok().body(updatedLecturer);
+        return ResponseEntity.ok(updatedLecturer);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<Void> deleteLecturer(@PathVariable Long id) {
         lecturerService.deleteLecturer(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

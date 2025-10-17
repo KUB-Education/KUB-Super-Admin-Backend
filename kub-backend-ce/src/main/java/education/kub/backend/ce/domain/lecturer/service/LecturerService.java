@@ -107,11 +107,10 @@ public class LecturerService {
         return getLecturerById(lecturerId);
     }
 
-    public LecturerDetailsResponse addAcademicTitle(Long lecturerId,
-                                                    LecturerAddAcademicTitleRequest addRequest) {
+    public LecturerDetailsResponse addAcademicTitle(Long lecturerId, Long academicTitleId) {
         LecturerEntity lecturer = lecturerRepository.findFullEntityById(lecturerId)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-        AcademicTitleEntity academicTitle = academicTitleRepository.findById(addRequest.academicTitleId())
+        AcademicTitleEntity academicTitle = academicTitleRepository.findById(academicTitleId)
                         .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
         if(lecturer.hasAcademicTitle(academicTitle)){
@@ -119,32 +118,6 @@ public class LecturerService {
         }
 
         lecturer.addAcademicTitle(academicTitle);
-        lecturerRepository.save(lecturer);
-
-        return lecturerMapper.toDetailsResponse(lecturer);
-    }
-
-    // use case: when lecturer updates his academic title from candidate to doctor of science
-    @Transactional
-    public LecturerDetailsResponse updateAcademicTitle(Long lecturerId, Long academicTitleId,
-                                                       LecturerUpdateAcademicTitleRequest updateRequest) {
-        LecturerEntity lecturer = lecturerRepository.findFullEntityById(lecturerId)
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-        AcademicTitleEntity oldAcademicTitle = academicTitleRepository.findById(academicTitleId)
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-        AcademicTitleEntity newAcademicTitle = academicTitleRepository.findById(updateRequest.newAcademicTitleId())
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-
-        if(!lecturer.hasAcademicTitle(oldAcademicTitle)){
-            throw new KubException(KubException.ErrorCode.NOT_FOUND);
-        }
-        if(lecturer.hasAcademicTitle(newAcademicTitle) &&
-                !oldAcademicTitle.equals(newAcademicTitle)){
-            throw new KubException(KubException.ErrorCode.CONFLICT);
-        }
-
-        lecturer.removeAcademicTitle(oldAcademicTitle);
-        lecturer.addAcademicTitle(newAcademicTitle);
         lecturerRepository.save(lecturer);
 
         return lecturerMapper.toDetailsResponse(lecturer);
