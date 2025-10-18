@@ -7,8 +7,8 @@ import education.kub.backend.ce.domain.lecturer.entity.LecturerEntity;
 import education.kub.backend.ce.domain.lecturer.mapper.LecturerMapper;
 import education.kub.backend.ce.domain.lecturer.model.*;
 import education.kub.backend.ce.domain.lecturer.repository.LecturerRepository;
-import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionCreateRequest;
-import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionUpdateRequest;
+import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionCreateDto;
+import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionUpdateDto;
 import education.kub.backend.ce.domain.lecturer_department_position.repository.LecturerDepartmentPositionRepository;
 import education.kub.backend.ce.domain.lecturer_department_position.service.LecturerDepartmentPositionService;
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
@@ -75,7 +75,7 @@ public class LecturerService {
 
     public LecturerDetailsResponse addDepartmentPosition(Long lecturerId,
                                                          LecturerAddDepartmentPositionRequest addRequest) {
-        lecturerDepartmentPositionService.createLecturerDepartmentPosition(new LecturerDepartmentPositionCreateRequest(
+        lecturerDepartmentPositionService.createLecturerDepartmentPosition(new LecturerDepartmentPositionCreateDto(
                 lecturerId,
                 addRequest.departmentId(),
                 addRequest.positionId()
@@ -85,7 +85,7 @@ public class LecturerService {
     }
 
     public LecturerDetailsResponse updateDepartmentPosition(Long lecturerId, Long departmentPositionId,
-                                                            LecturerDepartmentPositionUpdateRequest updateRequest){
+                                                            LecturerDepartmentPositionUpdateDto updateRequest){
         // check if given Lecturer has given LecturerDepartmentPosition
         if(!lecturerDepartmentPositionRepository.existsByIdAndLecturerId(departmentPositionId, lecturerId)){
             throw new KubException(KubException.ErrorCode.NOT_FOUND);

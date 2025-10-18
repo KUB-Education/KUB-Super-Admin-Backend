@@ -1,9 +1,8 @@
 package education.kub.backend.ce.domain.lecturer_department_position.model;
 
-import education.kub.backend.ce.domain.lecturer_department_position.entity.LecturerDepartmentPositionEntity;
 import jakarta.validation.constraints.NotNull;
 
-public record LecturerDepartmentPositionCreateRequest(
+public record LecturerDepartmentPositionCreateDto(
         @NotNull(message = "lecturer ID can't be null")
         Long lecturerId,
 

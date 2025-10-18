@@ -8,9 +8,9 @@ import education.kub.backend.ce.domain.lecturer.entity.LecturerEntity;
 import education.kub.backend.ce.domain.lecturer.repository.LecturerRepository;
 import education.kub.backend.ce.domain.lecturer_department_position.entity.LecturerDepartmentPositionEntity;
 import education.kub.backend.ce.domain.lecturer_department_position.mapper.LecturerDepartmentPositionMapper;
-import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionCreateRequest;
+import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionCreateDto;
 import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionDto;
-import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionUpdateRequest;
+import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionUpdateDto;
 import education.kub.backend.ce.domain.lecturer_department_position.repository.LecturerDepartmentPositionRepository;
 import education.kub.backend.ce.domain.position.entity.PositionEntity;
 import education.kub.backend.ce.domain.position.repository.PositionRepository;
@@ -27,7 +27,7 @@ public class LecturerDepartmentPositionService {
     private final LecturerDepartmentPositionMapper lecturerDepartmentPositionMapper;
 
     public LecturerDepartmentPositionDto createLecturerDepartmentPosition(
-            LecturerDepartmentPositionCreateRequest createRequest
+            LecturerDepartmentPositionCreateDto createRequest
     ){
         if(!lecturerRepository.existsById(createRequest.lecturerId())){
             throw new KubException(KubException.ErrorCode.NOT_FOUND);
@@ -55,7 +55,7 @@ public class LecturerDepartmentPositionService {
     }
 
     public LecturerDepartmentPositionDto updateLecturerDepartmentPosition(
-            Long id, LecturerDepartmentPositionUpdateRequest updateRequest
+            Long id, LecturerDepartmentPositionUpdateDto updateRequest
     ){
         LecturerDepartmentPositionEntity lecturerDepartmentPosition =
                 lecturerDepartmentPositionRepository.findById(id)

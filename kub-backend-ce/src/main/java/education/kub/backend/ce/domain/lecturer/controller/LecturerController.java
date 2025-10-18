@@ -2,7 +2,7 @@ package education.kub.backend.ce.domain.lecturer.controller;
 
 import education.kub.backend.ce.domain.lecturer.model.*;
 import education.kub.backend.ce.domain.lecturer.service.LecturerService;
-import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionUpdateRequest;
+import education.kub.backend.ce.domain.lecturer_department_position.model.LecturerDepartmentPositionUpdateDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -63,7 +63,7 @@ public class LecturerController {
     public ResponseEntity<LecturerDetailsResponse> updateDepartmentPosition(
             @PathVariable Long lecturerId,
             @PathVariable Long departmentPositionId,
-            @Valid @RequestBody LecturerDepartmentPositionUpdateRequest updateRequest
+            @Valid @RequestBody LecturerDepartmentPositionUpdateDto updateRequest
     ){
         LecturerDetailsResponse updatedLecturer = lecturerService.updateDepartmentPosition(
                 lecturerId, departmentPositionId, updateRequest);
