@@ -49,6 +49,12 @@ public class AttachmentBuilder {
     }
 
     static TrTag BuildBodyRowFromString(String body) {
+        if (body.isEmpty()) {
+            return tr(
+                    td("Body"),
+                    td()
+            );
+        }
         try {
             JSONObject json = new JSONObject(body);
             body = json.toString(4);
@@ -107,7 +113,6 @@ public class AttachmentBuilder {
         var method = BuildMethodRow(request.getMethod());
         var headers = BuildHeadersRow(Lists.newArrayList(request.getHeaderNames().asIterator()), request::getHeader);
         var body = BuildBodyRow(request.getContentAsByteArray());
-        var a = BuildAttachment(uri, method, headers, body);
         return BuildAttachment(uri, method, headers, body);
     }
 
