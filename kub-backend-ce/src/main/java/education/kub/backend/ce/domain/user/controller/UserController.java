@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
     public ResponseEntity<List<UserDetailsResponse>> getAllUsers() {
         var users = userService.getUsers();
 
@@ -60,24 +60,24 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
-    @PostMapping("/{id}/add-role")
+    @PutMapping("/{userId}/roles/{roleId}")
     @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
     public ResponseEntity<UserDetailsResponse> addUserRole(
-            @PathVariable Long id,
-            @Valid @RequestBody UserAddRoleRequest userAddRoleRequest
+            @PathVariable Long userId,
+            @PathVariable Long roleId
     ) {
-        var user = userService.addUserRole(id, userAddRoleRequest.type());
+        var user = userService.addUserRoleById(userId, roleId);
 
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
-    @PostMapping("/{id}/remove-role")
+    @DeleteMapping("/{userId}/roles/{roleId}")
     @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
     public ResponseEntity<UserDetailsResponse> removeUserRole(
-            @PathVariable Long id,
-            @Valid @RequestBody UserRemoveRoleRequest userRemoveRoleRequest
+            @PathVariable Long userId,
+            @PathVariable Long roleId
     ) {
-        var user = userService.removeUserRole(id, userRemoveRoleRequest.type());
+        var user = userService.removeUserRoleById(userId, roleId);
 
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
