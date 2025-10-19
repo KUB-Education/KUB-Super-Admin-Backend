@@ -8,11 +8,13 @@ import education.kub.backend.ce.infrastructure.password.service.PasswordService;
 import education.kub.backend.ce.infrastructure.token.provider.JwtTokenProvider;
 import education.kub.backend.ce.infrastructure.token.store.service.TokenStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 
 import static education.kub.backend.ce.domain.user.entity.UserEntity.Status.ACTIVATED;
 
+@Component
 public class UserProvider extends LoginProvider {
 
     protected final long id = 0;
@@ -39,11 +41,6 @@ public class UserProvider extends LoginProvider {
         user.setEmail(email);
         user.setPasswordHashed(passwordService.hash(password));
         user.setStatus(ACTIVATED);
-        user.setTemporaryPasswordHashed(null);
-        user.setTemporaryPasswordExpiresAt(null);
-        user.setCreatedAt(null);
-        user.setUpdatedAt(null);
-        user.setDeletedAt(null);
         var userSet = new HashSet<UserEntity>();
         userSet.add(user);
         RoleEntity role = new RoleEntity(id, RoleEntity.Type.ADMIN, userSet);
