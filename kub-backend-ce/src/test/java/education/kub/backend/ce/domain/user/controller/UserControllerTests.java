@@ -46,7 +46,6 @@ import java.util.Map;
 @ExtendWith(MockitoExtension.class)
 @ComponentScan(basePackages = {"education"})
 @EnableJpaRepositories(basePackages={"education"})
-@AutoConfigureMockMvc
 @TestPropertySource(locations = {"classpath:test.application.properties"})
 public class UserControllerTests extends UserProvider {
 
@@ -188,17 +187,17 @@ public class UserControllerTests extends UserProvider {
         }
 
         @Test
-        @DisplayName("When request body without new password, /api/v1/account/change-password returns 401")
-        @Description("When request body without new password, /api/v1/account/change-password returns 401.")
+        @DisplayName("When request body without new password, /api/v1/account/change-password returns 400")
+        @Description("When request body without new password, /api/v1/account/change-password returns 400.")
         public void ChangePasswordWithoutNewPassword() {
             SetAllureTestSubSuite();
             FirstLogin();
-            ValidateChangePasswordResponse(Map.of("password", password), HttpStatus.BAD_REQUEST);
+            ValidateChangePasswordResponse(Map.of("old_password", password), HttpStatus.BAD_REQUEST);
         }
 
         @Test
-        @DisplayName("When request body with empty new password, /api/v1/account/change-password returns 401")
-        @Description("When request body with empty new password, /api/v1/account/change-password returns 401.")
+        @DisplayName("When request body with empty new password, /api/v1/account/change-password returns 422")
+        @Description("When request body with empty new password, /api/v1/account/change-password returns 422.")
         public void ChangePasswordWithEmptyNewPassword() {
             SetAllureTestSubSuite();
             FirstLogin();
@@ -264,16 +263,16 @@ public class UserControllerTests extends UserProvider {
         }
 
         @Test
-        @DisplayName("When request body with empty email, /api/v1/account/recovery-password returns 401")
-        @Description("When request body with empty email, /api/v1/account/recovery-password returns 401.")
+        @DisplayName("When request body with empty email, /api/v1/account/recovery-password returns 422")
+        @Description("When request body with empty email, /api/v1/account/recovery-password returns 422.")
         public void RecoverPasswordWithEmptyEmail() {
             SetAllureTestSubSuite();
             ValidateRecoverPasswordResponse(Map.of("email", ""), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         @Test
-        @DisplayName("When request body with invalid email, /api/v1/account/recovery-password returns 401")
-        @Description("When request body with invalid email, /api/v1/account/recovery-password returns 401.")
+        @DisplayName("When request body with invalid email, /api/v1/account/recovery-password returns 422")
+        @Description("When request body with invalid email, /api/v1/account/recovery-password returns 422.")
         public void RecoverPasswordWithInvalidEmail() {
             SetAllureTestSubSuite();
             ValidateRecoverPasswordResponse(Map.of("email", "affafdad"), HttpStatus.UNPROCESSABLE_ENTITY);
