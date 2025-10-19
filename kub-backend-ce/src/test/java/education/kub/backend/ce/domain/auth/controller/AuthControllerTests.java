@@ -36,7 +36,6 @@ import java.util.*;
 @ExtendWith(MockitoExtension.class)
 @ComponentScan(basePackages = {"education"})
 @EnableJpaRepositories(basePackages={"education"})
-@AutoConfigureMockMvc
 @TestPropertySource(locations = {"classpath:test.application.properties"})
 public class AuthControllerTests extends UserProvider {
 
