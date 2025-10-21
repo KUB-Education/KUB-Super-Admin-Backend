@@ -21,7 +21,8 @@ public class SpecialtyService {
     private final SpecialtyRepository specialtyRepository;
 
     public SpecialtyDetailsResponse createSpecialty(SpecialtyCreateRequest SpecialtyCreateRequest) {
-        if (specialtyRepository.existsByName(SpecialtyCreateRequest.name())) {
+        if (specialtyRepository.existsByName(SpecialtyCreateRequest.name()) ||
+        specialtyRepository.existsByCode(SpecialtyCreateRequest.code())) {
             throw new KubException(KubException.ErrorCode.CONFLICT);
         }
 
