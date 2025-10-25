@@ -1,0 +1,20 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "LoginResponse",
+    "type": "object",
+    "properties": {
+        "access_token": {
+            "type": "string",
+            "description": "JWT access token."
+        },
+        "refresh_token": {
+            "type": "string",
+            "description": "JWT refresh token."
+        },
+        "first_login": {
+            "type": "boolean",
+            "description": "Indicates if this is the user's first login."
+        }
+    },
+    "required": ["access_token", "refresh_token", "first_login"]
+}
