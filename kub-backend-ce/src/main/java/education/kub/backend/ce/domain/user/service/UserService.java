@@ -54,7 +54,7 @@ public class UserService {
         }
         userRepository.save(user);
 
-        addUserRole(user.getId(), RoleEntity.Type.USER);
+        addUserRoleByType(user.getId(), RoleEntity.Type.USER);
 
         return sendUserPassword(user.getId());
     }
@@ -191,7 +191,21 @@ public class UserService {
         sendUserPassword(user.getId());
     }
 
-    public UserDetailsResponse addUserRole(Long id, RoleEntity.Type type) {
+    public UserDetailsResponse addUserRoleById(Long id, Long roleId) {
+        var user = userRepository.findWithRolesById(id)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        var role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new KubException((KubException.ErrorCode.NOT_FOUND)));
+
+        user.addRole(role);
+
+        userRepository.save(user);
+
+        return userMapper.toDetailsResponse(user);
+    }
+
+    public UserDetailsResponse addUserRoleByType(Long id, RoleEntity.Type type) {
         var user = userRepository.findWithRolesById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
@@ -205,7 +219,21 @@ public class UserService {
         return userMapper.toDetailsResponse(user);
     }
 
-    public UserDetailsResponse removeUserRole(Long id, RoleEntity.Type type) {
+    public UserDetailsResponse removeUserRoleById(Long id, Long roleId) {
+        var user = userRepository.findWithRolesById(id)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        var role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new KubException((KubException.ErrorCode.NOT_FOUND)));
+
+        user.removeRole(role);
+
+        userRepository.save(user);
+
+        return userMapper.toDetailsResponse(user);
+    }
+
+    public UserDetailsResponse removeUserRoleByType(Long id, RoleEntity.Type type) {
         var user = userRepository.findWithRolesById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 

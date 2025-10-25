@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.user.model;
 
-import education.kub.backend.ce.domain.role.model.RoleDto;
+import education.kub.backend.ce.domain.role.model.RoleDetailsResponse;
 import education.kub.backend.ce.domain.user.entity.UserEntity;
 
 import java.util.List;
@@ -18,6 +18,6 @@ public record UserDetailsResponse(
 
         UserEntity.Status status,
 
-        List<RoleDto> roles
+        List<RoleDetailsResponse> roles
 ) {
 }

@@ -51,7 +51,7 @@ public class BootstrapGate {
 //            }
 
             bootstrapTokenHashed.set(tokenHashed);
-            bootstrapTokenHashedExpiresAt.set(Instant.now().plus(15, ChronoUnit.MINUTES));
+            bootstrapTokenHashedExpiresAt.set(Instant.now().plus(1, ChronoUnit.DAYS));
         }
     }
 

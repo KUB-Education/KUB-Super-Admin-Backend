@@ -1,5 +1,6 @@
 package education.kub.backend.ce.app.config;
 
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -16,7 +17,8 @@ public class CorsConfig {
                         .allowedOrigins(
                                 "http://localhost:3000",
                                 "http://localhost:5173",
-                                "https://stage.kub.education"
+                                "https://stage.kub.education",
+                                "http://kub-backend-ce:8090"
                         )
                         .allowedMethods("*")
                         .allowedHeaders("*")
