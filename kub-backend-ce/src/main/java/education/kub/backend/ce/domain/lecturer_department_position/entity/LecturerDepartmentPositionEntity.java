@@ -1,18 +1,19 @@
-package education.kub.backend.ce.domain.department_lecturer.entity;
+package education.kub.backend.ce.domain.lecturer_department_position.entity;
 
 import education.kub.backend.ce.domain.department.entity.DepartmentEntity;
 import education.kub.backend.ce.domain.lecturer.entity.LecturerEntity;
+import education.kub.backend.ce.domain.position.entity.PositionEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "department_lecturers")
+@Table(name = "lecturer_department_positions")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-public class DepartmentLecturerEntity {
+public class LecturerDepartmentPositionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,20 +26,14 @@ public class DepartmentLecturerEntity {
     @JoinColumn(name = "department_id", nullable = false)
     private DepartmentEntity department;
 
-    @Column(name = "position", nullable = false, length=64)
-    @Enumerated(EnumType.STRING)
-    private Position position;
+    @ManyToOne
+    @JoinColumn(name = "position_id", nullable = false)
+    private PositionEntity position;
 
     @Column(name = "status", nullable = false, length=64)
     @Enumerated(EnumType.STRING)
     private Status status;
 
-
-    public enum Position{
-        ASSISTANT,
-        ASSOCIATE_PROFESSOR,
-        PROFESSOR
-    }
 
     public enum Status {
         ACTIVE,
