@@ -48,7 +48,7 @@ public class LecturerService {
                         lecturerCreateRequest.middleName(), lecturerCreateRequest.email()));
 
         // add LECTURER role
-        userService.addUserRole(user.id(), RoleEntity.Type.LECTURER);
+        userService.addUserRoleByType(user.id(), RoleEntity.Type.LECTURER);
 
         // actually create lecturer
         LecturerEntity lecturer = new LecturerEntity();
@@ -147,6 +147,6 @@ public class LecturerService {
 
         lecturerRepository.delete(lecturer);
 
-        userService.removeUserRole(userId, RoleEntity.Type.LECTURER);
+        userService.removeUserRoleByType(userId, RoleEntity.Type.LECTURER);
     }
 }
