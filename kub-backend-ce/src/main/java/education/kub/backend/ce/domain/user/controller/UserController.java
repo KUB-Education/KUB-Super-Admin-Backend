@@ -60,6 +60,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
+    @PostMapping("/{id}/resend")
+    @PreAuthorize("hasAnyAuthority('USER')")
+    public ResponseEntity<UserDetailsResponse> resendUserPassword(@PathVariable Long id) {
+        var user = userService.sendUserPassword(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
     @PutMapping("/{userId}/roles/{roleId}")
     @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
     public ResponseEntity<UserDetailsResponse> addUserRole(
