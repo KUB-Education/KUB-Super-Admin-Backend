@@ -1,8 +1,8 @@
-package education.kub.backend.ce.helpers.providers.mocks.server;
+package education.kub.backend.ce.helpers.providers.mocks.WebMvc;
 
 import education.kub.backend.ce.app.exception.handler.GlobalExceptionHandler;
 import education.kub.backend.ce.app.filter.JwtAuthFilter;
-import education.kub.backend.ce.helpers.providers.global.JacksonMapperProvider;
+import education.kub.backend.ce.helpers.providers.components.JacksonMapperProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
