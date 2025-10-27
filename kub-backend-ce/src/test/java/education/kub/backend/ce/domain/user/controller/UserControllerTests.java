@@ -1,21 +1,16 @@
 package education.kub.backend.ce.domain.user.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import education.kub.backend.ce.app.exception.handler.GlobalExceptionHandler;
 import education.kub.backend.ce.app.filter.JwtAuthFilter;
 import education.kub.backend.ce.app.properties.AppAccountRegistrationProperties;
 import education.kub.backend.ce.domain.auth.controller.AuthController;
 import education.kub.backend.ce.domain.auth.service.AuthService;
-import education.kub.backend.ce.domain.role.repository.RoleRepository;
 import education.kub.backend.ce.domain.user.mapper.UserMapper;
 import education.kub.backend.ce.domain.user.service.UserService;
-import education.kub.backend.ce.helpers.allure.SuiteHierarchyProvider;
-import education.kub.backend.ce.helpers.users.UserProvider;
+import education.kub.backend.ce.helpers.allure.SuiteHierarchy;
+import education.kub.backend.ce.helpers.providers.request_wrappers.user.AccountProvider;
+import education.kub.backend.ce.helpers.providers.components.UserRoleProvider;
+import education.kub.backend.ce.helpers.providers.mocks.WebMvc.MockMvcProvider;
 import education.kub.backend.ce.infrastructure.email.service.EmailService;
-import education.kub.backend.ce.infrastructure.password.service.PasswordService;
-import education.kub.backend.ce.infrastructure.token.provider.JwtTokenProvider;
-import education.kub.backend.ce.infrastructure.token.store.service.TokenStoreService;
 
 import io.qameta.allure.Allure;
 import io.qameta.allure.Description;
@@ -26,18 +21,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Map;
@@ -47,50 +38,37 @@ import java.util.Map;
 @ComponentScan(basePackages = {"education"})
 @EnableJpaRepositories(basePackages={"education"})
 @TestPropertySource(locations = {"classpath:test.application.properties"})
-public class UserControllerTests extends UserProvider {
+public class UserControllerTests extends UserRoleProvider {
 
     private final String new_password = "password";
 
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
     private EmailService emailService;
     @Autowired
-    private PasswordService passwordService;
-    @Autowired
-    private TokenStoreService tokenStoreService;
-    @Autowired
     private AppAccountRegistrationProperties appAccountRegistrationProperties;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    private GlobalExceptionHandler globalExceptionHandler;
-    @Autowired
-    private JwtAuthFilter jwtAuthFilter;
-
-    void InitializeMocks() {
-        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new
-                MappingJackson2HttpMessageConverter();
-        mappingJackson2HttpMessageConverter.setObjectMapper( new ObjectMapper().setPropertyNamingStrategy(namingStrategy));
-        UserService mockUserService = Mockito.spy(new UserService(userMapper,userRepo,roleRepository,emailService,passwordService,
-                tokenStoreService,appAccountRegistrationProperties));
-        mvc = MockMvcBuilders.standaloneSetup(new UserAccountController(mockUserService),
-                        new AuthController(new AuthService(userRepo, passwordService, tokenStoreService, jwtTokenProvider)))
-                .addFilter(jwtAuthFilter)
-                .setControllerAdvice(globalExceptionHandler)
-                .setMessageConverters(mappingJackson2HttpMessageConverter)
-                .build();
+    void initMocks() {
+        mockRepos();
+        mvc = MockMvcProvider.createAndSetupMockMvc(
+                new JwtAuthFilter(jwtTokenProvider, tokenStoreService),
+                new UserAccountController(
+                        new UserService(userMapper,userRepo,roleRepo,emailService,passwordService,
+                                tokenStoreService,appAccountRegistrationProperties)
+                ),
+                new AuthController(
+                        new AuthService(userRepo, passwordService, tokenStoreService, jwtTokenProvider
+                        )
+                )
+        );
     }
 
     @BeforeEach
     public void Setup() {
-        SuiteHierarchyProvider.SetAllureTestHierarchy();
+        SuiteHierarchy.SetAllureTestHierarchy();
         Allure.suite("Account API Controller Tests");
-        CreateUser();
-        InitializeMocks();
+        initMocks();
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

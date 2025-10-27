@@ -1,14 +1,13 @@
 package education.kub.backend.ce.domain.auth.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import education.kub.backend.ce.app.exception.handler.GlobalExceptionHandler;
 import education.kub.backend.ce.app.filter.JwtAuthFilter;
 import education.kub.backend.ce.domain.auth.service.AuthService;
-import education.kub.backend.ce.helpers.allure.SuiteHierarchyProvider;
-import education.kub.backend.ce.helpers.users.UserProvider;
+import education.kub.backend.ce.helpers.allure.SuiteHierarchy;
+import education.kub.backend.ce.helpers.providers.request_wrappers.auth.AuthProvider;
+import education.kub.backend.ce.helpers.providers.components.UserRoleProvider;
 
+import education.kub.backend.ce.helpers.providers.mocks.WebMvc.MockMvcProvider;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Description;
 
@@ -19,16 +18,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.*;
 
@@ -37,32 +32,22 @@ import java.util.*;
 @ComponentScan(basePackages = {"education"})
 @EnableJpaRepositories(basePackages={"education"})
 @TestPropertySource(locations = {"classpath:test.application.properties"})
-public class AuthControllerTests extends UserProvider {
+public class AuthControllerTests extends UserRoleProvider {
 
-    @Autowired
-    private GlobalExceptionHandler globalExceptionHandler;
-    @Autowired
-    private JwtAuthFilter jwtAuthFilter;
-
-    void InitializeMocks() {
-        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new
-                MappingJackson2HttpMessageConverter();
-        mappingJackson2HttpMessageConverter.setObjectMapper( new ObjectMapper().setPropertyNamingStrategy(namingStrategy));
-        mvc = MockMvcBuilders.standaloneSetup(new AuthController(
-                        new AuthService(userRepo, passwordService,
-                                tokenStoreService, jwtTokenProvider)))
-                .addFilter(jwtAuthFilter)
-                .setControllerAdvice(globalExceptionHandler)
-                .setMessageConverters(mappingJackson2HttpMessageConverter)
-                .build();
+    void initMocks() {
+        mockRepos();
+        mvc = MockMvcProvider.createAndSetupMockMvc(new JwtAuthFilter(jwtTokenProvider, tokenStoreService),
+                new AuthController(
+                        new AuthService(userRepo, passwordService, tokenStoreService, jwtTokenProvider)
+                )
+        );
     }
 
     @BeforeEach
     public void Setup() {
-        SuiteHierarchyProvider.SetAllureTestHierarchy();
+        SuiteHierarchy.SetAllureTestHierarchy();
         Allure.suite("Auth API Controller Tests");
-        CreateUser();
-        InitializeMocks();
+        initMocks();
     }
 
     @Step("Logout")
