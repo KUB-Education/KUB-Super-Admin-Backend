@@ -40,7 +40,7 @@ public class StudyFieldController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<StudyFieldDetailsResponse> getStudyFieldById(@PathVariable Long id) {
         return ResponseEntity.ok(studyFieldService.getStudyFieldById(id));
     }

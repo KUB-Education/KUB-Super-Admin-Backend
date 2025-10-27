@@ -53,6 +53,7 @@ public class StudyFieldService {
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
         studyField.setName(request.name());
+        studyField.setCode(request.code());
         studyFieldRepository.save(studyField);
 
         return studyFieldMapper.toDetailsResponse(studyField);
