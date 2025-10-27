@@ -1,4 +1,4 @@
-package education.kub.backend.ce.helpers.providers.global;
+package education.kub.backend.ce.helpers.providers.components;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
