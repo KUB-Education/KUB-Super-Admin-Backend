@@ -2,7 +2,7 @@ package education.kub.backend.ce.helpers.allure;
 
 import io.qameta.allure.Allure;
 
-public class SuiteHierarchyProvider {
+public class SuiteHierarchy {
     public static void SetAllureTestHierarchy() {
         Allure.getLifecycle().updateTestCase(tr -> tr.getLabels().removeIf(
                 label -> "suite".equals(label.getName())));
