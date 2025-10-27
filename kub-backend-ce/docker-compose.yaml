@@ -1,0 +1,66 @@
+services:
+  postgres:
+    # image: cimg/postgres:18.0 # for development
+    image: elestio/postgres:17 # for development
+    # image: postgres:18 # for production
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: kub_education
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ci_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d kub_education"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:8
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis_data:/data
+    networks:
+      - ci_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "admin_password", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # kub-backend-ce:
+  #   image: kildice/kub-backend-ce:v.0.2.3-dev
+  #   container_name: kub-backend-ce
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - ci_network
+  #   volumes:
+  #     - ./config/secrets.properties:/config/secrets.properties:ro
+  #   environment:
+  #     SPRING_CONFIG_IMPORT: optional:file:/config/secrets.properties
+  #   restart: no
+  #   ports:
+  #     - "9999:9999"
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  ci_network:
+    driver: bridge
