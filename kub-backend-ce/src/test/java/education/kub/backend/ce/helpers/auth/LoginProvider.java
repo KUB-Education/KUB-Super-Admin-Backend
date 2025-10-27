@@ -1,7 +1,7 @@
 package education.kub.backend.ce.helpers.auth;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import education.kub.backend.ce.domain.auth.controller.AuthProvider;
+import education.kub.backend.ce.helpers.providers.request_wrappers.auth.AuthProvider;
 import education.kub.backend.ce.helpers.requests.RequestExecutor;
 import io.qameta.allure.Step;
 import io.restassured.path.json.JsonPath;

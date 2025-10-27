@@ -1,4 +1,4 @@
-package education.kub.backend.ce.domain.auth.controller;
+package education.kub.backend.ce.helpers.providers.request_wrappers.auth;
 
 import education.kub.backend.ce.helpers.requests.RequestExecutor;
 import org.springframework.http.HttpStatusCode;

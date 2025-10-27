@@ -1,8 +1,8 @@
-package education.kub.backend.ce.helpers.providers.wrappers;
+package education.kub.backend.ce.helpers.providers.request_wrappers.user;
 
 import education.kub.backend.ce.helpers.requests.RequestExecutor;
 
-import static education.kub.backend.ce.helpers.providers.wrappers.AuthProvider.BearerTokenToMap;
+import static education.kub.backend.ce.helpers.providers.request_wrappers.auth.AuthProvider.BearerTokenToMap;
 
 import io.restassured.http.Method;
 import org.springframework.http.HttpStatusCode;

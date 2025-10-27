@@ -1,4 +1,4 @@
-package education.kub.backend.ce.helpers.providers.wrappers;
+package education.kub.backend.ce.helpers.providers.request_wrappers.auth;
 
 import education.kub.backend.ce.helpers.requests.RequestExecutor;
 import io.qameta.allure.Step;
