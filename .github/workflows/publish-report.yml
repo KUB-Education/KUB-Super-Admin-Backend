@@ -1,0 +1,116 @@
+name: API tests
+
+on:
+  push:
+    branches:
+      - issue-**
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Compose
+        uses: docker/setup-compose-action@v1
+
+      - name: Start container
+        run: |
+          docker compose -f ./kub-backend-ce/docker-compose.yaml up -d
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: "21"
+          distribution: "oracle"
+
+      - name: Restore maven dependencies cache
+        uses: actions/cache/restore@v4
+        id: pom-cache
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+
+      - name: Restore project cache
+        uses: actions/cache/restore@v4
+        id: project-cache
+        with:
+          path: ./kub-backend-ce/target
+          key: ${{ runner.os }}-project-${{ hashFiles('./kub-backend-ce/src/**') }}
+
+      - name: Build tests
+        if: steps.pom-cache.outputs.cache-hit != 'true' ||
+          steps.project-cache.outputs.cache-hit != 'true'
+        run: mvn -f kub-backend-ce test-compile
+
+      - name: Cache compiled project
+        uses: actions/cache/save@v4
+        if: steps.pom-cache.outputs.cache-hit != 'true' ||
+          steps.project-cache.outputs.cache-hit != 'true'
+        with:
+          path: ./kub-backend-ce/target
+          key: ${{ runner.os }}-project-${{ hashFiles('./kub-backend-ce/src/**') }}
+
+      - name: Cache maven dependencies
+        uses: actions/cache/save@v4
+        if: steps.pom-cache.outputs.cache-hit != 'true'
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+
+      - name: Clean allure-results
+        if: steps.maven-cache.outputs.cache-hit != 'true' ||
+          steps.project-cache.outputs.cache-hit == 'true'
+        run: rm -rf ./kub-backend-ce/target/allure-results
+
+      - name: Run tests
+        run: mvn -f kub-backend-ce surefire:test -Dtest="*ControllerTests"
+
+      - name: Stop container
+        run: docker compose down
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: ./kub-backend-ce/target/allure-results
+
+  publish-report:
+    if: always()
+    needs: [ run-tests ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@v1.12
+        if: always()
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+
+      - name: Deploy report to Github Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
