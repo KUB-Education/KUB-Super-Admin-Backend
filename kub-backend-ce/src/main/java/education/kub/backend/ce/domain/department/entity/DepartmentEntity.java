@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.department.entity;
 
-import education.kub.backend.ce.domain.department_lecturer.entity.DepartmentLecturerEntity;
+import education.kub.backend.ce.domain.lecturer_department_position.entity.LecturerDepartmentPositionEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,5 +22,5 @@ public class DepartmentEntity {
     private String name;
 
     @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
-    private Set<DepartmentLecturerEntity> departmentLecturers;
+    private Set<LecturerDepartmentPositionEntity> lecturerDepartmentPositions;
 }

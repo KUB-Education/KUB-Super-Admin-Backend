@@ -15,7 +15,7 @@ public class BootstrapService {
     public UserDetailsResponse createOrganizerUser(UserCreateRequest userCreateRequest) {
         var userDetailsResponse = userService.createUser(userCreateRequest);
 
-        userDetailsResponse = userService.addUserRole(userDetailsResponse.id(), RoleEntity.Type.ORGANIZER);
+        userDetailsResponse = userService.addUserRoleByType(userDetailsResponse.id(), RoleEntity.Type.ORGANIZER);
 
         return userDetailsResponse;
     }

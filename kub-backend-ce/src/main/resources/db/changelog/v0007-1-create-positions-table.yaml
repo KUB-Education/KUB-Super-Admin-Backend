@@ -1,0 +1,89 @@
+databaseChangeLog:
+  - changeSet:
+      id: v0007-1-create-positions-table
+      author: Yaroslav Drovolskyi
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: public
+                tableName: positions
+
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: positions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            schemaName: public
+            tableName: positions
+            columnNames: id
+            constraintName: pk_positions
+
+        - addAutoIncrement:
+            schemaName: public
+            tableName: positions
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+            defaultOnNull: false
+            generationType: ALWAYS
+
+        - addUniqueConstraint:
+            schemaName: public
+            tableName: positions
+            columnNames: name
+            constraintName: unique_positions_name
+
+
+        # add check constrains
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              ALTER TABLE public.positions
+                ADD CONSTRAINT chk_positions_name_not_blank CHECK (TRIM(name) <> ''),
+                ADD CONSTRAINT chk_positions_name CHECK (name IN ('ASSISTANT', 'ASSOCIATE_PROFESSOR', 'PROFESSOR'));
+
+        # populate with initial data
+        - insert:
+            schemaName: public
+            tableName: positions
+            columns:
+              - column:
+                  name: name
+                  value: 'ASSISTANT'
+        - insert:
+            schemaName: public
+            tableName: positions
+            columns:
+              - column:
+                  name: name
+                  value: 'ASSOCIATE_PROFESSOR'
+        - insert:
+            schemaName: public
+            tableName: positions
+            columns:
+              - column:
+                  name: name
+                  value: 'PROFESSOR'
+
+
+      rollback:
+        - dropTable:
+            schemaName: public
+            tableName: positions
+            cascadeConstraints: true

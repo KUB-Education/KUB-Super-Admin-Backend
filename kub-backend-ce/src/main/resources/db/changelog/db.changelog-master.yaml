@@ -14,7 +14,9 @@ databaseChangeLog:
   - include:
       file: db/changelog/v0007-create-departments-table.yaml
   - include:
-      file: db/changelog/v0008-create-department-lecturers-table.yaml
+      file: db/changelog/v0007-1-create-positions-table.yaml
+  - include:
+      file: db/changelog/v0008-create-lecturer-department-positions-table.yaml
   - include:
       file: db/changelog/v0009-create-academic-titles-table.yaml
   - include:

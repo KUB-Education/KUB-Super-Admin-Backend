@@ -1,5 +1,5 @@
 # ===== build stage =====
-ARG JDK_VERSION=17
+ARG JDK_VERSION=25
 FROM maven:3.9-eclipse-temurin-${JDK_VERSION} AS build
 WORKDIR /src
 
