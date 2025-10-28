@@ -16,9 +16,7 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.Description;
 
 import io.qameta.allure.Step;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,7 +32,6 @@ import java.util.*;
 
 import static education.kub.backend.ce.infrastructure.providers.request_wrappers.auth.AuthProvider.RefreshTokenToMap;
 
-@Slf4j
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @ComponentScan(basePackages = {"education"})

@@ -215,7 +215,7 @@ public class UserControllerTests {
         @DisplayName("When request without access token header, /api/v1/account/change-password returns 401")
         @Description("When request without access token header, /api/v1/account/change-password returns 401.")
         public void ChangePasswordWithoutToken() {
-                SetAllureTestSubSuite();
+            SetAllureTestSubSuite();
             ValidateChangePasswordResponse(
                     Map.of("old_password", loginData.password, "new_password", params.new_password),
                     HttpStatus.UNAUTHORIZED
