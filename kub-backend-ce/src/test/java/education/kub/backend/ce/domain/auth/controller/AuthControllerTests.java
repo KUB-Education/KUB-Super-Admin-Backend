@@ -32,6 +32,8 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.util.*;
 
+import static education.kub.backend.ce.infrastructure.providers.request_wrappers.auth.AuthProvider.RefreshTokenToMap;
+
 @Slf4j
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -90,7 +92,7 @@ public class AuthControllerTests {
     }
 
     public void ValidateRefresh(HttpStatusCode expectedStatusCode) {
-        ValidateRefresh(Map.of("refresh_token", loginData.refreshToken), expectedStatusCode);
+        ValidateRefresh(RefreshTokenToMap(loginData.refreshToken), expectedStatusCode);
     }
 
     public void Refresh() {
