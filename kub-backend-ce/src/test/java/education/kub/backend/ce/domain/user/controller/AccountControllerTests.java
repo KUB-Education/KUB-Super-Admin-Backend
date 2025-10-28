@@ -42,7 +42,7 @@ import java.util.Map;
 @ComponentScan(basePackages = {"education"})
 @EnableJpaRepositories(basePackages={"education"})
 @TestPropertySource(locations = {"classpath:test.application.properties"})
-public class UserControllerTests {
+public class AccountControllerTests {
     @Autowired
     private ConnectionProperties conn;
 
@@ -106,12 +106,12 @@ public class UserControllerTests {
     public class AccountMeTests {
 
         void SetAllureTestSubSuite() {
-            Allure.label("subSuite", "/api/v1/account/me");
+            Allure.label("subSuite", "GET /api/v1/account/me");
         }
 
         @Test
-        @DisplayName("When request is valid, /api/v1/account/me returns 200 and valid response")
-        @Description("When request is valid, /api/v1/account/me returns 200 and valid response.")
+        @DisplayName("When request is valid, GET /api/v1/account/me returns 200 and valid response")
+        @Description("When request is valid, GET /api/v1/account/me returns 200 and valid response.")
         public void GetUserAccountInfoSuccess() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -119,16 +119,16 @@ public class UserControllerTests {
         }
 
         @Test
-        @DisplayName("When request without access token header, /api/v1/account/me returns 401")
-        @Description("When request without access token header, /api/v1/account/me returns 401.")
+        @DisplayName("When request without access token header, GET /api/v1/account/me returns 401")
+        @Description("When request without access token header, GET /api/v1/account/me returns 401.")
         public void GetUserAccountInfoWithoutToken() {
             SetAllureTestSubSuite();
             ValidateUserAccountInfoResponse(HttpStatus.UNAUTHORIZED);
         }
 
         @Test
-        @DisplayName("When request without invalid access token header, /api/v1/account/me returns 401")
-        @Description("When request without invalid access token header, /api/v1/account/me returns 401.")
+        @DisplayName("When request without invalid access token header, GET /api/v1/account/me returns 401")
+        @Description("When request without invalid access token header, GET /api/v1/account/me returns 401.")
         public void GetUserAccountInfoWithInvalidToken() {
             SetAllureTestSubSuite();
             loginData.accessToken = "gdagddfgadg";
@@ -140,12 +140,12 @@ public class UserControllerTests {
     public class ChangePasswordTests {
 
         void SetAllureTestSubSuite() {
-            Allure.label("subSuite", "/api/v1/account/change-password");
+            Allure.label("subSuite", "POST /api/v1/account/change-password");
         }
 
         @Test
-        @DisplayName("When request is valid, /api/v1/account/change-password returns 204 and valid response")
-        @Description("When request is valid, /api/v1/account/change-password returns 204 and valid response.")
+        @DisplayName("When request is valid, POST /api/v1/account/change-password returns 204 and valid response")
+        @Description("When request is valid, POST /api/v1/account/change-password returns 204 and valid response.")
         public void ChangePasswordSuccess() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -156,8 +156,8 @@ public class UserControllerTests {
         }
 
         @Test
-        @DisplayName("When request without body, /api/v1/account/change-password returns 400")
-        @Description("When request without body, /api/v1/account/change-password returns 400.")
+        @DisplayName("When request without body, POST /api/v1/account/change-password returns 400")
+        @Description("When request without body, POST /api/v1/account/change-password returns 400.")
         public void ChangePasswordWithoutBody() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -165,8 +165,8 @@ public class UserControllerTests {
         }
 
         @Test
-        @DisplayName("When request with empty body, /api/v1/account/change-password returns 400")
-        @Description("When request with empty body, /api/v1/account/change-password returns 400.")
+        @DisplayName("When request with empty body, POST /api/v1/account/change-password returns 400")
+        @Description("When request with empty body, POST /api/v1/account/change-password returns 400.")
         public void ChangePasswordWithEmptyBody() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -174,8 +174,8 @@ public class UserControllerTests {
         }
 
         @Test
-        @DisplayName("When request body without old password, /api/v1/account/change-password returns 401")
-        @Description("When request body without old password, /api/v1/account/change-password returns 401.")
+        @DisplayName("When request body without old password, POST /api/v1/account/change-password returns 401")
+        @Description("When request body without old password, POST /api/v1/account/change-password returns 401.")
         public void ChangePasswordWithoutOldPassword() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -183,8 +183,8 @@ public class UserControllerTests {
         }
 
         @Test
-        @DisplayName("When request body without new password, /api/v1/account/change-password returns 400")
-        @Description("When request body without new password, /api/v1/account/change-password returns 400.")
+        @DisplayName("When request body without new password, POST /api/v1/account/change-password returns 400")
+        @Description("When request body without new password, POST /api/v1/account/change-password returns 400.")
         public void ChangePasswordWithoutNewPassword() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -192,8 +192,8 @@ public class UserControllerTests {
         }
 
         @Test
-        @DisplayName("When request body with empty new password, /api/v1/account/change-password returns 422")
-        @Description("When request body with empty new password, /api/v1/account/change-password returns 422.")
+        @DisplayName("When request body with empty new password, POST /api/v1/account/change-password returns 422")
+        @Description("When request body with empty new password, POST /api/v1/account/change-password returns 422.")
         public void ChangePasswordWithEmptyNewPassword() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -202,8 +202,8 @@ public class UserControllerTests {
         }
 
         @Test
-        @DisplayName("When request body with empty old password, /api/v1/account/change-password returns 401")
-        @Description("When request body with empty old password, /api/v1/account/change-password returns 401.")
+        @DisplayName("When request body with empty old password, POST /api/v1/account/change-password returns 401")
+        @Description("When request body with empty old password, POST /api/v1/account/change-password returns 401.")
         public void ChangePasswordWithEmptyOldPassword() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -212,8 +212,8 @@ public class UserControllerTests {
         }
 
         @Test
-        @DisplayName("When request without access token header, /api/v1/account/change-password returns 401")
-        @Description("When request without access token header, /api/v1/account/change-password returns 401.")
+        @DisplayName("When request without access token header, POST /api/v1/account/change-password returns 401")
+        @Description("When request without access token header, POST /api/v1/account/change-password returns 401.")
         public void ChangePasswordWithoutToken() {
             SetAllureTestSubSuite();
             ValidateChangePasswordResponse(
@@ -223,8 +223,8 @@ public class UserControllerTests {
         }
 
         @Test
-        @DisplayName("When request with invalid access token header, /api/v1/account/change-password returns 401")
-        @Description("When request with invalid access token header, /api/v1/account/change-password returns 401.")
+        @DisplayName("When request with invalid access token header, POST /api/v1/account/change-password returns 401")
+        @Description("When request with invalid access token header, POST /api/v1/account/change-password returns 401.")
         public void ChangePasswordWithInvalidToken() {
             SetAllureTestSubSuite();
             loginData.accessToken = "gdagddfgadg";
@@ -239,44 +239,44 @@ public class UserControllerTests {
     class PasswordRecoveryTests {
 
         void SetAllureTestSubSuite() {
-            Allure.label("subSuite", "/api/v1/account/recovery-password");
+            Allure.label("subSuite", "POST /api/v1/account/recovery-password");
         }
 
         @Test
-        @DisplayName("When request is valid, /api/v1/account/recovery-password returns 204 and valid response")
-        @Description("When request is valid, /api/v1/account/recovery-password returns 204 and valid response.")
+        @DisplayName("When request is valid, POST /api/v1/account/recovery-password returns 204 and valid response")
+        @Description("When request is valid, POST /api/v1/account/recovery-password returns 204 and valid response.")
         public void RecoverPasswordSuccess() {
             SetAllureTestSubSuite();
             ValidateRecoverPasswordResponse(Map.of("email", loginData.email), HttpStatus.NO_CONTENT);
         }
 
         @Test
-        @DisplayName("When request without body, /api/v1/account/recovery-password returns 400")
-        @Description("When request without body, /api/v1/account/recovery-password returns 400.")
+        @DisplayName("When request without body, POST /api/v1/account/recovery-password returns 400")
+        @Description("When request without body, POST /api/v1/account/recovery-password returns 400.")
         public void RecoverPasswordWithoutBody() {
             SetAllureTestSubSuite();
             ValidateRecoverPasswordResponse(null, HttpStatus.BAD_REQUEST);
         }
 
         @Test
-        @DisplayName("When request with empty body, /api/v1/account/recovery-password returns 400")
-        @Description("When request with empty body, /api/v1/account/recovery-password returns 400.")
+        @DisplayName("When request with empty body, POST /api/v1/account/recovery-password returns 400")
+        @Description("When request with empty body, POST /api/v1/account/recovery-password returns 400.")
         public void RecoverPasswordWithEmptyBody() {
             SetAllureTestSubSuite();
             ValidateRecoverPasswordResponse(Map.of(), HttpStatus.BAD_REQUEST);
         }
 
         @Test
-        @DisplayName("When request body with empty email, /api/v1/account/recovery-password returns 422")
-        @Description("When request body with empty email, /api/v1/account/recovery-password returns 422.")
+        @DisplayName("When request body with empty email, POST /api/v1/account/recovery-password returns 422")
+        @Description("When request body with empty email, POST /api/v1/account/recovery-password returns 422.")
         public void RecoverPasswordWithEmptyEmail() {
             SetAllureTestSubSuite();
             ValidateRecoverPasswordResponse(Map.of("email", ""), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         @Test
-        @DisplayName("When request body with invalid email, /api/v1/account/recovery-password returns 422")
-        @Description("When request body with invalid email, /api/v1/account/recovery-password returns 422.")
+        @DisplayName("When request body with invalid email, POST /api/v1/account/recovery-password returns 422")
+        @Description("When request body with invalid email, POST /api/v1/account/recovery-password returns 422.")
         public void RecoverPasswordWithInvalidEmail() {
             SetAllureTestSubSuite();
             ValidateRecoverPasswordResponse(Map.of("email", "affafdad"), HttpStatus.UNPROCESSABLE_ENTITY);

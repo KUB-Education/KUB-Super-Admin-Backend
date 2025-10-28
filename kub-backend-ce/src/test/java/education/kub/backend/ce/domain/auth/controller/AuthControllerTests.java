@@ -100,20 +100,20 @@ public class AuthControllerTests {
     public class LoginTests {
 
         void SetAllureTestSubSuite() {
-            Allure.label("subSuite", "/api/v1/auth/login");
+            Allure.label("subSuite", "POST /api/v1/auth/login");
         }
 
         @Test
-        @DisplayName("When request is valid, /api/v1/auth/login returns 200 and valid response")
-        @Description("When request is valid, /api/v1/auth/login returns 200 and valid response.")
+        @DisplayName("When request is valid, POST /api/v1/auth/login returns 200 and valid response")
+        @Description("When request is valid, POST /api/v1/auth/login returns 200 and valid response.")
         public void TestLoginSuccess() {
             LoginTests.this.SetAllureTestSubSuite();
             lComponent.FirstLogin();
         }
 
         @Test
-        @DisplayName("When request body with wrong password, /api/v1/auth/login returns 401")
-        @Description("When request body with wrong password, /api/v1/auth/login returns 401.")
+        @DisplayName("When request body with wrong password, POST /api/v1/auth/login returns 401")
+        @Description("When request body with wrong password, POST /api/v1/auth/login returns 401.")
         public void TestLoginWithWrongPassword() {
             LoginTests.this.SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -122,8 +122,8 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request body with wrong email, /api/v1/auth/login returns 401")
-        @Description("When request body with wrong email, /api/v1/auth/login returns 401.")
+        @DisplayName("When request body with wrong email, POST /api/v1/auth/login returns 401")
+        @Description("When request body with wrong email, POST /api/v1/auth/login returns 401.")
         public void TestLoginWithWrongEmail() {
             LoginTests.this.SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -132,8 +132,8 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request body without email, /api/v1/auth/login returns 400")
-        @Description("When request body without email, /api/v1/auth/login returns 400.")
+        @DisplayName("When request body without email, POST /api/v1/auth/login returns 400")
+        @Description("When request body without email, POST /api/v1/auth/login returns 400.")
         public void TestLoginWithoutEmail() {
             LoginTests.this.SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -141,8 +141,8 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request with invalid body, /api/v1/auth/login returns 400")
-        @Description("When request with invalid body, /api/v1/auth/login returns 400.")
+        @DisplayName("When request with invalid body, POST /api/v1/auth/login returns 400")
+        @Description("When request with invalid body, POST /api/v1/auth/login returns 400.")
         public void TestLoginWithInvalidBody() {
             LoginTests.this.SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -151,8 +151,8 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request with empty body, /api/v1/auth/login returns 400")
-        @Description("When request with empty body, /api/v1/auth/login returns 400.")
+        @DisplayName("When request with empty body, POST /api/v1/auth/login returns 400")
+        @Description("When request with empty body, POST /api/v1/auth/login returns 400.")
         public void TestLoginWithEmptyBody() {
             LoginTests.this.SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -160,8 +160,8 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request without body, /api/v1/auth/login returns 400")
-        @Description("When request without body, /api/v1/auth/login returns 400.")
+        @DisplayName("When request without body, POST /api/v1/auth/login returns 400")
+        @Description("When request without body, POST /api/v1/auth/login returns 400.")
         public void TestLoginWithoutBody() {
             LoginTests.this.SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -169,8 +169,8 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request with invalid access token header , /api/v1/auth/login returns 401")
-        @Description("When request with invalid access token header, /api/v1/auth/login returns 401.")
+        @DisplayName("When request with invalid access token header , POST /api/v1/auth/login returns 401")
+        @Description("When request with invalid access token header, POST /api/v1/auth/login returns 401.")
         public void TestLoginWithInvalidToken() {
             LoginTests.this.SetAllureTestSubSuite();
             ValidateLogin(Map.of("email", loginData.email, "password", loginData.password),
@@ -182,12 +182,12 @@ public class AuthControllerTests {
     public class LogoutTests {
 
         void SetAllureTestSubSuite() {
-            Allure.label("subSuite", "/api/v1/auth/logout");
+            Allure.label("subSuite", "POST /api/v1/auth/logout");
         }
 
         @Test
-        @DisplayName("When request is valid, /api/v1/auth/logout returns 204")
-        @Description("When request is valid, /api/v1/auth/logout returns 204.")
+        @DisplayName("When request is valid, POST /api/v1/auth/logout returns 204")
+        @Description("When request is valid, POST /api/v1/auth/logout returns 204.")
         public void TestLogoutSuccess() {
             LogoutTests.this.SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -195,16 +195,16 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request without access token header, /api/v1/auth/logout returns 401")
-        @Description("When request without access token header, /api/v1/auth/logout returns 401.")
+        @DisplayName("When request without access token header, POST /api/v1/auth/logout returns 401")
+        @Description("When request without access token header, POST /api/v1/auth/logout returns 401.")
         public void TestLogoutWithoutBearerToken() {
             LogoutTests.this.SetAllureTestSubSuite();
             ValidateLogout(HttpStatus.UNAUTHORIZED);
         }
 
         @Test
-        @DisplayName("When request with invalid access token, /api/v1/auth/logout returns 401")
-        @Description("When request with invalid access token, /api/v1/auth/logout returns 401.")
+        @DisplayName("When request with invalid access token, POST /api/v1/auth/logout returns 401")
+        @Description("When request with invalid access token, POST /api/v1/auth/logout returns 401.")
         public void TestLogoutWithInvalidToken() {
             LogoutTests.this.SetAllureTestSubSuite();
             loginData.accessToken = "adsgadgdg";
@@ -216,12 +216,12 @@ public class AuthControllerTests {
     public class RefreshTests {
 
         public void SetAllureTestSubSuite() {
-            Allure.label("subSuite", "/api/v1/auth/refresh");
+            Allure.label("subSuite", "POST /api/v1/auth/refresh");
         }
 
         @Test
-        @DisplayName("When request is valid, /api/v1/auth/refresh returns 200")
-        @Description("When request is valid, /api/v1/auth/refresh returns 200.")
+        @DisplayName("When request is valid, POST /api/v1/auth/refresh returns 200")
+        @Description("When request is valid, POST /api/v1/auth/refresh returns 200.")
         public void TestRefreshSuccess() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -229,8 +229,8 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request without body, /api/v1/auth/refresh returns 400")
-        @Description("When request without body, /api/v1/auth/refresh returns 400.")
+        @DisplayName("When request without body, POST /api/v1/auth/refresh returns 400")
+        @Description("When request without body, POST /api/v1/auth/refresh returns 400.")
         public void TestRefreshWithoutBody() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
@@ -238,8 +238,8 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request with invalid refresh token header, /api/v1/auth/refresh returns 401")
-        @Description("When request with invalid refresh token header, /api/v1/auth/refresh returns 401.")
+        @DisplayName("When request with invalid refresh token header, POST /api/v1/auth/refresh returns 401")
+        @Description("When request with invalid refresh token header, POST /api/v1/auth/refresh returns 401.")
         public void TestRefreshWithInvalidRefreshToken() {
             RefreshTests.this.SetAllureTestSubSuite();
             loginData.refreshToken = "adsgadgdg";
@@ -247,8 +247,8 @@ public class AuthControllerTests {
         }
 
         @Test
-        @DisplayName("When request with empty refresh token header, /api/v1/auth/refresh returns 401")
-        @Description("When request with empty refresh token header, /api/v1/auth/refresh returns 401.")
+        @DisplayName("When request with empty refresh token header, POST /api/v1/auth/refresh returns 401")
+        @Description("When request with empty refresh token header, POST /api/v1/auth/refresh returns 401.")
         public void TestRefreshWithEmptyRefreshToken() {
             RefreshTests.this.SetAllureTestSubSuite();
             loginData.refreshToken = "";
