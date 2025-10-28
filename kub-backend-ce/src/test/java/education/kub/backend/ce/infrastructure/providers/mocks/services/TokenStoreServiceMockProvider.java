@@ -1,4 +1,4 @@
-package education.kub.backend.ce.helpers.providers.mocks.services;
+package education.kub.backend.ce.infrastructure.providers.mocks.services;
 
 
 import education.kub.backend.ce.infrastructure.token.store.service.TokenStoreService;

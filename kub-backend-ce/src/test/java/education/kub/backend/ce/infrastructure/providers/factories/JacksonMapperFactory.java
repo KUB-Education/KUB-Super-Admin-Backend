@@ -1,4 +1,4 @@
-package education.kub.backend.ce.helpers.providers.components;
+package education.kub.backend.ce.infrastructure.providers.factories;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -11,7 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @Component
 @TestPropertySource(locations = {"classpath:test.application.properties"})
-public class JacksonMapperProvider {
+public class JacksonMapperFactory {
     private static PropertyNamingStrategy namingStrategy;
 
     @Autowired

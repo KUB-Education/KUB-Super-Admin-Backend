@@ -1,8 +1,8 @@
-package education.kub.backend.ce.helpers.providers.mocks.WebMvc;
+package education.kub.backend.ce.infrastructure.providers.mocks.WebMvc;
 
 import education.kub.backend.ce.app.exception.handler.GlobalExceptionHandler;
 import education.kub.backend.ce.app.filter.JwtAuthFilter;
-import education.kub.backend.ce.helpers.providers.components.JacksonMapperProvider;
+import education.kub.backend.ce.infrastructure.providers.factories.JacksonMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,7 +21,7 @@ public class MockMvcProvider {
         return MockMvcBuilders.standaloneSetup(controllers)
                 .addFilter(filter)
                 .setControllerAdvice(globalExceptionHandler)
-                .setMessageConverters(JacksonMapperProvider.createJacksonMapper())
+                .setMessageConverters(JacksonMapperFactory.createJacksonMapper())
                 .build();
     }
 }

@@ -1,47 +1,48 @@
-package education.kub.backend.ce.helpers.providers.components;
+package education.kub.backend.ce.infrastructure.components.user;
 
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.role.repository.RoleRepository;
 import education.kub.backend.ce.domain.user.entity.UserEntity;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
-import education.kub.backend.ce.helpers.providers.request_wrappers.auth.LoginProvider;
-import education.kub.backend.ce.helpers.providers.mocks.repositories.RoleRepositoryMockProvider;
-import education.kub.backend.ce.helpers.providers.mocks.services.TokenStoreServiceMockProvider;
-import education.kub.backend.ce.helpers.providers.mocks.repositories.UserRepositoryMockProvider;
+
+import education.kub.backend.ce.infrastructure.properties.auth.LoginProperties;
+import education.kub.backend.ce.infrastructure.properties.user.UserProperties;
+import education.kub.backend.ce.infrastructure.providers.mocks.repositories.RoleRepositoryMockProvider;
+import education.kub.backend.ce.infrastructure.providers.mocks.services.TokenStoreServiceMockProvider;
+import education.kub.backend.ce.infrastructure.providers.mocks.repositories.UserRepositoryMockProvider;
+
 import education.kub.backend.ce.infrastructure.password.service.PasswordService;
 import education.kub.backend.ce.infrastructure.token.provider.JwtTokenProvider;
 import education.kub.backend.ce.infrastructure.token.store.service.TokenStoreService;
 
 import static education.kub.backend.ce.domain.user.entity.UserEntity.Status.ACTIVATED;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 
+@Setter
+@Getter
 @Component
-public class UserRoleProvider extends LoginProvider {
-
-    protected final long user_id = 0;
-    protected final long role_id = 0;
-
-
-    protected final String last_name = "Doe";
-    protected final String first_name = "John";
-    protected final String middle_name = "Edward";
-
-    RoleEntity.Type type = RoleEntity.Type.USER;
+public class UserComponent {
+    public LoginProperties loginData;
+    @Autowired
+    public UserProperties userData;
 
     @Autowired
-    protected TokenStoreService tokenStoreService;
+    public TokenStoreService tokenStoreService;
     @Autowired
-    protected UserRepository userRepo;
+    public UserRepository userRepo;
     @Autowired
-    protected RoleRepository roleRepo;
+    public RoleRepository roleRepo;
     @Autowired
-    protected PasswordService passwordService;
+    public PasswordService passwordService;
     @Autowired
-    protected JwtTokenProvider jwtTokenProvider;
+    public JwtTokenProvider jwtTokenProvider;
 
     public void initRepos() {
         roleRepo.deleteAll();
@@ -56,8 +57,8 @@ public class UserRoleProvider extends LoginProvider {
     public void mockRepos() {
         UserEntity user = createUser();
         RoleEntity role = createRole(user);
-        user.setId(user_id);
-        role.setId(role_id);
+        user.setId(userData.id);
+        role.setId(userData.roles.id);
         injectRole(user, role);
         tokenStoreService = TokenStoreServiceMockProvider.createTokenStoreServiceMock();
         userRepo = UserRepositoryMockProvider.createUserRepositoryMock(user);
@@ -68,18 +69,18 @@ public class UserRoleProvider extends LoginProvider {
         var userSet = new HashSet<UserEntity>();
         userSet.add(user);
         var roleEntity = new RoleEntity();
-        roleEntity.setType(type);
+        roleEntity.setType(userData.roles.role);
         roleEntity.setUsers(userSet);
         return roleEntity;
     }
 
     private UserEntity createUser() {
         UserEntity user = new UserEntity();
-        user.setLastName(last_name);
-        user.setFirstName(first_name);
-        user.setMiddleName(middle_name);
-        user.setEmail(email);
-        user.setPasswordHashed(passwordService.hash(password));
+        user.setLastName(userData.last_name);
+        user.setFirstName(userData.first_name);
+        user.setMiddleName(userData.middle_name);
+        user.setEmail(loginData.email);
+        user.setPasswordHashed(passwordService.hash(loginData.password));
         user.setStatus(ACTIVATED);
         return user;
     }

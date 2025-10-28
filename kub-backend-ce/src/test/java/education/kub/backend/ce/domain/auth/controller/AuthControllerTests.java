@@ -3,21 +3,26 @@ package education.kub.backend.ce.domain.auth.controller;
 
 import education.kub.backend.ce.app.filter.JwtAuthFilter;
 import education.kub.backend.ce.domain.auth.service.AuthService;
-import education.kub.backend.ce.helpers.allure.SuiteHierarchy;
-import education.kub.backend.ce.helpers.providers.request_wrappers.auth.AuthProvider;
-import education.kub.backend.ce.helpers.providers.components.UserRoleProvider;
+import education.kub.backend.ce.infrastructure.properties.executor.ConnectionProperties;
+import education.kub.backend.ce.infrastructure.providers.allure.SuiteHierarchy;
+import education.kub.backend.ce.infrastructure.properties.auth.LoginProperties;
+import education.kub.backend.ce.infrastructure.components.auth.LoginComponent;
+import education.kub.backend.ce.infrastructure.providers.request_wrappers.auth.AuthProvider;
+import education.kub.backend.ce.infrastructure.components.user.UserComponent;
 
-import education.kub.backend.ce.helpers.providers.mocks.WebMvc.MockMvcProvider;
+import education.kub.backend.ce.infrastructure.providers.mocks.WebMvc.MockMvcProvider;
+import education.kub.backend.ce.infrastructure.providers.request_wrappers.auth.LoginProvider;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Description;
 
 import io.qameta.allure.Step;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -27,18 +32,32 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.util.*;
 
+@Slf4j
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @ComponentScan(basePackages = {"education"})
 @EnableJpaRepositories(basePackages={"education"})
 @TestPropertySource(locations = {"classpath:test.application.properties"})
-public class AuthControllerTests extends UserRoleProvider {
+public class AuthControllerTests {
+    @Autowired
+    private final ConnectionProperties conn = new ConnectionProperties();
+
+    private final LoginProperties loginData = new LoginProperties();
+
+    private final LoginComponent lComponent = new LoginComponent();
+    @Autowired
+    private UserComponent uComponent;
 
     void initMocks() {
-        mockRepos();
-        mvc = MockMvcProvider.createAndSetupMockMvc(new JwtAuthFilter(jwtTokenProvider, tokenStoreService),
+        loginData.executor.setConn(conn);
+        lComponent.setLoginData(loginData);
+        uComponent.setLoginData(loginData);
+        uComponent.mockRepos();
+        loginData.executor.mvc = MockMvcProvider.createAndSetupMockMvc(
+                new JwtAuthFilter(uComponent.jwtTokenProvider, uComponent.tokenStoreService),
                 new AuthController(
-                        new AuthService(userRepo, passwordService, tokenStoreService, jwtTokenProvider)
+                        new AuthService(uComponent.userRepo, uComponent.passwordService,
+                                uComponent.tokenStoreService, uComponent.jwtTokenProvider)
                 )
         );
     }
@@ -50,27 +69,32 @@ public class AuthControllerTests extends UserRoleProvider {
         initMocks();
     }
 
-    @Step("Logout")
-    public void ValidateLogout(HttpStatusCode expectedStatusCode) {
-        AuthProvider.Logout(this, backend_url, accessToken, expectedStatusCode);
+    @Step("Login")
+    public void ValidateLogin(Map<String, String> request_map, String bearer_token, HttpStatusCode expectedStatusCode) {
+        LoginProvider.ValidateLogin(loginData.executor, request_map, bearer_token, expectedStatusCode);
     }
 
-    public void Logout() {
+    @Step("Logout")
+    public void ValidateLogout(HttpStatusCode expectedStatusCode) {
+        AuthProvider.Logout(loginData, expectedStatusCode);
+    }
+
+    public void ValidateLogout() {
         ValidateLogout(HttpStatus.NO_CONTENT);
     }
 
     @Step("Refresh")
     public void ValidateRefresh(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
-        AuthProvider.Refresh(this, backend_url, request_body, expectedStatusCode,
-                "schemas/RefreshResponse.json");
+        AuthProvider.Refresh(loginData.executor, request_body, expectedStatusCode,
+                "schemas/RefreshResponse.json");;
     }
 
-    public void Refresh(HttpStatusCode expectedStatusCode) {
-        ValidateRefresh(Map.of("refresh_token", refreshToken), expectedStatusCode);
+    public void ValidateRefresh(HttpStatusCode expectedStatusCode) {
+        ValidateRefresh(Map.of("refresh_token", loginData.refreshToken), expectedStatusCode);
     }
 
     public void Refresh() {
-        Refresh(HttpStatus.OK);
+        ValidateRefresh(HttpStatus.OK);
     }
 
     @Nested
@@ -85,7 +109,7 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request is valid, /api/v1/auth/login returns 200 and valid response.")
         public void TestLoginSuccess() {
             LoginTests.this.SetAllureTestSubSuite();
-            FirstLogin();
+            lComponent.FirstLogin();
         }
 
         @Test
@@ -93,8 +117,9 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request body with wrong password, /api/v1/auth/login returns 401.")
         public void TestLoginWithWrongPassword() {
             LoginTests.this.SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateLogin(Map.of("email", email, "password", "dagagdg"), accessToken, HttpStatus.UNAUTHORIZED);
+            lComponent.FirstLogin();
+            ValidateLogin(Map.of("email", loginData.email, "password", "dagagdg"),
+                    loginData.accessToken, HttpStatus.UNAUTHORIZED);
         }
 
         @Test
@@ -102,8 +127,9 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request body with wrong email, /api/v1/auth/login returns 401.")
         public void TestLoginWithWrongEmail() {
             LoginTests.this.SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateLogin(Map.of("email", email, "password", "dagagdg"), accessToken, HttpStatus.UNAUTHORIZED);
+            lComponent.FirstLogin();
+            ValidateLogin(Map.of("email", loginData.email, "password", "dagagdg"), loginData.accessToken,
+                    HttpStatus.UNAUTHORIZED);
         }
 
         @Test
@@ -111,8 +137,8 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request body without email, /api/v1/auth/login returns 400.")
         public void TestLoginWithoutEmail() {
             LoginTests.this.SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateLogin(Map.of("password", "dagagdg"), accessToken, HttpStatus.BAD_REQUEST);
+            lComponent.FirstLogin();
+            ValidateLogin(Map.of("password", "dagagdg"), loginData.accessToken, HttpStatus.BAD_REQUEST);
         }
 
         @Test
@@ -120,8 +146,9 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request with invalid body, /api/v1/auth/login returns 400.")
         public void TestLoginWithInvalidBody() {
             LoginTests.this.SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateLogin(Map.of("afafsfs", email, "fdfdf", password), accessToken, HttpStatus.BAD_REQUEST);
+            lComponent.FirstLogin();
+            ValidateLogin(Map.of("afafsfs", loginData.email, "fdfdf", loginData.password),
+                    loginData.accessToken, HttpStatus.BAD_REQUEST);
         }
 
         @Test
@@ -129,8 +156,8 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request with empty body, /api/v1/auth/login returns 400.")
         public void TestLoginWithEmptyBody() {
             LoginTests.this.SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateLogin(Map.of(), accessToken, HttpStatus.BAD_REQUEST);
+            lComponent.FirstLogin();
+            ValidateLogin(Map.of(), loginData.accessToken, HttpStatus.BAD_REQUEST);
         }
 
         @Test
@@ -138,8 +165,8 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request without body, /api/v1/auth/login returns 400.")
         public void TestLoginWithoutBody() {
             LoginTests.this.SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateLogin(null, accessToken, HttpStatus.BAD_REQUEST);
+            lComponent.FirstLogin();
+            ValidateLogin(null, loginData.accessToken, HttpStatus.BAD_REQUEST);
         }
 
         @Test
@@ -147,7 +174,8 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request with invalid access token header, /api/v1/auth/login returns 401.")
         public void TestLoginWithInvalidToken() {
             LoginTests.this.SetAllureTestSubSuite();
-            ValidateLogin(Map.of("email", email, "password", password), "afdfasfda", HttpStatus.UNAUTHORIZED);
+            ValidateLogin(Map.of("email", loginData.email, "password", loginData.password),
+                    "afdfasfda", HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -163,8 +191,8 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request is valid, /api/v1/auth/logout returns 204.")
         public void TestLogoutSuccess() {
             LogoutTests.this.SetAllureTestSubSuite();
-            FirstLogin();
-            Logout();
+            lComponent.FirstLogin();
+            ValidateLogout();
         }
 
         @Test
@@ -172,7 +200,7 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request without access token header, /api/v1/auth/logout returns 401.")
         public void TestLogoutWithoutBearerToken() {
             LogoutTests.this.SetAllureTestSubSuite();
-            AuthProvider.Logout(AuthControllerTests.this, backend_url, null, HttpStatus.UNAUTHORIZED);
+            ValidateLogout(HttpStatus.UNAUTHORIZED);
         }
 
         @Test
@@ -180,7 +208,7 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request with invalid access token, /api/v1/auth/logout returns 401.")
         public void TestLogoutWithInvalidToken() {
             LogoutTests.this.SetAllureTestSubSuite();
-            accessToken = "adsgadgdg";
+            loginData.accessToken = "adsgadgdg";
             ValidateLogout(HttpStatus.UNAUTHORIZED);
         }
     }
@@ -197,7 +225,7 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request is valid, /api/v1/auth/refresh returns 200.")
         public void TestRefreshSuccess() {
             SetAllureTestSubSuite();
-            FirstLogin();
+            lComponent.FirstLogin();
             Refresh();
         }
 
@@ -206,7 +234,7 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request without body, /api/v1/auth/refresh returns 400.")
         public void TestRefreshWithoutBody() {
             SetAllureTestSubSuite();
-            FirstLogin();
+            lComponent.FirstLogin();
             ValidateRefresh(null, HttpStatus.BAD_REQUEST);
         }
 
@@ -215,8 +243,8 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request with invalid refresh token header, /api/v1/auth/refresh returns 401.")
         public void TestRefreshWithInvalidRefreshToken() {
             RefreshTests.this.SetAllureTestSubSuite();
-            refreshToken = "adsgadgdg";
-            Refresh(HttpStatus.UNAUTHORIZED);
+            loginData.refreshToken = "adsgadgdg";
+            ValidateRefresh(HttpStatus.UNAUTHORIZED);
         }
 
         @Test
@@ -224,8 +252,8 @@ public class AuthControllerTests extends UserRoleProvider {
         @Description("When request with empty refresh token header, /api/v1/auth/refresh returns 401.")
         public void TestRefreshWithEmptyRefreshToken() {
             RefreshTests.this.SetAllureTestSubSuite();
-            refreshToken = "";
-            Refresh(HttpStatus.UNAUTHORIZED);
+            loginData.refreshToken = "";
+            ValidateRefresh(HttpStatus.UNAUTHORIZED);
         }
     }
 }

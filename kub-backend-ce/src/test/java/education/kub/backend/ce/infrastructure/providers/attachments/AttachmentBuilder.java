@@ -1,4 +1,4 @@
-package education.kub.backend.ce.helpers.attachments;
+package education.kub.backend.ce.infrastructure.providers.attachments;
 
 import io.qameta.allure.Attachment;
 import j2html.tags.specialized.TrTag;

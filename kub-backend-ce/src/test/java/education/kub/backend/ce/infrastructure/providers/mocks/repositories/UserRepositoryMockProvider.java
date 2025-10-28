@@ -1,11 +1,10 @@
-package education.kub.backend.ce.helpers.providers.mocks.repositories;
+package education.kub.backend.ce.infrastructure.providers.mocks.repositories;
 
 
 import education.kub.backend.ce.domain.user.entity.UserEntity;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.Optional;
 
 public class UserRepositoryMockProvider {

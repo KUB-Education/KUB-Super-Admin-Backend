@@ -6,10 +6,14 @@ import education.kub.backend.ce.domain.auth.controller.AuthController;
 import education.kub.backend.ce.domain.auth.service.AuthService;
 import education.kub.backend.ce.domain.user.mapper.UserMapper;
 import education.kub.backend.ce.domain.user.service.UserService;
-import education.kub.backend.ce.helpers.allure.SuiteHierarchy;
-import education.kub.backend.ce.helpers.providers.request_wrappers.user.AccountProvider;
-import education.kub.backend.ce.helpers.providers.components.UserRoleProvider;
-import education.kub.backend.ce.helpers.providers.mocks.WebMvc.MockMvcProvider;
+import education.kub.backend.ce.infrastructure.properties.executor.ConnectionProperties;
+import education.kub.backend.ce.infrastructure.providers.allure.SuiteHierarchy;
+import education.kub.backend.ce.infrastructure.properties.user.AccountRequestProperties;
+import education.kub.backend.ce.infrastructure.properties.auth.LoginProperties;
+import education.kub.backend.ce.infrastructure.components.auth.LoginComponent;
+import education.kub.backend.ce.infrastructure.providers.request_wrappers.user.AccountProvider;
+import education.kub.backend.ce.infrastructure.components.user.UserComponent;
+import education.kub.backend.ce.infrastructure.providers.mocks.WebMvc.MockMvcProvider;
 import education.kub.backend.ce.infrastructure.email.service.EmailService;
 
 import io.qameta.allure.Allure;
@@ -38,10 +42,17 @@ import java.util.Map;
 @ComponentScan(basePackages = {"education"})
 @EnableJpaRepositories(basePackages={"education"})
 @TestPropertySource(locations = {"classpath:test.application.properties"})
-public class UserControllerTests extends UserRoleProvider {
+public class UserControllerTests {
+    @Autowired
+    private ConnectionProperties conn;
 
-    private final String new_password = "password";
+    private final LoginProperties loginData = new LoginProperties();
+    @Autowired
+    private UserComponent uComponent;
 
+    private final AccountRequestProperties params = new AccountRequestProperties();
+
+    private final LoginComponent lComponent = new LoginComponent();
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -50,15 +61,19 @@ public class UserControllerTests extends UserRoleProvider {
     private AppAccountRegistrationProperties appAccountRegistrationProperties;
 
     void initMocks() {
-        mockRepos();
-        mvc = MockMvcProvider.createAndSetupMockMvc(
-                new JwtAuthFilter(jwtTokenProvider, tokenStoreService),
+        loginData.executor.setConn(conn);
+        lComponent.setLoginData(loginData);
+        uComponent.setLoginData(loginData);
+        uComponent.mockRepos();
+        loginData.executor.mvc = MockMvcProvider.createAndSetupMockMvc(
+                new JwtAuthFilter(uComponent.jwtTokenProvider, uComponent.tokenStoreService),
                 new UserAccountController(
-                        new UserService(userMapper,userRepo,roleRepo,emailService,passwordService,
-                                tokenStoreService,appAccountRegistrationProperties)
+                        new UserService(userMapper, uComponent.userRepo, uComponent.roleRepo,emailService,
+                                uComponent.passwordService, uComponent.tokenStoreService, appAccountRegistrationProperties)
                 ),
                 new AuthController(
-                        new AuthService(userRepo, passwordService, tokenStoreService, jwtTokenProvider
+                        new AuthService(uComponent.userRepo, uComponent.passwordService,
+                                uComponent.tokenStoreService, uComponent.jwtTokenProvider
                         )
                 )
         );
@@ -74,17 +89,17 @@ public class UserControllerTests extends UserRoleProvider {
 
     @Step("Get account info")
     void ValidateUserAccountInfoResponse(HttpStatusCode expectedStatusCode) {
-        AccountProvider.GetUserAccountInfo(this, backend_url, accessToken, expectedStatusCode);
+        AccountProvider.GetUserAccountInfo(loginData, expectedStatusCode);
     }
 
     @Step("Change password")
     void ValidateChangePasswordResponse(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
-        AccountProvider.ChangePassword(this, backend_url, request_body, accessToken, expectedStatusCode);
+        AccountProvider.ChangePassword(loginData, request_body, expectedStatusCode);
     }
 
     @Step("Recover password")
     void ValidateRecoverPasswordResponse(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
-        AccountProvider.RecoverPassword(this, backend_url, request_body, accessToken, expectedStatusCode);
+        AccountProvider.RecoverPassword(loginData, request_body, expectedStatusCode);
     }
 
     @Nested
@@ -99,7 +114,7 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request is valid, /api/v1/account/me returns 200 and valid response.")
         public void GetUserAccountInfoSuccess() {
             SetAllureTestSubSuite();
-            FirstLogin();
+            lComponent.FirstLogin();
             ValidateUserAccountInfoResponse(HttpStatus.OK);
         }
 
@@ -116,7 +131,7 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request without invalid access token header, /api/v1/account/me returns 401.")
         public void GetUserAccountInfoWithInvalidToken() {
             SetAllureTestSubSuite();
-            accessToken = "gdagddfgadg";
+            loginData.accessToken = "gdagddfgadg";
             ValidateUserAccountInfoResponse(HttpStatus.UNAUTHORIZED);
         }
     }
@@ -133,8 +148,11 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request is valid, /api/v1/account/change-password returns 204 and valid response.")
         public void ChangePasswordSuccess() {
             SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateChangePasswordResponse(Map.of("old_password", password, "new_password", new_password), HttpStatus.NO_CONTENT);
+            lComponent.FirstLogin();
+            ValidateChangePasswordResponse(
+                    Map.of("old_password", loginData.password, "new_password", params.new_password),
+                    HttpStatus.NO_CONTENT
+            );
         }
 
         @Test
@@ -142,7 +160,7 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request without body, /api/v1/account/change-password returns 400.")
         public void ChangePasswordWithoutBody() {
             SetAllureTestSubSuite();
-            FirstLogin();
+            lComponent.FirstLogin();
             ValidateChangePasswordResponse(null, HttpStatus.BAD_REQUEST);
         }
 
@@ -151,7 +169,7 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request with empty body, /api/v1/account/change-password returns 400.")
         public void ChangePasswordWithEmptyBody() {
             SetAllureTestSubSuite();
-            FirstLogin();
+            lComponent.FirstLogin();
             ValidateChangePasswordResponse(Map.of(), HttpStatus.BAD_REQUEST);
         }
 
@@ -160,8 +178,8 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request body without old password, /api/v1/account/change-password returns 401.")
         public void ChangePasswordWithoutOldPassword() {
             SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateChangePasswordResponse(Map.of("new_password", new_password), HttpStatus.UNAUTHORIZED);
+            lComponent.FirstLogin();
+            ValidateChangePasswordResponse(Map.of("new_password", params.new_password), HttpStatus.UNAUTHORIZED);
         }
 
         @Test
@@ -169,8 +187,8 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request body without new password, /api/v1/account/change-password returns 400.")
         public void ChangePasswordWithoutNewPassword() {
             SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateChangePasswordResponse(Map.of("old_password", password), HttpStatus.BAD_REQUEST);
+            lComponent.FirstLogin();
+            ValidateChangePasswordResponse(Map.of("old_password", loginData.password), HttpStatus.BAD_REQUEST);
         }
 
         @Test
@@ -178,8 +196,9 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request body with empty new password, /api/v1/account/change-password returns 422.")
         public void ChangePasswordWithEmptyNewPassword() {
             SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateChangePasswordResponse(Map.of("old_password", password, "new_password", ""), HttpStatus.UNPROCESSABLE_ENTITY);
+            lComponent.FirstLogin();
+            ValidateChangePasswordResponse(Map.of("old_password", loginData.password, "new_password", ""),
+                    HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         @Test
@@ -187,16 +206,20 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request body with empty old password, /api/v1/account/change-password returns 401.")
         public void ChangePasswordWithEmptyOldPassword() {
             SetAllureTestSubSuite();
-            FirstLogin();
-            ValidateChangePasswordResponse(Map.of("old_password", "", "new_password", new_password), HttpStatus.UNAUTHORIZED);
+            lComponent.FirstLogin();
+            ValidateChangePasswordResponse(Map.of("old_password", "", "new_password", params.new_password),
+                    HttpStatus.UNAUTHORIZED);
         }
 
         @Test
         @DisplayName("When request without access token header, /api/v1/account/change-password returns 401")
         @Description("When request without access token header, /api/v1/account/change-password returns 401.")
         public void ChangePasswordWithoutToken() {
-            SetAllureTestSubSuite();
-            ValidateChangePasswordResponse(Map.of("old_password", password, "new_password", new_password), HttpStatus.UNAUTHORIZED);
+                SetAllureTestSubSuite();
+            ValidateChangePasswordResponse(
+                    Map.of("old_password", loginData.password, "new_password", params.new_password),
+                    HttpStatus.UNAUTHORIZED
+            );
         }
 
         @Test
@@ -204,8 +227,11 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request with invalid access token header, /api/v1/account/change-password returns 401.")
         public void ChangePasswordWithInvalidToken() {
             SetAllureTestSubSuite();
-            accessToken = "gdagddfgadg";
-            ValidateChangePasswordResponse(Map.of("old_password", password, "new_password", new_password), HttpStatus.UNAUTHORIZED);
+            loginData.accessToken = "gdagddfgadg";
+            ValidateChangePasswordResponse(
+                    Map.of("old_password", loginData.password, "new_password", params.new_password),
+                    HttpStatus.UNAUTHORIZED
+            );
         }
     }
 
@@ -221,7 +247,7 @@ public class UserControllerTests extends UserRoleProvider {
         @Description("When request is valid, /api/v1/account/recovery-password returns 204 and valid response.")
         public void RecoverPasswordSuccess() {
             SetAllureTestSubSuite();
-            ValidateRecoverPasswordResponse(Map.of("email", email), HttpStatus.NO_CONTENT);
+            ValidateRecoverPasswordResponse(Map.of("email", loginData.email), HttpStatus.NO_CONTENT);
         }
 
         @Test

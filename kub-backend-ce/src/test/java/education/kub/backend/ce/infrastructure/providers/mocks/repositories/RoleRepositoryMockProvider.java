@@ -1,4 +1,4 @@
-package education.kub.backend.ce.helpers.providers.mocks.repositories;
+package education.kub.backend.ce.infrastructure.providers.mocks.repositories;
 
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.role.repository.RoleRepository;

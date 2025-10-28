@@ -1,4 +1,4 @@
-package education.kub.backend.ce.helpers.allure;
+package education.kub.backend.ce.infrastructure.providers.allure;
 
 import io.qameta.allure.Allure;
 
