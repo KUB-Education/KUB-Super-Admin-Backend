@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class ConnectionProperties {
-    @Value("${server.url}")
+    @Value("${test.server.url}")
     public String base_url;
 }
