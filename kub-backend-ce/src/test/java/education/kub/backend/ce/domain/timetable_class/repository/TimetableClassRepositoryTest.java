@@ -12,7 +12,7 @@ import education.kub.backend.ce.domain.selected_subject_activity.domain.Selected
 import education.kub.backend.ce.domain.selected_subject_activity.repository.SelectedSubjectActivityRepository;
 import education.kub.backend.ce.domain.selected_subject_activity_group.domain.SelectedSubjectActivityGroupEntity;
 import education.kub.backend.ce.domain.selected_subject_activity_group.repository.SelectedSubjectActivityGroupRepository;
-import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
+import education.kub.backend.ce.domain.specialty.entity.SpecialtyEntity;
 import education.kub.backend.ce.domain.specialty.repository.SpecialtyRepository;
 import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;
 import education.kub.backend.ce.domain.study_field.repository.StudyFieldRepository;

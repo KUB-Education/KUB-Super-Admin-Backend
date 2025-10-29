@@ -1,4 +1,4 @@
-package education.kub.backend.ce.domain.specialty.domain;
+package education.kub.backend.ce.domain.specialty.entity;
 
 import education.kub.backend.ce.domain.educational_program.domain.EducationalProgramEntity;
 import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;
