@@ -52,7 +52,7 @@ jobs:
 
       - name: Fetch dependencies
         if: steps.pom-cache.outputs.cache-hit != 'true'
-        run: mvn -f ./kub-backend-ce clean install
+        run: mvn -f ./kub-backend-ce clean install -DskipTests
 
       - name: Cache maven dependencies
         uses: actions/cache/save@v4
