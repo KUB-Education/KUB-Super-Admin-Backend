@@ -1,6 +1,5 @@
 package education.kub.backend.ce.domain.specialty.controller;
 
-import education.kub.backend.ce.domain.specialty.model.SpecialtyCreateRequest;
 import education.kub.backend.ce.domain.specialty.model.SpecialtyDetailsResponse;
 import education.kub.backend.ce.domain.specialty.model.SpecialtyUpdateRequest;
 import education.kub.backend.ce.domain.specialty.service.SpecialtyService;
@@ -20,14 +19,6 @@ public class SpecialtyController {
 
     private final SpecialtyService specialtyService;
 
-    @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<SpecialtyDetailsResponse> createSpecialty(@Valid @RequestBody SpecialtyCreateRequest request) {
-        SpecialtyDetailsResponse createdSpecialty = specialtyService.createSpecialty(request);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdSpecialty);
-    }
-
 
     @GetMapping
     @PreAuthorize("hasAuthority('USER')")
@@ -40,17 +31,19 @@ public class SpecialtyController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<SpecialtyDetailsResponse> getSpecialtyById(@PathVariable Long id) {
-        var specialtyDetails = specialtyService.getSpecialtyById(id);
+        var specialty = specialtyService.getSpecialtyById(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(specialtyDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(specialty);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<SpecialtyDetailsResponse> updateSpecialty(@PathVariable Long id, @Valid @RequestBody SpecialtyUpdateRequest request) {
-        var specialtyDetails = specialtyService.updateSpecialty(id, request);
+    public ResponseEntity<SpecialtyDetailsResponse> updateSpecialty(
+            @PathVariable Long id,
+            @Valid @RequestBody SpecialtyUpdateRequest request) {
+        var updatedSpecialty = specialtyService.updateSpecialty(id, request);
 
-        return ResponseEntity.status(HttpStatus.OK).body(specialtyDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedSpecialty);
     }
 
     @DeleteMapping("/{id}")

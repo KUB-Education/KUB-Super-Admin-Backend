@@ -8,7 +8,5 @@ import java.util.List;
 public interface SpecialtyRepository extends JpaRepository<SpecialtyEntity, Long> {
     List<SpecialtyEntity> findByStudyFieldId(Long studyFieldId);
 
-    boolean existsByName(String name);
-
     boolean existsByCode(String code);
 }
