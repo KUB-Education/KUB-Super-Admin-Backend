@@ -1,10 +1,13 @@
 package education.kub.backend.ce.domain.study_field.service;
 
 import education.kub.backend.ce.app.exception.model.KubException;
+import education.kub.backend.ce.domain.specialty.model.SpecialtyDetailsResponse;
+import education.kub.backend.ce.domain.specialty.service.SpecialtyService;
 import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;
 import education.kub.backend.ce.domain.study_field.mapper.StudyFieldMapper;
 import education.kub.backend.ce.domain.study_field.model.StudyFieldCreateRequest;
 import education.kub.backend.ce.domain.study_field.model.StudyFieldDetailsResponse;
+import education.kub.backend.ce.domain.study_field.model.StudyFieldSpecialtyCreateRequest;
 import education.kub.backend.ce.domain.study_field.model.StudyFieldUpdateRequest;
 import education.kub.backend.ce.domain.study_field.repository.StudyFieldRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ public class StudyFieldService {
 
     private final StudyFieldMapper studyFieldMapper;
     private final StudyFieldRepository studyFieldRepository;
+    private final SpecialtyService specialtyService;
 
     public StudyFieldDetailsResponse createStudyField(StudyFieldCreateRequest request) {
         if (studyFieldRepository.existsByCode(request.code())) {
@@ -75,5 +79,22 @@ public class StudyFieldService {
         }
 
         studyFieldRepository.deleteById(id);
+    }
+
+
+    public SpecialtyDetailsResponse createSpecialty(Long studyFieldId,
+                                                    StudyFieldSpecialtyCreateRequest request) {
+        var studyField = studyFieldRepository.findById(studyFieldId)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        return specialtyService.createSpecialty(studyField, request);
+    }
+
+    public List<SpecialtyDetailsResponse> getAllSpecialtiesForStudyField(Long studyFieldId) {
+        if (!studyFieldRepository.existsById(studyFieldId)) {
+            throw new KubException(KubException.ErrorCode.NOT_FOUND);
+        }
+
+        return specialtyService.getAllSpecialitiesForStudyField(studyFieldId);
     }
 }

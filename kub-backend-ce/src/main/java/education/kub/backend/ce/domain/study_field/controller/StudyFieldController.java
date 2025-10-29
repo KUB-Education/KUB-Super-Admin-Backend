@@ -1,5 +1,6 @@
 package education.kub.backend.ce.domain.study_field.controller;
 
+import education.kub.backend.ce.domain.specialty.model.SpecialtyDetailsResponse;
 import education.kub.backend.ce.domain.study_field.model.*;
 import education.kub.backend.ce.domain.study_field.service.StudyFieldService;
 import jakarta.validation.Valid;
@@ -60,4 +61,25 @@ public class StudyFieldController {
         studyFieldService.deleteStudyField(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
+    @PostMapping("/{id}/specialties")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<SpecialtyDetailsResponse> createSpecialtyForStudyField(
+            @PathVariable Long id,
+            @Valid @RequestBody StudyFieldSpecialtyCreateRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(studyFieldService.createSpecialty(id, request));
+    }
+
+    @GetMapping("/{id}/specialties")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<List<SpecialtyDetailsResponse>> getAllSpecialtiesForStudyField(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(studyFieldService.getAllSpecialtiesForStudyField(id));
+    }
+
 }

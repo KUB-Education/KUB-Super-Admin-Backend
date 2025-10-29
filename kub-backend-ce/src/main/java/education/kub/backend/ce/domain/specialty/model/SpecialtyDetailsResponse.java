@@ -5,7 +5,7 @@ import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;
 public record SpecialtyDetailsResponse (
         Long id,
 
-        StudyFieldEntity studyField,
+        Long studyFieldId,
 
         String code,
 
