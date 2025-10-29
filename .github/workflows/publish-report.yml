@@ -13,16 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      server.port: "${{ secrets.SERVER_PORT }}"
+      server.port: "${{ secrets.TESTS_SERVER_PORT }}"
       account-registration.temporary-password-expiration-days: 1
-      security.secret-key: "${{ secrets.SECURITY_KEY }}"
+      security.secret-key: "${{ secrets.TESTS__SECURITY_KEY }}"
       security.access-token-validity-ms: 60000000
       security.refresh-token-validity-ms: 120000000
-      datasource.url: "${{ secrets.DATASOURCE_URL }}"
-      datasource.username: "${{ secrets.DATASOURCE_USER }}"
-      datasource.password: "${{ secrets.DATASOURCE_PASSWORD }}"
+      datasource.url: "${{ secrets.TESTS_DATASOURCE_URL }}"
+      datasource.username: "${{ secrets.TESTS_DATASOURCE_USER }}"
+      datasource.password: "${{ secrets.TESTS_DATASOURCE_PASSWORD }}"
       data.redis.host: localhost
-      data.redis.port: "${{ secrets.REDIS_URL }}"
+      data.redis.port: "${{ secrets.TESTS_REDIS_URL }}"
 
 
     steps:
