@@ -18,6 +18,8 @@ jobs:
       security.secret-key: ${{ secrets.TESTS_WORKFLOW_SECURITY_KEY }}
       security.access-token-validity-ms: 60000000
       security.refresh-token-validity-ms: 120000000
+      smtp.host: localhost
+      smtp.port: 587
       datasource.url: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_URL }}
       datasource.username: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_USER }}
       datasource.password: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_PASSWORD }}
