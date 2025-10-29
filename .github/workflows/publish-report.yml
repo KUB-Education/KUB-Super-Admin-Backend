@@ -13,26 +13,23 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      server.port: ${{ secrets.TESTS_WORKFLOW_SERVER_PORT }}
-      account-registration.temporary-password-expiration-days: 1
-      security.secret-key: ${{ secrets.TESTS_WORKFLOW_SECURITY_KEY }}
-      security.access-token-validity-ms: 60000000
-      security.refresh-token-validity-ms: 120000000
-      smtp.host: localhost
-      smtp.port: 587
-      datasource.url: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_URL }}
-      datasource.username: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_USER }}
-      datasource.password: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_PASSWORD }}
-      data.redis.host: localhost
-      data.redis.port: 6379
+      jdk_version: 25
+      server_port: ${{ secrets.TESTS_WORKFLOW_SERVER_PORT }}
+      account-registration-temporary-password-expiration-days: 1
+      security_secret_key: ${{ secrets.TESTS_WORKFLOW_SECURITY_KEY }}
+      security-access-token-validity-ms: 60000000
+      security-refresh-token-validity-ms: 120000000
+      smtp_host: localhost
+      smtp_port: 587
+      datasource_url: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_URL }}
+      datasource_username: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_USER }}
+      datasource_password: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_PASSWORD }}
+      data_redis_host: localhost
+      data_redis_port: 6379
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Debug application.properties
-        run:
-          cat ./kub-backend-ce/src/main/resources/application.properties
 
       - name: Setup Docker Compose
         uses: docker/setup-compose-action@v1
@@ -40,11 +37,10 @@ jobs:
       - name: Start container
         run: |
           docker compose -f ./kub-backend-ce/docker-compose.yaml up -d
-
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: "25"
+          java-version: "${{ env.jdk_version }}"
           distribution: "oracle"
 
       - name: Restore maven dependencies cache
@@ -53,6 +49,53 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+
+      - name: Fetch dependencies
+        if: steps.pom-cache.outputs.cache-hit != 'true'
+        run: mvn -f ./kub-backend-ce clean install
+
+      - name: Cache maven dependencies
+        uses: actions/cache/save@v4
+        if: steps.pom-cache.outputs.cache-hit != 'true'
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+
+      - name: Substitute enviroment variables
+        uses: datamonsters/replace-action@v2
+        with:
+          files: './kub-backend-ce/src/main/resources/application.properties'
+          replacements:  "${server.port}=${{ env['server_port'] }}, ${account-registration.temporary-password-expiration-days}=${{ env['account-registration-temporary-password-expiration-days'] }}"
+
+      - name: Substitute tokens
+        uses: datamonsters/replace-action@v2
+        with:
+          files: './kub-backend-ce/src/main/resources/application.properties'
+          replacements:  "${security.access-token-validity-ms}=${{ env['security-access-token-validity-ms'] }}, ${security.refresh-token-validity-ms}=${{ env['security-refresh-token-validity-ms'] }}"
+
+      - name: Substitute secret key
+        uses: datamonsters/replace-action@v2
+        with:
+          files: './kub-backend-ce/src/main/resources/application.properties'
+          replacements:  "${security.secret-key}=${{ env['security_secret_key'] }}"
+
+      - name: Substitute smtp variables
+        uses: datamonsters/replace-action@v2
+        with:
+          files: './kub-backend-ce/src/main/resources/application.properties'
+          replacements:  "${smtp.host}=${{ env['smtp_host'] }}, ${smtp.port}=${{ env['smtp_port'] }}"
+
+      - name: Substitute datasource variables
+        uses: datamonsters/replace-action@v2
+        with:
+          files: './kub-backend-ce/src/main/resources/application.properties'
+          replacements:  "${datasource.url}=${{ env['datasource_url'] }}, ${datasource.username}=${{ env['datasource_username'] }}, ${datasource.password}=${{ env['datasource_password'] }}"
+
+      - name: Substitute redis variables
+        uses: datamonsters/replace-action@v2
+        with:
+          files: './kub-backend-ce/src/main/resources/application.properties'
+          replacements:  "${data.redis.host}=${{ env['data_redis_host'] }}, ${data.redis.port}=${{ env['data_redis_port'] }}"
 
       - name: Restore project cache
         uses: actions/cache/restore@v4
@@ -64,9 +107,7 @@ jobs:
       - name: Build tests
         if: steps.pom-cache.outputs.cache-hit != 'true' ||
           steps.project-cache.outputs.cache-hit != 'true'
-        run: |
-          cat ./kub-backend-ce/src/main/resources/application.properties
-          mvn -f kub-backend-ce test-compile
+        run: mvn -f kub-backend-ce test-compile
 
       - name: Cache compiled project
         uses: actions/cache/save@v4
@@ -75,13 +116,6 @@ jobs:
         with:
           path: ./kub-backend-ce/target
           key: ${{ runner.os }}-project-${{ hashFiles('./kub-backend-ce/src/**') }}
-
-      - name: Cache maven dependencies
-        uses: actions/cache/save@v4
-        if: steps.pom-cache.outputs.cache-hit != 'true'
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
       - name: Clean allure-results
         if: steps.maven-cache.outputs.cache-hit != 'true' ||
