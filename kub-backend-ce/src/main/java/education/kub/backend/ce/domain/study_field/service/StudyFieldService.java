@@ -1,7 +1,7 @@
 package education.kub.backend.ce.domain.study_field.service;
 
 import education.kub.backend.ce.app.exception.model.KubException;
-import education.kub.backend.ce.domain.study_field.domain.StudyFieldEntity;
+import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;
 import education.kub.backend.ce.domain.study_field.mapper.StudyFieldMapper;
 import education.kub.backend.ce.domain.study_field.model.StudyFieldCreateRequest;
 import education.kub.backend.ce.domain.study_field.model.StudyFieldDetailsResponse;
@@ -52,8 +52,18 @@ public class StudyFieldService {
         var studyField = studyFieldRepository.findById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
-        studyField.setName(request.name());
-        studyField.setCode(request.code());
+        // update fields
+        if(request.code() != null){
+            if(studyFieldRepository.existsByCode(request.code())){
+                throw new KubException(KubException.ErrorCode.CONFLICT);
+            }
+
+            studyField.setCode(request.code());
+        }
+        if(request.name() != null){
+            studyField.setName(request.name());
+        }
+
         studyFieldRepository.save(studyField);
 
         return studyFieldMapper.toDetailsResponse(studyField);
