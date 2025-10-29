@@ -60,7 +60,9 @@ jobs:
       - name: Build tests
         if: steps.pom-cache.outputs.cache-hit != 'true' ||
           steps.project-cache.outputs.cache-hit != 'true'
-        run: mvn -f kub-backend-ce test-compile
+        run: |
+          cat ./kub-backend-ce/src/main/resources/application.properties
+          mvn -f kub-backend-ce test-compile
 
       - name: Cache compiled project
         uses: actions/cache/save@v4
