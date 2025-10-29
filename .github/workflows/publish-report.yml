@@ -22,7 +22,7 @@ jobs:
       datasource.username: ${{ secrets.tests_workflow_datasource_user }}
       datasource.password: ${{ secrets.tests_workflow_datasource_password }}
       data.redis.host: localhost
-      data.redis.port: ${{ secrets.tests_workflow_datasource_redis_url }}
+      data.redis.port: 6379
 
     steps:
       - name: Check out repository
