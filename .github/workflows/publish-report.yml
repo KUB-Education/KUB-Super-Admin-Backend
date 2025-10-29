@@ -30,6 +30,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Debug application.properties
+        run:
+          cat ./kub-backend-ce/src/main/resources/application.properties
+
       - name: Setup Docker Compose
         uses: docker/setup-compose-action@v1
 
