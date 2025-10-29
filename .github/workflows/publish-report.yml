@@ -13,17 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      server.port: "${{ secrets.TESTS_SERVER_PORT }}"
+      server.port: ${{ secrets.tests_workflow_server_port }}
       account-registration.temporary-password-expiration-days: 1
-      security.secret-key: "${{ secrets.TESTS__SECURITY_KEY }}"
+      security.secret-key: ${{ secrets.tests_workflow_security_key }}
       security.access-token-validity-ms: 60000000
       security.refresh-token-validity-ms: 120000000
-      datasource.url: "${{ secrets.TESTS_DATASOURCE_URL }}"
-      datasource.username: "${{ secrets.TESTS_DATASOURCE_USER }}"
-      datasource.password: "${{ secrets.TESTS_DATASOURCE_PASSWORD }}"
+      datasource.url: ${{ secrets.tests_workflow_datasource_url }}
+      datasource.username: ${{ secrets.tests_workflow_datasource_user }}
+      datasource.password: ${{ secrets.tests_workflow_datasource_password }}
       data.redis.host: localhost
-      data.redis.port: "${{ secrets.TESTS_REDIS_URL }}"
-
+      data.redis.port: ${{ secrets.tests_workflow_datasource_redis_url }}
 
     steps:
       - name: Check out repository
