@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.educational_program.repository;
 
-import education.kub.backend.ce.domain.educational_program.domain.EducationalProgramEntity;
+import education.kub.backend.ce.domain.educational_program.entity.EducationalProgramEntity;
 import education.kub.backend.ce.domain.specialty.entity.SpecialtyEntity;
 import education.kub.backend.ce.domain.specialty.repository.SpecialtyRepository;
 import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;

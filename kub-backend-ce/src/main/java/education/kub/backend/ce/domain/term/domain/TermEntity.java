@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.term.domain;
 
-import education.kub.backend.ce.domain.educational_program.domain.EducationalProgramEntity;
+import education.kub.backend.ce.domain.educational_program.entity.EducationalProgramEntity;
 import education.kub.backend.ce.domain.subject.domain.SubjectEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;

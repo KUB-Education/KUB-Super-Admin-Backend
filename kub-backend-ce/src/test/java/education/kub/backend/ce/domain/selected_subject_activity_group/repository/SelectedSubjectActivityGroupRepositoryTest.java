@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.selected_subject_activity_group.repository;
 
-import education.kub.backend.ce.domain.educational_program.domain.EducationalProgramEntity;
+import education.kub.backend.ce.domain.educational_program.entity.EducationalProgramEntity;
 import education.kub.backend.ce.domain.educational_program.repository.EducationalProgramRepository;
 import education.kub.backend.ce.domain.group.domain.GroupEntity;
 import education.kub.backend.ce.domain.group.repository.GroupRepository;

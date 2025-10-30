@@ -1,7 +1,7 @@
 package education.kub.backend.ce.domain.student_educational_program.domain;
 
 
-import education.kub.backend.ce.domain.educational_program.domain.EducationalProgramEntity;
+import education.kub.backend.ce.domain.educational_program.entity.EducationalProgramEntity;
 import education.kub.backend.ce.domain.student.entity.StudentEntity;
 import jakarta.persistence.*;
 import lombok.*;
