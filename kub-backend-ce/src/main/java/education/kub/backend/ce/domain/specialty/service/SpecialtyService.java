@@ -41,11 +41,6 @@ public class SpecialtyService {
         return specialtyMapper.toDetailsResponse(specialty);
     }
 
-    public List<SpecialtyDetailsResponse> getAllSpecialitiesForStudyField(Long studyFieldId) {
-        return specialtyMapper.toDetailsResponseList(
-                specialtyRepository.findByStudyFieldId(studyFieldId));
-    }
-
     public List<SpecialtyDetailsResponse> getAllSpecialties() {
         return specialtyMapper.toDetailsResponseList(specialtyRepository.findAll());
     }

@@ -30,7 +30,7 @@ public class StudyFieldController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<List<StudyFieldDetailsResponse>> getAllStudyFields(
             @RequestParam(required = false) String name
     ) {
@@ -75,7 +75,7 @@ public class StudyFieldController {
     }
 
     @GetMapping("/{id}/specialties")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<List<SpecialtyDetailsResponse>> getAllSpecialtiesForStudyField(
             @PathVariable Long id
     ) {

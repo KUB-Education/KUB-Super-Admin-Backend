@@ -1,6 +1,7 @@
 package education.kub.backend.ce.domain.study_field.service;
 
 import education.kub.backend.ce.app.exception.model.KubException;
+import education.kub.backend.ce.domain.specialty.mapper.SpecialtyMapper;
 import education.kub.backend.ce.domain.specialty.model.SpecialtyDetailsResponse;
 import education.kub.backend.ce.domain.specialty.service.SpecialtyService;
 import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;
@@ -22,6 +23,7 @@ public class StudyFieldService {
     private final StudyFieldMapper studyFieldMapper;
     private final StudyFieldRepository studyFieldRepository;
     private final SpecialtyService specialtyService;
+    private final SpecialtyMapper specialtyMapper;
 
     public StudyFieldDetailsResponse createStudyField(StudyFieldCreateRequest request) {
         if (studyFieldRepository.existsByCode(request.code())) {
@@ -58,7 +60,8 @@ public class StudyFieldService {
 
         // update fields
         if(request.code() != null){
-            if(studyFieldRepository.existsByCode(request.code())){
+            if(studyFieldRepository.existsByCode(request.code()) &&
+                    !studyField.getCode().equals(request.code())){ // check if set the same code as current value
                 throw new KubException(KubException.ErrorCode.CONFLICT);
             }
 
@@ -91,10 +94,9 @@ public class StudyFieldService {
     }
 
     public List<SpecialtyDetailsResponse> getAllSpecialtiesForStudyField(Long studyFieldId) {
-        if (!studyFieldRepository.existsById(studyFieldId)) {
-            throw new KubException(KubException.ErrorCode.NOT_FOUND);
-        }
+        var studyField = studyFieldRepository.findById(studyFieldId)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
-        return specialtyService.getAllSpecialitiesForStudyField(studyFieldId);
+        return specialtyMapper.toDetailsResponseList(studyField.getSpecialties());
     }
 }
