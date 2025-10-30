@@ -1,6 +1,8 @@
 package education.kub.backend.ce.domain.specialty.controller;
 
+import education.kub.backend.ce.domain.educational_program.model.EducationalProgramDetailsResponse;
 import education.kub.backend.ce.domain.specialty.model.SpecialtyDetailsResponse;
+import education.kub.backend.ce.domain.specialty.model.SpecialtyEducationalProgramCreateRequest;
 import education.kub.backend.ce.domain.specialty.model.SpecialtyUpdateRequest;
 import education.kub.backend.ce.domain.specialty.service.SpecialtyService;
 import jakarta.validation.Valid;
@@ -53,4 +55,25 @@ public class SpecialtyController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
+
+
+    @PostMapping("/{id}/educational-programs")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<EducationalProgramDetailsResponse> createEducationalProgramForSpecialty(
+            @PathVariable Long id,
+            @Valid @RequestBody SpecialtyEducationalProgramCreateRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(specialtyService.createEducationalProgram(id, request));
+    }
+
+    @GetMapping("/{id}/educational-programs")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<EducationalProgramDetailsResponse>> getAllEducationalProgramsForSpecialty(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(specialtyService.getAllEducationalProgramsForSpecialty(id));
+    }
+
 }

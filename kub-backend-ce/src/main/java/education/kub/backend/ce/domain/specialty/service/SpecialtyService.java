@@ -1,9 +1,13 @@
 package education.kub.backend.ce.domain.specialty.service;
 
 import education.kub.backend.ce.app.exception.model.KubException;
+import education.kub.backend.ce.domain.educational_program.mapper.EducationalProgramMapper;
+import education.kub.backend.ce.domain.educational_program.model.EducationalProgramDetailsResponse;
+import education.kub.backend.ce.domain.educational_program.service.EducationalProgramService;
 import education.kub.backend.ce.domain.specialty.entity.SpecialtyEntity;
 import education.kub.backend.ce.domain.specialty.mapper.SpecialtyMapper;
 import education.kub.backend.ce.domain.specialty.model.SpecialtyDetailsResponse;
+import education.kub.backend.ce.domain.specialty.model.SpecialtyEducationalProgramCreateRequest;
 import education.kub.backend.ce.domain.specialty.model.SpecialtyUpdateRequest;
 import education.kub.backend.ce.domain.specialty.repository.SpecialtyRepository;
 import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;
@@ -23,6 +27,10 @@ public class SpecialtyService {
     private final SpecialtyRepository specialtyRepository;
 
     private final StudyFieldRepository studyFieldRepository;
+
+    private final EducationalProgramService educationalProgramService;
+
+    private final EducationalProgramMapper educationalProgramMapper;
 
 
     public SpecialtyDetailsResponse createSpecialty(StudyFieldEntity studyField,
@@ -84,5 +92,24 @@ public class SpecialtyService {
         }
 
         specialtyRepository.deleteById(id);
+    }
+
+
+    public EducationalProgramDetailsResponse createEducationalProgram(
+            Long specialtyId,
+            SpecialtyEducationalProgramCreateRequest request
+    ){
+        var specialty = specialtyRepository.findById(specialtyId)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        return educationalProgramService.createEducationalProgram(specialty, request);
+    }
+
+    public List<EducationalProgramDetailsResponse> getAllEducationalProgramsForSpecialty(
+            Long specialtyId) {
+        var specialty = specialtyRepository.findById(specialtyId)
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+        return educationalProgramMapper.toDetailsResponseList(specialty.getEducationalPrograms());
     }
 }
