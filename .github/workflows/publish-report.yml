@@ -9,6 +9,9 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
 
+    env:
+      jdk_version: 25
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
