@@ -1,9 +1,6 @@
 name: API tests
 
 on:
-  push:
-    branches:
-      - issue-**
   pull_request:
     branches:
       - development
@@ -11,21 +8,6 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-
-    env:
-      jdk_version: 25
-      server_port: ${{ secrets.TESTS_WORKFLOW_SERVER_PORT }}
-      account-registration-temporary-password-expiration-days: 1
-      security_secret_key: ${{ secrets.TESTS_WORKFLOW_SECURITY_KEY }}
-      security-access-token-validity-ms: 60000000
-      security-refresh-token-validity-ms: 120000000
-      smtp_host: localhost
-      smtp_port: 587
-      datasource_url: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_URL }}
-      datasource_username: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_USER }}
-      datasource_password: ${{ secrets.TESTS_WORKFLOW_DATASOURCE_PASSWORD }}
-      data_redis_host: localhost
-      data_redis_port: 6379
 
     steps:
       - name: Check out repository
@@ -43,59 +25,15 @@ jobs:
           java-version: "${{ env.jdk_version }}"
           distribution: "oracle"
 
+      - name: Setup secrets.properties
+        run:  cp ./kub-backend-ce/config/secrets.tests.properties.example ./kub-backend-ce/config//secrets.properties
+
       - name: Restore maven dependencies cache
         uses: actions/cache/restore@v4
         id: pom-cache
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - name: Fetch dependencies
-        if: steps.pom-cache.outputs.cache-hit != 'true'
-        run: mvn -f ./kub-backend-ce clean install -DskipTests
-
-      - name: Cache maven dependencies
-        uses: actions/cache/save@v4
-        if: steps.pom-cache.outputs.cache-hit != 'true'
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - name: Substitute enviroment variables
-        uses: datamonsters/replace-action@v2
-        with:
-          files: './kub-backend-ce/src/main/resources/application.properties'
-          replacements:  "${server.port}=${{ env['server_port'] }}, ${account-registration.temporary-password-expiration-days}=${{ env['account-registration-temporary-password-expiration-days'] }}"
-
-      - name: Substitute tokens
-        uses: datamonsters/replace-action@v2
-        with:
-          files: './kub-backend-ce/src/main/resources/application.properties'
-          replacements:  "${security.access-token-validity-ms}=${{ env['security-access-token-validity-ms'] }}, ${security.refresh-token-validity-ms}=${{ env['security-refresh-token-validity-ms'] }}"
-
-      - name: Substitute secret key
-        uses: datamonsters/replace-action@v2
-        with:
-          files: './kub-backend-ce/src/main/resources/application.properties'
-          replacements:  "${security.secret-key}=${{ env['security_secret_key'] }}"
-
-      - name: Substitute smtp variables
-        uses: datamonsters/replace-action@v2
-        with:
-          files: './kub-backend-ce/src/main/resources/application.properties'
-          replacements:  "${smtp.host}=${{ env['smtp_host'] }}, ${smtp.port}=${{ env['smtp_port'] }}"
-
-      - name: Substitute datasource variables
-        uses: datamonsters/replace-action@v2
-        with:
-          files: './kub-backend-ce/src/main/resources/application.properties'
-          replacements:  "${datasource.url}=${{ env['datasource_url'] }}, ${datasource.username}=${{ env['datasource_username'] }}, ${datasource.password}=${{ env['datasource_password'] }}"
-
-      - name: Substitute redis variables
-        uses: datamonsters/replace-action@v2
-        with:
-          files: './kub-backend-ce/src/main/resources/application.properties'
-          replacements:  "${data.redis.host}=${{ env['data_redis_host'] }}, ${data.redis.port}=${{ env['data_redis_port'] }}"
 
       - name: Restore project cache
         uses: actions/cache/restore@v4
@@ -108,6 +46,13 @@ jobs:
         if: steps.pom-cache.outputs.cache-hit != 'true' ||
           steps.project-cache.outputs.cache-hit != 'true'
         run: mvn -f kub-backend-ce test-compile
+
+      - name: Cache maven dependencies
+        uses: actions/cache/save@v4
+        if: steps.pom-cache.outputs.cache-hit != 'true'
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
       - name: Cache compiled project
         uses: actions/cache/save@v4
