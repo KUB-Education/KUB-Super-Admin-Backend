@@ -15,6 +15,7 @@ import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.user.model.UserCreateRequest;
 import education.kub.backend.ce.domain.user.model.UserDetailsResponse;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
+import education.kub.backend.ce.domain.user.service.UserRoleService;
 import education.kub.backend.ce.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,8 @@ public class LecturerService {
 
     private final UserService userService;
 
+    private final UserRoleService userRoleService;
+
     private final LecturerMapper lecturerMapper;
 
     private final LecturerDepartmentPositionService lecturerDepartmentPositionService;
@@ -42,21 +45,13 @@ public class LecturerService {
 
     @Transactional
     public LecturerDetailsResponse createLecturer(LecturerCreateRequest lecturerCreateRequest) {
-        // create corresponding user
         UserDetailsResponse user = userService.createUser(
                 new UserCreateRequest(lecturerCreateRequest.lastName(), lecturerCreateRequest.firstName(),
                         lecturerCreateRequest.middleName(), lecturerCreateRequest.email()));
 
-        // add LECTURER role
-        userService.addUserRoleByType(user.id(), RoleEntity.Type.LECTURER);
+        userRoleService.addUserRoleByType(user.id(), RoleEntity.Type.LECTURER);
 
-        // actually create lecturer
-        LecturerEntity lecturer = new LecturerEntity();
-        lecturer.setUser(userRepository.findWithRolesById(user.id()).get());
-        lecturerRepository.save(lecturer);
-        // error in Optional.get() results in Exception -> HTTP 500, it is correct
-
-        return lecturerMapper.toDetailsResponse(lecturer);
+        return getLecturerByUserId(user.id());
     }
 
     public List<LecturerDetailsResponse> getAllLecturers() {
@@ -139,14 +134,10 @@ public class LecturerService {
         return lecturerMapper.toDetailsResponse(lecturer);
     }
 
-    
     public void deleteLecturer(Long id) {
         LecturerEntity lecturer = lecturerRepository.findFullEntityById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-        Long userId = lecturer.getUser().getId();
 
-        lecturerRepository.delete(lecturer);
-
-        userService.removeUserRoleByType(userId, RoleEntity.Type.LECTURER);
+        userRoleService.removeUserRoleByType(lecturer.getUser().getId(), RoleEntity.Type.LECTURER);
     }
 }

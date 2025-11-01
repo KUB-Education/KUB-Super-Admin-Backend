@@ -1,6 +1,7 @@
 package education.kub.backend.ce.domain.user.controller;
 
 import education.kub.backend.ce.domain.user.model.*;
+import education.kub.backend.ce.domain.user.service.UserRoleService;
 import education.kub.backend.ce.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    private final UserRoleService userRoleService;
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ORGANIZER', 'SYSADMIN', 'ADMIN')")
@@ -74,7 +77,7 @@ public class UserController {
             @PathVariable Long userId,
             @PathVariable Long roleId
     ) {
-        var user = userService.addUserRoleById(userId, roleId);
+        var user = userRoleService.addUserRoleById(userId, roleId);
 
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
@@ -85,7 +88,7 @@ public class UserController {
             @PathVariable Long userId,
             @PathVariable Long roleId
     ) {
-        var user = userService.removeUserRoleById(userId, roleId);
+        var user = userRoleService.removeUserRoleById(userId, roleId);
 
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
