@@ -5,6 +5,8 @@ import education.kub.backend.ce.domain.lecturer.entity.LecturerEntity;
 import education.kub.backend.ce.domain.lecturer.repository.LecturerRepository;
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.role.repository.RoleRepository;
+import education.kub.backend.ce.domain.student.entity.StudentEntity;
+import education.kub.backend.ce.domain.student.repository.StudentRepository;
 import education.kub.backend.ce.domain.user.mapper.UserMapper;
 import education.kub.backend.ce.domain.user.model.UserDetailsResponse;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
@@ -21,6 +23,7 @@ public class UserRoleService {
     private final RoleRepository roleRepository;
 
     private final LecturerRepository lecturerRepository;
+    private final StudentRepository studentRepository;
 
 
     public UserDetailsResponse addUserRoleById(Long userId, Long roleId) {
@@ -52,8 +55,11 @@ public class UserRoleService {
             LecturerEntity lecturer = new LecturerEntity();
             lecturer.setUser(user);
             lecturerRepository.save(lecturer);
+        } else if (role.getType() == RoleEntity.Type.STUDENT) {
+            StudentEntity student = new StudentEntity();
+            student.setUser(user);
+            studentRepository.save(student);
         }
-        // TODO: add check for STUDENT role
 
         return userMapper.toDetailsResponse(user);
     }
@@ -74,8 +80,12 @@ public class UserRoleService {
                     .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
             lecturerRepository.delete(lecturer);
+        } else if (role.getType() == RoleEntity.Type.STUDENT) {
+            StudentEntity student = studentRepository.findFullEntityByUserId(userId)
+                    .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+
+            studentRepository.delete(student);
         }
-        // TODO: add check for STUDENT role
 
         return userMapper.toDetailsResponse(user);
     }

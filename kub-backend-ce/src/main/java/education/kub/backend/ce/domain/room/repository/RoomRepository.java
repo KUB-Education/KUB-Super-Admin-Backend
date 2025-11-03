@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
     Boolean existsByLocation(String location);
+    Boolean existsByLocationAndIdNot(String location, Long id);
     List<RoomEntity> findByLocationContainingAndCapacityGreaterThanEqual(String location, Short capacity);
     List<RoomEntity> findByLocationContaining(String location);
     List<RoomEntity> findByCapacityGreaterThanEqual(Short capacity);

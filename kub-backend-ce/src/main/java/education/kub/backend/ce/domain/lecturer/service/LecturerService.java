@@ -14,7 +14,6 @@ import education.kub.backend.ce.domain.lecturer_department_position.service.Lect
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.user.model.UserCreateRequest;
 import education.kub.backend.ce.domain.user.model.UserDetailsResponse;
-import education.kub.backend.ce.domain.user.repository.UserRepository;
 import education.kub.backend.ce.domain.user.service.UserRoleService;
 import education.kub.backend.ce.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
@@ -26,8 +25,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class LecturerService {
-    private final UserRepository userRepository;
-
     private final LecturerRepository lecturerRepository;
 
     private final UserService userService;
