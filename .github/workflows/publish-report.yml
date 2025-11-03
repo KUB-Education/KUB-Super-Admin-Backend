@@ -19,9 +19,14 @@ jobs:
       - name: Setup Docker Compose
         uses: docker/setup-compose-action@v1
 
+      - name: Clone KUB-Infrastructure repo
+        run: git clone "${{ env.repo_url }}"
+        env:
+          repo_url: https://github.com/KUB-Education/KUB-Infrastructure
+
       - name: Start container
         run: |
-          docker compose -f ./kub-backend-ce/docker-compose.yaml up -d
+          docker compose -f ./KUB-Infrastructure/docker-compose.yaml up -d
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -29,7 +34,7 @@ jobs:
           distribution: "oracle"
 
       - name: Setup secrets.properties
-        run:  cp ./kub-backend-ce/config/secrets.tests.properties.example ./kub-backend-ce/config//secrets.properties
+        run:  cp ./kub-backend-ce/config/secrets.properties.example ./kub-backend-ce/config//secrets.properties
 
       - name: Restore maven dependencies cache
         uses: actions/cache/restore@v4
