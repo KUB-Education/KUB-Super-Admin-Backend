@@ -78,6 +78,30 @@ databaseChangeLog:
                 ADD CONSTRAINT chk_specialties_name_not_empty CHECK (name <> '');
               
 
+        # populate created table with intial data
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(1, '111', 'Mathematics');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(1, '112', 'Statistics');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(1, '113', 'Applied mathematics');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(2, '121', 'Software engineering');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(2, '122', 'Computer science');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(2, '123', 'Computer engineering');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(2, '124', 'System analysis');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(2, '125', 'Cybersecurity and information protection');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(2, '126', 'Information systems and technologies');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(3, 'E7', 'Mathematics');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(3, 'E8', 'Statistics');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(4, 'F1', 'Applied mathematics');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(4, 'F2', 'Software engineering');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(4, 'F3', 'Computer science');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(4, 'F4', 'Systems Analysis and Data Science');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(4, 'F5', 'Cybersecurity and information protection');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(4, 'F6', 'Information systems and technologies');
+              INSERT INTO public.specialties(study_field_id, code, name) VALUES(4, 'F7', 'Computer Engineering');
+
       rollback:
         - dropTable:
             schemaName: public
