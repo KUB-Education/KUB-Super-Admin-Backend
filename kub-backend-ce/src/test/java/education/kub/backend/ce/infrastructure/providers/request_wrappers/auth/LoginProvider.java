@@ -4,7 +4,6 @@ import education.kub.backend.ce.infrastructure.properties.executor.ExecutorPrope
 import education.kub.backend.ce.infrastructure.properties.auth.LoginProperties;
 import education.kub.backend.ce.infrastructure.properties.executor.RequestProperties;
 import education.kub.backend.ce.infrastructure.properties.executor.ResponseValidationProperties;
-import education.kub.backend.ce.infrastructure.providers.executors.RequestExecutor;
 import io.restassured.path.json.JsonPath;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
@@ -17,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Component
 @TestPropertySource(locations = {"classpath:test.application.properties"})
-public class LoginProvider extends RequestExecutor {
+public class LoginProvider {
 
     static String Login(ExecutorProperties executor, Map<String, String> request_map,
                         String bearer_token, HttpStatusCode expectedStatusCode) {
@@ -28,7 +27,7 @@ public class LoginProvider extends RequestExecutor {
 
         ResponseValidationProperties validation = ResponseValidationProperties.builder()
                 .StatusCode(expectedStatusCode)
-                .ValidationSchema("schemas/LoginResponse.json")
+                .ValidationSchema("schemas/auth/LoginResponse.json")
                 .build();
 
         return AuthProvider.Login(executor, request_params, validation);
@@ -39,9 +38,9 @@ public class LoginProvider extends RequestExecutor {
         Login(executor, request_map, bearer_token, expectedStatusCode);
     }
 
-    public static void FirstLogin(LoginProperties loginData) {
+    public static void FirstLogin(ExecutorProperties executor, LoginProperties loginData) {
 
-        String response = Login(loginData.executor, Map.of("email", loginData.email, "password", loginData.password),
+        String response = Login(executor, Map.of("email", loginData.user.email, "password", loginData.user.password),
                 null, HttpStatusCode.valueOf(200));
 
         JsonPath jsonPath = JsonPath.with(response);
