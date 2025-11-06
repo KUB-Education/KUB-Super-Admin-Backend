@@ -71,8 +71,8 @@ public class SpecialtyService {
             specialty.setStudyField(studyField);
         }
         if(request.code() != null){
-            if(specialtyRepository.existsByCode(request.code()) &&
-                    !specialty.getCode().equals(request.code())){ // check if set the same code as specialty already have
+            // check if set the same code as specialty already have
+            if(specialtyRepository.existsByCodeAndIdIsNot(request.code(), id)){
                 throw new KubException(KubException.ErrorCode.CONFLICT);
             }
             specialty.setCode(request.code());

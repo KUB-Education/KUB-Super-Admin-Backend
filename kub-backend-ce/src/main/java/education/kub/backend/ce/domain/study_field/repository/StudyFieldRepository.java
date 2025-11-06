@@ -6,5 +6,8 @@ import java.util.List;
 
 public interface StudyFieldRepository extends JpaRepository<StudyFieldEntity, Long> {
     boolean existsByCode(String code);
+
+    boolean existsByCodeAndIdIsNot(String code, Long id);
+
     List<StudyFieldEntity> findByNameContainingIgnoreCase(String nameSubstring);
 }

@@ -60,11 +60,10 @@ public class StudyFieldService {
 
         // update fields
         if(request.code() != null){
-            if(studyFieldRepository.existsByCode(request.code()) &&
-                    !studyField.getCode().equals(request.code())){ // check if set the same code as current value
+            // check if set the same code as studyField already have
+            if(studyFieldRepository.existsByCodeAndIdIsNot(request.code(), id)){
                 throw new KubException(KubException.ErrorCode.CONFLICT);
             }
-
             studyField.setCode(request.code());
         }
         if(request.name() != null){

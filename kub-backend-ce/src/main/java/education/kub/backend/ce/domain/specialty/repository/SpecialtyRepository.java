@@ -9,4 +9,6 @@ public interface SpecialtyRepository extends JpaRepository<SpecialtyEntity, Long
     List<SpecialtyEntity> findByStudyFieldId(Long studyFieldId);
 
     boolean existsByCode(String code);
+
+    boolean existsByCodeAndIdIsNot(String code, Long id);
 }
