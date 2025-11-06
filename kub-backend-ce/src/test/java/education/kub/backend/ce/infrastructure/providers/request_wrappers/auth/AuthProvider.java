@@ -26,9 +26,9 @@ public class AuthProvider {
         return RequestExecutor.ExecuteRequest(executor.mvc, request_params, validation);
     }
 
-    public static void Logout(LoginProperties loginData, HttpStatusCode expectedStatusCode) {
+    public static void Logout(ExecutorProperties executor, LoginProperties loginData, HttpStatusCode expectedStatusCode) {
         RequestProperties request_params = RequestProperties.builder()
-                .url(loginData.executor.conn.base_url + "/api/v1/auth/logout")
+                .url(executor.conn.base_url + "/api/v1/auth/logout")
                 .headers(AuthProvider.BearerTokenToMap(loginData.accessToken))
                 .build();
 
@@ -36,7 +36,7 @@ public class AuthProvider {
                 .StatusCode(expectedStatusCode)
                 .build();
 
-        RequestExecutor.ExecuteRequest(loginData.executor.mvc, request_params, validation);
+        RequestExecutor.ExecuteRequest(executor.mvc, request_params, validation);
     }
 
     public static void Refresh(ExecutorProperties executor, Map<String, String> request_body,
