@@ -22,7 +22,7 @@ import education.kub.backend.ce.domain.subject_activity.domain.SubjectActivityEn
 import education.kub.backend.ce.domain.subject_activity.repository.SubjectActivityRepository;
 import education.kub.backend.ce.domain.term.domain.TermEntity;
 import education.kub.backend.ce.domain.term.repository.TermRepository;
-import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
+import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import education.kub.backend.ce.domain.timetable.repository.TimetableRepository;
 import education.kub.backend.ce.domain.timetable_class.entity.TimetableClassEntity;
 import org.junit.jupiter.api.AfterEach;

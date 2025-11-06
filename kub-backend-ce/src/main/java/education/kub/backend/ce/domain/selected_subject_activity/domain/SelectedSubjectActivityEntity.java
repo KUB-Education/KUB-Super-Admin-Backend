@@ -2,7 +2,7 @@ package education.kub.backend.ce.domain.selected_subject_activity.domain;
 
 import education.kub.backend.ce.domain.selected_subject_activity_group.domain.SelectedSubjectActivityGroupEntity;
 import education.kub.backend.ce.domain.subject_activity.domain.SubjectActivityEntity;
-import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
+import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

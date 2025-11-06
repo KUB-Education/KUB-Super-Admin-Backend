@@ -1,10 +1,9 @@
-package education.kub.backend.ce.domain.timetable.domain;
+package education.kub.backend.ce.domain.timetable.entity;
 
 import education.kub.backend.ce.domain.group.domain.GroupEntity;
 import education.kub.backend.ce.domain.selected_lecturer.domain.SelectedLecturerEntity;
 import education.kub.backend.ce.domain.selected_room.domain.SelectedRoomEntity;
 import education.kub.backend.ce.domain.selected_subject_activity.domain.SelectedSubjectActivityEntity;
-import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
 import education.kub.backend.ce.domain.timetable_class.entity.TimetableClassEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

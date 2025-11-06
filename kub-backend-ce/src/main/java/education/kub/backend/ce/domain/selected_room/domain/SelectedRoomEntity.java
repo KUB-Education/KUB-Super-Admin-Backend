@@ -1,7 +1,7 @@
 package education.kub.backend.ce.domain.selected_room.domain;
 
 import education.kub.backend.ce.domain.room.domain.RoomEntity;
-import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
+import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

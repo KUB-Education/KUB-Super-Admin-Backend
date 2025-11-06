@@ -2,7 +2,7 @@ package education.kub.backend.ce.domain.timetable.repository;
 
 import education.kub.backend.ce.domain.group.domain.GroupEntity;
 import education.kub.backend.ce.domain.group.repository.GroupRepository;
-import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
+import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

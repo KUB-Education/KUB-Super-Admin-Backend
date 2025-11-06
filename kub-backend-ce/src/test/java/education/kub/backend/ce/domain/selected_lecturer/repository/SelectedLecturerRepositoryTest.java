@@ -5,7 +5,7 @@ import education.kub.backend.ce.domain.group.repository.GroupRepository;
 import education.kub.backend.ce.domain.lecturer.entity.LecturerEntity;
 import education.kub.backend.ce.domain.lecturer.repository.LecturerRepository;
 import education.kub.backend.ce.domain.selected_lecturer.domain.SelectedLecturerEntity;
-import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
+import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import education.kub.backend.ce.domain.timetable.repository.TimetableRepository;
 import education.kub.backend.ce.domain.user.entity.UserEntity;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
