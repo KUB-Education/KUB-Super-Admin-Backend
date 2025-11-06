@@ -1,16 +1,13 @@
 package education.kub.backend.ce.infrastructure.properties.auth;
 
-import education.kub.backend.ce.infrastructure.properties.executor.ExecutorProperties;
+import education.kub.backend.ce.infrastructure.properties.user.UserProperties;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class LoginProperties {
-    public ExecutorProperties executor = new ExecutorProperties();
-
-    public final String email = "allex.nevedrov@example.com";
-    public final String password = "password";
+    public UserProperties user = UserProperties.builder().build();
 
     public String accessToken;
     public String refreshToken;
