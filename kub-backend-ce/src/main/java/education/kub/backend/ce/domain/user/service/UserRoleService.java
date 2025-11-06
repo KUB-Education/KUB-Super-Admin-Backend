@@ -10,6 +10,7 @@ import education.kub.backend.ce.domain.student.repository.StudentRepository;
 import education.kub.backend.ce.domain.user.mapper.UserMapper;
 import education.kub.backend.ce.domain.user.model.UserDetailsResponse;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
+import education.kub.backend.ce.infrastructure.token.store.service.TokenStoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +19,15 @@ import org.springframework.stereotype.Service;
 public class UserRoleService {
     private final UserRepository userRepository;
 
-    private final UserMapper userMapper;
-
     private final RoleRepository roleRepository;
 
+    private final UserMapper userMapper;
+
     private final LecturerRepository lecturerRepository;
+
     private final StudentRepository studentRepository;
 
+    private final TokenStoreService tokenStoreService;
 
     public UserDetailsResponse addUserRoleById(Long userId, Long roleId) {
         var role = roleRepository.findById(roleId)
@@ -61,6 +64,8 @@ public class UserRoleService {
             studentRepository.save(student);
         }
 
+        tokenStoreService.deleteAllSessions(userId);
+
         return userMapper.toDetailsResponse(user);
     }
 
@@ -86,6 +91,8 @@ public class UserRoleService {
 
             studentRepository.delete(student);
         }
+
+        tokenStoreService.deleteAllSessions(userId);
 
         return userMapper.toDetailsResponse(user);
     }

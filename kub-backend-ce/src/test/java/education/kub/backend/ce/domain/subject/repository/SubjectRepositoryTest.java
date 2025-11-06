@@ -1,13 +1,13 @@
 package education.kub.backend.ce.domain.subject.repository;
 
-import education.kub.backend.ce.domain.educational_program.domain.EducationalProgramEntity;
+import education.kub.backend.ce.domain.educational_program.entity.EducationalProgramEntity;
 import education.kub.backend.ce.domain.educational_program.repository.EducationalProgramRepository;
-import education.kub.backend.ce.domain.specialty.domain.SpecialtyEntity;
+import education.kub.backend.ce.domain.specialty.entity.SpecialtyEntity;
 import education.kub.backend.ce.domain.specialty.repository.SpecialtyRepository;
-import education.kub.backend.ce.domain.study_field.domain.StudyFieldEntity;
+import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;
 import education.kub.backend.ce.domain.study_field.repository.StudyFieldRepository;
-import education.kub.backend.ce.domain.subject.domain.SubjectEntity;
-import education.kub.backend.ce.domain.term.domain.TermEntity;
+import education.kub.backend.ce.domain.subject.entity.SubjectEntity;
+import education.kub.backend.ce.domain.term.entity.TermEntity;
 import education.kub.backend.ce.domain.term.repository.TermRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

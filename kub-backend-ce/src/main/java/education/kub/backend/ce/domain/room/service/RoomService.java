@@ -1,7 +1,7 @@
 package education.kub.backend.ce.domain.room.service;
 
 import education.kub.backend.ce.app.exception.model.KubException;
-import education.kub.backend.ce.domain.room.domain.RoomEntity;
+import education.kub.backend.ce.domain.room.entity.RoomEntity;
 import education.kub.backend.ce.domain.room.mapper.RoomMapper;
 import education.kub.backend.ce.domain.room.model.RoomCreateRequest;
 import education.kub.backend.ce.domain.room.model.RoomDto;

@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.room.mapper;
 
-import education.kub.backend.ce.domain.room.domain.RoomEntity;
+import education.kub.backend.ce.domain.room.entity.RoomEntity;
 import education.kub.backend.ce.domain.room.model.RoomDto;
 import org.mapstruct.Mapper;
 

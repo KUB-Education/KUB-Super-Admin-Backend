@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.room.service;
 
-import education.kub.backend.ce.domain.room.domain.RoomEntity;
+import education.kub.backend.ce.domain.room.entity.RoomEntity;
 import education.kub.backend.ce.domain.room.model.RoomCreateRequest;
 import education.kub.backend.ce.domain.room.model.RoomDto;
 import education.kub.backend.ce.domain.room.model.RoomRequestFilter;
@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

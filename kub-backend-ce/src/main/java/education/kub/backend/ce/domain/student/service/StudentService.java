@@ -4,7 +4,10 @@ import education.kub.backend.ce.app.exception.model.KubException;
 import education.kub.backend.ce.domain.lecturer.model.LecturerCreateRequest;
 import education.kub.backend.ce.domain.lecturer.model.LecturerDetailsResponse;
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
-import education.kub.backend.ce.domain.student.model.StudentDetailsResponse;
+import education.kub.backend.ce.domain.student.mapper.StudentMapper;
+import education.kub.backend.ce.domain.student.model.StudentCreateRequest;
+import education.kub.backend.ce.domain.student.model.StudentShortDetailsResponse;
+import education.kub.backend.ce.domain.student.repository.StudentRepository;
 import education.kub.backend.ce.domain.user.model.UserCreateRequest;
 import education.kub.backend.ce.domain.user.model.UserDetailsResponse;
 import education.kub.backend.ce.domain.user.service.UserRoleService;
@@ -20,19 +23,28 @@ public class StudentService {
 
     private final UserRoleService userRoleService;
 
+    private final StudentRepository studentRepository;
+
+    private final StudentMapper studentMapper;
+
     @Transactional
-    public StudentDetailsResponse createLecturer(LecturerCreateRequest lecturerCreateRequest) {
+    public StudentShortDetailsResponse createStudent(StudentCreateRequest studentCreateRequest) {
         UserDetailsResponse user = userService.createUser(
-                new UserCreateRequest(lecturerCreateRequest.lastName(), lecturerCreateRequest.firstName(),
-                        lecturerCreateRequest.middleName(), lecturerCreateRequest.email()));
+                new UserCreateRequest(
+                        studentCreateRequest.lastName(),
+                        studentCreateRequest.firstName(),
+                        studentCreateRequest.middleName(),
+                        studentCreateRequest.email()
+                )
+        );
 
         userRoleService.addUserRoleByType(user.id(), RoleEntity.Type.STUDENT);
 
         return getStudentByUserId(user.id());
     }
 
-    public LecturerDetailsResponse getLecturerByUserId(Long userId) {
-        return lecturerMapper.toDetailsResponse(lecturerRepository.findFullEntityByUserId(userId)
+    public StudentShortDetailsResponse getStudentByUserId(Long userId) {
+        return studentMapper.toShortDetailsResponse(studentRepository.findFullEntityByUserId(userId)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND)));
     }
 }
