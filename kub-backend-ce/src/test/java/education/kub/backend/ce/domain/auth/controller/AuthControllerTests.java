@@ -50,7 +50,7 @@ public class AuthControllerTests {
     private JwtTokenProvider jwtTokenProvider;
 
     void initMocks() {
-        lComponent.executor.setConn(conn); ;
+        lComponent.executor.setConn(conn);
         lComponent.setLoginData(loginData);
         uComponent.setUserData(loginData.user);
         uComponent.mockRepos();
@@ -87,7 +87,7 @@ public class AuthControllerTests {
     @Step("Refresh")
     public void ValidateRefresh(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
         AuthProvider.Refresh(lComponent.executor, request_body, expectedStatusCode,
-                "schemas/auth/RefreshResponse.json");;
+                "schemas/auth/RefreshResponse.json");
     }
 
     public void ValidateRefresh(HttpStatusCode expectedStatusCode) {

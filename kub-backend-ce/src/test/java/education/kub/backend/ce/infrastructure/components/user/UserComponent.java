@@ -83,7 +83,7 @@ public class UserComponent {
             }
             else {
                 RoleEntity roleEntity = createRole(role);
-                roleEntity = roleRepo.save(roleEntity);
+                roleRepo.save(roleEntity);
             }
         }
 

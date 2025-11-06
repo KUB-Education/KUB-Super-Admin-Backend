@@ -21,17 +21,6 @@ public class RoleRepositoryMockProvider {
         Mockito.lenient().doReturn(Optional.of(role)).when(mock).findByType(role.getType());
     }
 
-    public static RoleRepository createRoleRepositoryMock(UserEntity user) {
-        RoleRepository roleRepo = Mockito.mock(RoleRepository.class);
-        Mockito.lenient().doAnswer(invocation -> {
-            var saved_role = invocation.getArgument(0, RoleEntity.class);
-            saved_role.setId(id_count++);
-            saveRole(roleRepo, saved_role);
-            return saved_role;
-        }).when(roleRepo).save(any(RoleEntity.class));
-        return roleRepo;
-    }
-
     public static RoleRepository createRoleRepositoryMock() {
         RoleRepository roleRepo = Mockito.mock(RoleRepository.class);
         Mockito.lenient().doAnswer(invocation -> {

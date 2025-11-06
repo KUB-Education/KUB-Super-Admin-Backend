@@ -56,7 +56,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -98,15 +97,13 @@ public class UserControllerTests {
     private UserService userService;
     @MockitoSpyBean
     private JwtAuthFilter jwtAuthFilter;
-    @Autowired
-    private RoleRepository roleRepository;
 
     void initMocks() {
         loginData.setUser(user_creator);
         lComponent.executor.setConn(conn);
         lComponent.setLoginData(loginData);
         uComponent.setUserData(loginData.user);
-        var user = uComponent.mockRepos();
+        uComponent.mockRepos();
 
         lComponent.executor.mvc = mockMvc;
 

@@ -29,8 +29,6 @@ public class UserRepositoryMockProvider {
     }
 
     public static UserRepository createUserRepositoryMock(UserEntity user) {
-        Long id = user.getId();
-        String email = user.getEmail();
         UserRepository userRepo = Mockito.mock(UserRepository.class);
         Mockito.lenient().doAnswer(invocation -> {
             var saved_user = invocation.getArgument(0, UserEntity.class);
