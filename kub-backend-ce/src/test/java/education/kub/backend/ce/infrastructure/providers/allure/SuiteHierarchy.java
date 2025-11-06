@@ -10,6 +10,6 @@ public class SuiteHierarchy {
                 label -> "parentSuite".equals(label.getName())));
         Allure.getLifecycle().updateTestCase(tr -> tr.getLabels().removeIf(
                 label -> "subSuite".equals(label.getName())));
-        Allure.label("parentSuite", "Unit Tests");
+        Allure.label("parentSuite", "Controller tests");
     }
 }
