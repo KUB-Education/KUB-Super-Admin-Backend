@@ -31,7 +31,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: details
+                  name: description
                   type: text
                   constraints:
                     nullable: true
@@ -65,7 +65,7 @@ databaseChangeLog:
             sql: |
               ALTER TABLE public.rooms
                 ADD CONSTRAINT chk_rooms_location_not_blank CHECK (TRIM(location) <> ''),
-                ADD CONSTRAINT chk_rooms_details_not_blank CHECK (TRIM(details) <> ''),
+                ADD CONSTRAINT chk_rooms_description_not_blank CHECK (TRIM(description) <> ''),
                 ADD CONSTRAINT chk_rooms_capacity_not_negative CHECK (capacity >= 0);
               
 

@@ -26,6 +26,6 @@ public class RoomEntity {
     @PositiveOrZero
     private Short capacity;
 
-    @Column(name = "details", columnDefinition = "TEXT", nullable = true) // not blank
-    private String details;
+    @Column(name = "description", columnDefinition = "TEXT", nullable = true) // not blank
+    private String description;
 }

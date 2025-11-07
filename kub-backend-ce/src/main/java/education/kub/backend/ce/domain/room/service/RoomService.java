@@ -29,7 +29,7 @@ public class RoomService {
         RoomEntity room = new RoomEntity();
         room.setLocation(createRoomRequest.location());
         room.setCapacity(createRoomRequest.capacity());
-        room.setDetails(createRoomRequest.details());
+        room.setDescription(createRoomRequest.description());
         roomRepo.save(room);
 
         return roomMapper.toDto(room);
@@ -78,11 +78,11 @@ public class RoomService {
             room.setCapacity(roomUpdateRequest.capacity());
         }
 
-        if (roomUpdateRequest.details() != null) {
-            if (roomUpdateRequest.details().isEmpty()) {
-                room.setDetails(null);
+        if (roomUpdateRequest.description() != null) {
+            if (roomUpdateRequest.description().isEmpty()) {
+                room.setLocation(null);
             } else {
-                room.setDetails(roomUpdateRequest.details());
+                room.setDescription(roomUpdateRequest.description());
             }
         }
 
