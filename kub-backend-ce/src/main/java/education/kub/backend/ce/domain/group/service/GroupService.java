@@ -42,15 +42,15 @@ public class GroupService {
         return groupMapper.toFullDetailsResponse(group);
     }
 
-    public GroupFullDetailsResponse updateGroup(Long id, GroupUpdateRequest groupUpdateRequest) {
-        var group = groupRepository.findGroupWithStudentsById(id)
+    public GroupShortDetailsResponse updateGroup(Long id, GroupUpdateRequest groupUpdateRequest) {
+        var group = groupRepository.findById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
         group.setName(groupUpdateRequest.name());
 
         groupRepository.save(group);
 
-        return groupMapper.toFullDetailsResponse(group);
+        return groupMapper.toShortDetailsResponse(group);
     }
 
     public void deleteGroup(Long id) {

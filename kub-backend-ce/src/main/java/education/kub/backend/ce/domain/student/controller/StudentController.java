@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class StudentController {
     final private StudentService studentService;
 
-    final private StudentMapper studentMapper;
-
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<StudentShortDetailsResponse> createStudent(

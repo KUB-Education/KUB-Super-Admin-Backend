@@ -48,7 +48,7 @@ public class GroupController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<GroupFullDetailsResponse> updateGroup(
+    public ResponseEntity<GroupShortDetailsResponse> updateGroup(
             @PathVariable Long id,
             @Valid @RequestBody GroupUpdateRequest groupUpdateRequest
     ) {
@@ -78,7 +78,7 @@ public class GroupController {
 
     @DeleteMapping("/{groupId}/students/{studentId}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<GroupFullDetailsResponse> removeStudentToGroup(
+    public ResponseEntity<GroupFullDetailsResponse> removeStudentFromGroup(
             @PathVariable Long groupId,
             @PathVariable Long studentId
     ) {
