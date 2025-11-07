@@ -80,7 +80,7 @@ public class RoomService {
 
         if (roomUpdateRequest.description() != null) {
             if (roomUpdateRequest.description().isEmpty()) {
-                room.setLocation(null);
+                room.setDescription(null);
             } else {
                 room.setDescription(roomUpdateRequest.description());
             }
