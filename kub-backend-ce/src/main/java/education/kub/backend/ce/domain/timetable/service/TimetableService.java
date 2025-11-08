@@ -1,6 +1,7 @@
 package education.kub.backend.ce.domain.timetable.service;
 
 import education.kub.backend.ce.app.exception.model.KubException;
+import education.kub.backend.ce.domain.group.repository.GroupRepository;
 import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import education.kub.backend.ce.domain.timetable.mapper.TimetableMapper;
 import education.kub.backend.ce.domain.timetable.model.TimetableCreateRequest;
@@ -20,48 +21,55 @@ public class TimetableService {
 
     private final TimetableRepository timetableRepository;
 
+    private final GroupRepository groupRepository;
+
     public TimetableDetailsResponse createTimetable(TimetableCreateRequest TimetableCreateRequest) {
-        if (timetableRepository.existsByName(TimetableCreateRequest.name())) {
-            throw new KubException(KubException.ErrorCode.CONFLICT);
-        }
+        var timetable = new TimetableEntity();
+        timetable.setName(TimetableCreateRequest.name());
+        timetable.setTimeStart(TimetableCreateRequest.timeStart());
+        timetable.setTimeEnd(TimetableCreateRequest.timeEnd());
 
-        var Timetable = new TimetableEntity();
-        Timetable.setName(TimetableCreateRequest.name());
-        Timetable.setTimeStart(TimetableCreateRequest.timeStart());
-        Timetable.setTimeEnd(TimetableCreateRequest.timeEnd());
+        timetableRepository.save(timetable);
 
-        timetableRepository.save(Timetable);
-
-        return timetableMapper.toDetailsResponse(Timetable);
+        return timetableMapper.toDetailsResponse(timetable);
     }
 
-    public List<TimetableDetailsResponse> getAllSpecialties() {
+    public List<TimetableDetailsResponse> getAllTimetables() {
         var Specialties = timetableRepository.findAll();
 
         return timetableMapper.toDetailsResponseList(Specialties);
     }
 
     public TimetableDetailsResponse getTimetableById(Long id) {
-        var Timetable = timetableRepository.findById(id)
+        var timetable = timetableRepository.findById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
-        return timetableMapper.toDetailsResponse(Timetable);
+        return timetableMapper.toDetailsResponse(timetable);
     }
 
     public TimetableDetailsResponse updateTimetable(Long id, TimetableUpdateRequest timetableUpdateRequest) {
-        if (timetableRepository.existsByName(timetableUpdateRequest.name())) {
-            throw new KubException(KubException.ErrorCode.CONFLICT);
-        }
-
-        var Timetable = timetableRepository.findById(id)
+        var timetable = timetableRepository.findById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+        if(timetableUpdateRequest.name() != null){
+            timetable.setName(timetableUpdateRequest.name());
+        }
+        if(timetableUpdateRequest.timeStart() != null){
+            timetable.setTimeStart(timetableUpdateRequest.timeStart());
+        }
+        if(timetableUpdateRequest.timeEnd() != null){
+            timetable.setTimeEnd(timetableUpdateRequest.timeEnd());
+        }
+        if(timetableUpdateRequest.group() != null){
+            var groupId = groupRepository.findById(timetableUpdateRequest.group())
+                    .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+            timetable.setGroup(groupId);
+        }
+        if(timetableUpdateRequest.status() != null){
+            timetable.setStatus(timetableUpdateRequest.status());
+        }
+        timetableRepository.save(timetable);
 
-        Timetable.setName(timetableUpdateRequest.name());
-        Timetable.setTimeStart(timetableUpdateRequest.timeStart());
-        Timetable.setTimeEnd(timetableUpdateRequest.timeEnd());
-        timetableRepository.save(Timetable);
-
-        return timetableMapper.toDetailsResponse(Timetable);
+        return timetableMapper.toDetailsResponse(timetable);
     }
 
     public void deleteTimetable(Long id) {

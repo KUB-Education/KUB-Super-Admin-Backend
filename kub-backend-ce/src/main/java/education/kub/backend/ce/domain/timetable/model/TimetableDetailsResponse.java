@@ -1,7 +1,6 @@
 package education.kub.backend.ce.domain.timetable.model;
 
 
-import education.kub.backend.ce.domain.group.domain.GroupEntity;
 import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 
 import java.time.Instant;
@@ -15,7 +14,7 @@ public record TimetableDetailsResponse(
 
         Instant timeEnd,
 
-        GroupEntity group,
+        Long group,
 
         TimetableEntity.Status status
 ) { }
