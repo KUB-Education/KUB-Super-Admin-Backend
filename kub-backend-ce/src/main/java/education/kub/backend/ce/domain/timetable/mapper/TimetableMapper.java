@@ -9,9 +9,9 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface TimetableMapper {
-    @Mapping(target = "group", source = "group.id")
+    @Mapping(target = "groupId", source = "group.id")
     TimetableDetailsResponse toDetailsResponse(TimetableEntity entity);
 
-    @Mapping(target = "group", source = "group.id")
+    @Mapping(target = "groupId", source = "group.id")
     List<TimetableDetailsResponse> toDetailsResponseList(Iterable<TimetableEntity> entity);
 }

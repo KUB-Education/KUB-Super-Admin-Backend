@@ -31,9 +31,9 @@ public class TimetableController {
     @GetMapping
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<TimetableDetailsResponse>> getAllTimetables() {
-        List<TimetableDetailsResponse> specialties = timetableService.getAllTimetables();
+        List<TimetableDetailsResponse> timetables = timetableService.getAllTimetables();
 
-        return ResponseEntity.ok(specialties);
+        return ResponseEntity.ok(timetables);
     }
 
     @GetMapping("/{id}")

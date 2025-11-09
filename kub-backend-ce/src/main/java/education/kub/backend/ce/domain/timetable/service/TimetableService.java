@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static education.kub.backend.ce.domain.timetable.entity.TimetableEntity.Status.DRAFT;
+
 @Service
 @RequiredArgsConstructor
 public class TimetableService {
@@ -23,21 +25,24 @@ public class TimetableService {
 
     private final GroupRepository groupRepository;
 
-    public TimetableDetailsResponse createTimetable(TimetableCreateRequest TimetableCreateRequest) {
+    public TimetableDetailsResponse createTimetable(TimetableCreateRequest timetableCreateRequest) {
         var timetable = new TimetableEntity();
-        timetable.setName(TimetableCreateRequest.name());
-        timetable.setTimeStart(TimetableCreateRequest.timeStart());
-        timetable.setTimeEnd(TimetableCreateRequest.timeEnd());
-
+        timetable.setName(timetableCreateRequest.name());
+        timetable.setTimeStart(timetableCreateRequest.timeStart());
+        timetable.setTimeEnd(timetableCreateRequest.timeEnd());
+        var group = groupRepository.findById(timetableCreateRequest.groupId())
+                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
+        timetable.setGroup(group);
+        timetable.setStatus(DRAFT);
         timetableRepository.save(timetable);
 
         return timetableMapper.toDetailsResponse(timetable);
     }
 
     public List<TimetableDetailsResponse> getAllTimetables() {
-        var Specialties = timetableRepository.findAll();
+        var timetables = timetableRepository.findAll();
 
-        return timetableMapper.toDetailsResponseList(Specialties);
+        return timetableMapper.toDetailsResponseList(timetables);
     }
 
     public TimetableDetailsResponse getTimetableById(Long id) {
@@ -59,10 +64,10 @@ public class TimetableService {
         if(timetableUpdateRequest.timeEnd() != null){
             timetable.setTimeEnd(timetableUpdateRequest.timeEnd());
         }
-        if(timetableUpdateRequest.group() != null){
-            var groupId = groupRepository.findById(timetableUpdateRequest.group())
+        if(timetableUpdateRequest.groupId() != null){
+            var group = groupRepository.findById(timetableUpdateRequest.groupId())
                     .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-            timetable.setGroup(groupId);
+            timetable.setGroup(group);
         }
         if(timetableUpdateRequest.status() != null){
             timetable.setStatus(timetableUpdateRequest.status());

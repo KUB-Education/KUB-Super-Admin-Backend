@@ -14,7 +14,7 @@ public record TimetableDetailsResponse(
 
         Instant timeEnd,
 
-        Long group,
+        Long groupId,
 
         TimetableEntity.Status status
 ) { }
