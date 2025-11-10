@@ -1,10 +1,10 @@
 package education.kub.backend.ce.domain.selected_room.repository;
 
-import education.kub.backend.ce.domain.group.domain.GroupEntity;
+import education.kub.backend.ce.domain.group.entity.GroupEntity;
 import education.kub.backend.ce.domain.group.repository.GroupRepository;
-import education.kub.backend.ce.domain.room.domain.RoomEntity;
+import education.kub.backend.ce.domain.room.entity.RoomEntity;
 import education.kub.backend.ce.domain.room.repository.RoomRepository;
-import education.kub.backend.ce.domain.selected_room.domain.SelectedRoomEntity;
+import education.kub.backend.ce.domain.selected_room.entity.SelectedRoomEntity;
 import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import education.kub.backend.ce.domain.timetable.repository.TimetableRepository;
 import org.junit.jupiter.api.AfterEach;

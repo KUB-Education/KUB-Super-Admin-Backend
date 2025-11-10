@@ -5,6 +5,6 @@ public record RoomUpdateRequest(
 
         Short capacity,
 
-        String details
+        String description
 ) {
 }

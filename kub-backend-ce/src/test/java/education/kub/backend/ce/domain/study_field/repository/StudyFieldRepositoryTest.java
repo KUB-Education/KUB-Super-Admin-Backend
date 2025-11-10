@@ -1,6 +1,6 @@
 package education.kub.backend.ce.domain.study_field.repository;
 
-import education.kub.backend.ce.domain.study_field.domain.StudyFieldEntity;
+import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
