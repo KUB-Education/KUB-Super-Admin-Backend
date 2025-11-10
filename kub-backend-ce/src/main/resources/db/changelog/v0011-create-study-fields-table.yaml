@@ -61,6 +61,16 @@ databaseChangeLog:
               ALTER TABLE public.study_fields
                 ADD CONSTRAINT chk_study_fields_code_not_empty CHECK (code <> ''),
                 ADD CONSTRAINT chk_study_fields_name_not_empty CHECK (name <> '');
+
+        # populate created table with initial data
+        - sql:
+            dbms: postgresql
+            splitStatements: true
+            sql: |
+              INSERT INTO public.study_fields(id, code, name) VALUES(1, '11', 'Mathematics and statistics');
+              INSERT INTO public.study_fields(id, code, name) VALUES(2, '12', 'Information technology');
+              INSERT INTO public.study_fields(id, code, name) VALUES(3, 'E', 'Natural Sciences, Mathematics and Statistics');
+              INSERT INTO public.study_fields(id, code, name) VALUES(4, 'F', 'Information technology');
               
 
       rollback:

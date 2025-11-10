@@ -4,4 +4,7 @@ import education.kub.backend.ce.domain.educational_program.entity.EducationalPro
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EducationalProgramRepository extends JpaRepository<EducationalProgramEntity, Long> {
+    boolean existsByName(String name);
+
+    boolean existsByNameAndIdIsNot(String name, Long id);
 }
