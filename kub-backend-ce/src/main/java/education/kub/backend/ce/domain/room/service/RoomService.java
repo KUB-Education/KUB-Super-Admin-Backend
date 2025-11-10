@@ -1,7 +1,7 @@
 package education.kub.backend.ce.domain.room.service;
 
 import education.kub.backend.ce.app.exception.model.KubException;
-import education.kub.backend.ce.domain.room.domain.RoomEntity;
+import education.kub.backend.ce.domain.room.entity.RoomEntity;
 import education.kub.backend.ce.domain.room.mapper.RoomMapper;
 import education.kub.backend.ce.domain.room.model.RoomCreateRequest;
 import education.kub.backend.ce.domain.room.model.RoomDto;
@@ -50,14 +50,11 @@ public class RoomService {
                     filter.locationContains(),
                     filter.minCapacity()
             );
-        }
-        else if (filter.locationContains() != null) {
+        } else if (filter.locationContains() != null) {
             rooms = roomRepo.findByLocationContaining(filter.locationContains());
-        }
-        else if (filter.minCapacity() != null) {
+        } else if (filter.minCapacity() != null) {
             rooms = roomRepo.findByCapacityGreaterThanEqual(filter.minCapacity());
-        }
-        else {
+        } else {
             rooms = roomRepo.findAll();
         }
 
@@ -69,24 +66,22 @@ public class RoomService {
         RoomEntity room = roomRepo.findById(id)
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
-        if(roomUpdateRequest.location() != null) {
-            // if same location exists and do not belong to room that is under updating
-            if(roomRepo.existsByLocation(roomUpdateRequest.location()) &&
-                !room.getLocation().equals(roomUpdateRequest.location())) {
+        if (roomUpdateRequest.location() != null) {
+            if (roomRepo.existsByLocationAndIdNot(roomUpdateRequest.location(), room.getId())) {
                 throw new KubException(KubException.ErrorCode.CONFLICT);
             }
+
             room.setLocation(roomUpdateRequest.location());
         }
 
-        if(roomUpdateRequest.capacity() != null) {
+        if (roomUpdateRequest.capacity() != null) {
             room.setCapacity(roomUpdateRequest.capacity());
         }
 
-        if(roomUpdateRequest.details() != null) {
-            if(roomUpdateRequest.details().isEmpty()){
+        if (roomUpdateRequest.details() != null) {
+            if (roomUpdateRequest.details().isEmpty()) {
                 room.setDetails(null);
-            }
-            else{
+            } else {
                 room.setDetails(roomUpdateRequest.details());
             }
         }

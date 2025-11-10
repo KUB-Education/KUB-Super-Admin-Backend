@@ -3,7 +3,6 @@ package education.kub.backend.ce.domain.user.service;
 import education.kub.backend.ce.app.exception.model.KubException;
 import education.kub.backend.ce.app.properties.AppAccountRegistrationProperties;
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
-import education.kub.backend.ce.domain.role.repository.RoleRepository;
 import education.kub.backend.ce.domain.user.entity.UserEntity;
 import education.kub.backend.ce.domain.user.mapper.UserMapper;
 import education.kub.backend.ce.domain.user.model.*;
@@ -22,12 +21,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
-    private final UserMapper userMapper;
-
     private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
+    private final UserRoleService userRoleService;
+
+    private final UserMapper userMapper;
 
     private final EmailService emailService;
 
@@ -54,7 +52,7 @@ public class UserService {
         }
         userRepository.save(user);
 
-        addUserRoleByType(user.getId(), RoleEntity.Type.USER);
+        userRoleService.addUserRoleByType(user.getId(), RoleEntity.Type.USER);
 
         return sendUserPassword(user.getId());
     }
@@ -189,61 +187,5 @@ public class UserService {
                 .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
 
         sendUserPassword(user.getId());
-    }
-
-    public UserDetailsResponse addUserRoleById(Long id, Long roleId) {
-        var user = userRepository.findWithRolesById(id)
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-
-        var role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new KubException((KubException.ErrorCode.NOT_FOUND)));
-
-        user.addRole(role);
-
-        userRepository.save(user);
-
-        return userMapper.toDetailsResponse(user);
-    }
-
-    public UserDetailsResponse addUserRoleByType(Long id, RoleEntity.Type type) {
-        var user = userRepository.findWithRolesById(id)
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-
-        var role = roleRepository.findByType(type)
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-
-        user.addRole(role);
-
-        userRepository.save(user);
-
-        return userMapper.toDetailsResponse(user);
-    }
-
-    public UserDetailsResponse removeUserRoleById(Long id, Long roleId) {
-        var user = userRepository.findWithRolesById(id)
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-
-        var role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new KubException((KubException.ErrorCode.NOT_FOUND)));
-
-        user.removeRole(role);
-
-        userRepository.save(user);
-
-        return userMapper.toDetailsResponse(user);
-    }
-
-    public UserDetailsResponse removeUserRoleByType(Long id, RoleEntity.Type type) {
-        var user = userRepository.findWithRolesById(id)
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-
-        var role = roleRepository.findByType(type)
-                .orElseThrow(() -> new KubException(KubException.ErrorCode.NOT_FOUND));
-
-        user.removeRole(role);
-
-        userRepository.save(user);
-
-        return userMapper.toDetailsResponse(user);
     }
 }
