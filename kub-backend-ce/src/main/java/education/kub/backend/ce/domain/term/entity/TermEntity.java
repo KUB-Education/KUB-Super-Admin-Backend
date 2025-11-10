@@ -1,7 +1,7 @@
-package education.kub.backend.ce.domain.term.domain;
+package education.kub.backend.ce.domain.term.entity;
 
 import education.kub.backend.ce.domain.educational_program.entity.EducationalProgramEntity;
-import education.kub.backend.ce.domain.subject.domain.SubjectEntity;
+import education.kub.backend.ce.domain.subject.entity.SubjectEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;

@@ -1,4 +1,4 @@
-package education.kub.backend.ce.domain.room.domain;
+package education.kub.backend.ce.domain.room.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +26,6 @@ public class RoomEntity {
     @PositiveOrZero
     private Short capacity;
 
-    @Column(name = "details", columnDefinition = "TEXT", nullable = true) // not blank
-    private String details;
+    @Column(name = "description", columnDefinition = "TEXT", nullable = true) // not blank
+    private String description;
 }

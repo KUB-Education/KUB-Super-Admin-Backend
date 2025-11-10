@@ -1,8 +1,6 @@
-package education.kub.backend.ce.domain.selected_subject_activity_group.domain;
+package education.kub.backend.ce.domain.selected_subject_activity_group.entity;
 
-import education.kub.backend.ce.domain.room.domain.RoomEntity;
-import education.kub.backend.ce.domain.selected_subject_activity.domain.SelectedSubjectActivityEntity;
-import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
+import education.kub.backend.ce.domain.selected_subject_activity.entity.SelectedSubjectActivityEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;

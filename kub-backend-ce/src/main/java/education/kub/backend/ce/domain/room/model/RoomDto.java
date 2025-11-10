@@ -7,6 +7,6 @@ public record RoomDto(
 
         Short capacity,
 
-        String details
+        String description
 ) {
 }

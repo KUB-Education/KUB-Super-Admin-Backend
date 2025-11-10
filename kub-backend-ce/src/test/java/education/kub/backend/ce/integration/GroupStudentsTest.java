@@ -1,6 +1,6 @@
 package education.kub.backend.ce.integration;
 
-import education.kub.backend.ce.domain.group.domain.GroupEntity;
+import education.kub.backend.ce.domain.group.entity.GroupEntity;
 import education.kub.backend.ce.domain.group.repository.GroupRepository;
 import education.kub.backend.ce.domain.student.entity.StudentEntity;
 import education.kub.backend.ce.domain.student.repository.StudentRepository;

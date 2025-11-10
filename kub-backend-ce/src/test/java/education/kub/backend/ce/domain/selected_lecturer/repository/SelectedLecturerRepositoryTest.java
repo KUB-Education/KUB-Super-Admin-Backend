@@ -1,11 +1,11 @@
 package education.kub.backend.ce.domain.selected_lecturer.repository;
 
-import education.kub.backend.ce.domain.group.domain.GroupEntity;
+import education.kub.backend.ce.domain.group.entity.GroupEntity;
 import education.kub.backend.ce.domain.group.repository.GroupRepository;
 import education.kub.backend.ce.domain.lecturer.entity.LecturerEntity;
 import education.kub.backend.ce.domain.lecturer.repository.LecturerRepository;
-import education.kub.backend.ce.domain.selected_lecturer.domain.SelectedLecturerEntity;
-import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
+import education.kub.backend.ce.domain.selected_lecturer.entity.SelectedLecturerEntity;
+import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import education.kub.backend.ce.domain.timetable.repository.TimetableRepository;
 import education.kub.backend.ce.domain.user.entity.UserEntity;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 

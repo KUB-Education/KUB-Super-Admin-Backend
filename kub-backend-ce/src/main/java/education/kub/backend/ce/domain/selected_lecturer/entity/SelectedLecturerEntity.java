@@ -1,7 +1,7 @@
-package education.kub.backend.ce.domain.selected_lecturer.domain;
+package education.kub.backend.ce.domain.selected_lecturer.entity;
 
 import education.kub.backend.ce.domain.lecturer.entity.LecturerEntity;
-import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
+import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import education.kub.backend.ce.domain.timetable_class.entity.TimetableClassEntity;
 import jakarta.persistence.*;
 import lombok.*;

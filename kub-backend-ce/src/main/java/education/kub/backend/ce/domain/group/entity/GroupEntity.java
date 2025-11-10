@@ -1,13 +1,11 @@
-package education.kub.backend.ce.domain.group.domain;
+package education.kub.backend.ce.domain.group.entity;
 
-import education.kub.backend.ce.domain.academic_title.entity.AcademicTitleEntity;
-import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.student.entity.StudentEntity;
-import education.kub.backend.ce.domain.subject.domain.SubjectEntity;
-import education.kub.backend.ce.domain.timetable.domain.TimetableEntity;
+import education.kub.backend.ce.domain.timetable.entity.TimetableEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -30,7 +28,8 @@ public class GroupEntity {
     @NotBlank
     private String name;
 
-    @Column(name = "created_at", columnDefinition = "timestamptz", nullable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "timestamptz")
     private Instant createdAt;
 
     @ManyToMany
@@ -44,13 +43,12 @@ public class GroupEntity {
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)
     private List<TimetableEntity> timetables;
 
-
     public void addStudent(StudentEntity student) {
         students.add(student);
         student.getGroups().add(this);
     }
 
-    public void removeRole(StudentEntity student) {
+    public void removeStudent(StudentEntity student) {
         students.remove(student);
         student.getGroups().remove(this);
     }
