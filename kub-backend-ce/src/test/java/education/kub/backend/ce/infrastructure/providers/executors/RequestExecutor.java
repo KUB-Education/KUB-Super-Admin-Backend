@@ -3,9 +3,9 @@ package education.kub.backend.ce.infrastructure.providers.executors;
 import education.kub.backend.ce.infrastructure.properties.executor.RequestProperties;
 import education.kub.backend.ce.infrastructure.properties.executor.ResponseValidationProperties;
 import io.restassured.http.Method;
+import org.hamcrest.Matchers;
 import org.json.JSONObject;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -74,10 +74,14 @@ public class RequestExecutor {
 
             if (validation.StatusCode != null) {
                 perform.andExpect(status().is(validation.StatusCode.value()));
-            }
-
-            if (validation.ValidationSchema != null) {
-                perform.andExpect(content().string(matchesJsonSchemaInClasspath(validation.ValidationSchema)));
+                if (validation.ValidationSchema != null) {
+                    if (validation.StatusCode.is2xxSuccessful()) {
+                        perform.andExpect(content().string(matchesJsonSchemaInClasspath(validation.ValidationSchema)));
+                    }
+                }
+                else if (validation.StatusCode.is2xxSuccessful()) {
+                    perform.andExpect(content().string(Matchers.blankString()));
+                }
             }
 
             return result_response.getContentAsString();
@@ -87,18 +91,9 @@ public class RequestExecutor {
         }
     }
 
-    static String ExecuteRequestImpl(MockMvc mvc, RequestProperties request_params,
-                                 ResponseValidationProperties validation) {
-        MockHttpServletRequestBuilder request = BuildRequest(request_params);
-        return GetAndValidateResponse(mvc, request, validation);
-    }
-
     public static String ExecuteRequest(MockMvc mvc, RequestProperties request_params,
                                         ResponseValidationProperties validation) {
-        if (validation.StatusCode == HttpStatus.OK)  {
-            return ExecuteRequestImpl(mvc, request_params, validation);
-        }
-        validation.ValidationSchema = null;
-        return ExecuteRequestImpl(mvc, request_params, validation);
+        MockHttpServletRequestBuilder request = BuildRequest(request_params);
+        return GetAndValidateResponse(mvc, request, validation);
     }
 }
