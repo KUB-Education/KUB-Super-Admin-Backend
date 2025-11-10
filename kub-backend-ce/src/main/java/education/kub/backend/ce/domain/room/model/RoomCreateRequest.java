@@ -5,6 +5,6 @@ public record RoomCreateRequest(
 
         Short capacity,
 
-        String details
+        String description
 ) {
 }
