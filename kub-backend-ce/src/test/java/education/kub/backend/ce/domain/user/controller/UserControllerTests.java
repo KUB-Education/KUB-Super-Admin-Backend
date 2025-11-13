@@ -6,12 +6,12 @@ import education.kub.backend.ce.domain.auth.controller.AuthController;
 import education.kub.backend.ce.domain.auth.model.LoginRequest;
 import education.kub.backend.ce.domain.auth.service.AuthService;
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
-import education.kub.backend.ce.domain.role.repository.RoleRepository;
 import education.kub.backend.ce.domain.user.mapper.UserMapper;
 import education.kub.backend.ce.domain.user.model.UserCreateRequest;
 import education.kub.backend.ce.domain.user.model.UserPasswordRecoveryRequest;
 import education.kub.backend.ce.domain.user.model.UserRegistrationData;
 import education.kub.backend.ce.domain.user.model.UserUpdateRequest;
+import education.kub.backend.ce.domain.user.service.UserRoleService;
 import education.kub.backend.ce.domain.user.service.UserService;
 import education.kub.backend.ce.infrastructure.components.auth.LoginComponent;
 import education.kub.backend.ce.infrastructure.components.user.UserComponent;
@@ -21,7 +21,9 @@ import education.kub.backend.ce.infrastructure.properties.executor.ConnectionPro
 import education.kub.backend.ce.infrastructure.properties.user.UserProperties;
 import education.kub.backend.ce.infrastructure.properties.user.UserRequestUrlParameters;
 import education.kub.backend.ce.infrastructure.providers.allure.SuiteHierarchy;
+import education.kub.backend.ce.infrastructure.providers.mocks.repositories.LecturerRepositoryMockProvider;
 import education.kub.backend.ce.infrastructure.providers.mocks.repositories.RoleRepositoryMockProvider;
+import education.kub.backend.ce.infrastructure.providers.mocks.repositories.StudentRepositoryMockProvider;
 import education.kub.backend.ce.infrastructure.providers.mocks.repositories.UserRepositoryMockProvider;
 import education.kub.backend.ce.infrastructure.providers.request_wrappers.user.UserProvider;
 import education.kub.backend.ce.infrastructure.token.provider.JwtTokenProvider;
@@ -47,6 +49,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -71,7 +74,7 @@ public class UserControllerTests {
             .last_name("New")
             .first_name("created")
             .middle_name("user")
-            .email("Test.email@example.com").
+            .email("test.email@example.com").
             password("new_password").build();
     private final LoginComponent lComponent = new LoginComponent();
 
@@ -95,6 +98,8 @@ public class UserControllerTests {
     private UserController userController;
     @MockitoSpyBean
     private UserService userService;
+    @MockitoBean
+    private UserRoleService userRoleService;
     @MockitoSpyBean
     private JwtAuthFilter jwtAuthFilter;
 
@@ -116,8 +121,12 @@ public class UserControllerTests {
         Mockito.lenient().when(emailService.sendRegistrationEmail(any(UserRegistrationData.class),any(String.class)))
                 .thenReturn(true);
 
-        UserService userServiceInterceptor = new UserService(
-                userMapper, uComponent.userRepo, uComponent.roleRepo,emailService,
+        UserRoleService userRoleServiceInterceptor = new UserRoleService (
+                uComponent.userRepo, uComponent.roleRepo, userMapper, uComponent.lecturerRepo, uComponent.studentRepo,
+                uComponent.tokenStoreService);
+
+        UserService userServiceInterceptor = new UserService (
+                uComponent.userRepo, userRoleService, userMapper, emailService,
                 uComponent.passwordService, uComponent.tokenStoreService, appAccountRegistrationProperties);
 
         Mockito.lenient().doAnswer(invocation -> {
@@ -148,11 +157,11 @@ public class UserControllerTests {
             return userServiceInterceptor.sendUserPassword(invocation.getArgument(0));
         }).when(userService).sendUserPassword(any(long.class));
         Mockito.lenient().doAnswer(invocation -> {
-            return userServiceInterceptor.addUserRoleById(invocation.getArgument(0), invocation.getArgument(1));
-        }).when(userService).addUserRoleById(any(long.class),any(long.class));
+            return userRoleServiceInterceptor.addUserRoleById(invocation.getArgument(0), invocation.getArgument(1));
+        }).when(userRoleService).addUserRoleById(any(long.class),any(long.class));
         Mockito.lenient().doAnswer(invocation -> {
-            return userServiceInterceptor.removeUserRoleById(invocation.getArgument(0), invocation.getArgument(1));
-        }).when(userService).removeUserRoleById(any(long.class),any(long.class));
+            return userRoleServiceInterceptor.removeUserRoleById(invocation.getArgument(0), invocation.getArgument(1));
+        }).when(userRoleService).removeUserRoleById(any(long.class),any(long.class));
 
         try {
             Mockito.lenient().doAnswer(invocation -> {
@@ -261,6 +270,8 @@ public class UserControllerTests {
     void resetMocks() {
         UserRepositoryMockProvider.resetMocks();
         RoleRepositoryMockProvider.resetMocks();
+        LecturerRepositoryMockProvider.resetMocks();
+        StudentRepositoryMockProvider.resetMocks();
     }
 
     public static Stream<Arguments> UserRequestFields() {
@@ -371,6 +382,17 @@ public class UserControllerTests {
                 uComponent.addRole(user_creator_role);
                 lComponent.FirstLogin();
                 ValidateCreateUser(user_creator.toMap(), HttpStatus.UNAUTHORIZED);
+            }
+
+            @Test
+            @DisplayName("When request body with not lowercase email field, POST /api/v1/users returns 422")
+            @Description("When request body with not lowercase email field, POST /api/v1/users returns 422.")
+            void CreateUserWithNonLowerCaseEmailField() {
+                SetAllureTestSubSuite();
+                uComponent.addRole(RoleEntity.Type.ADMIN);
+                lComponent.FirstLogin();
+                user_to_create.setEmail("Test.Test@example.com");
+                ValidateCreateUser(user_to_create.toMap(), HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
             @Test
@@ -640,6 +662,17 @@ public class UserControllerTests {
                     lComponent.FirstLogin();
                     user_creator.id = 123124314L;
                     ValidateUpdateUser(user_creator.toMap(), HttpStatus.NOT_FOUND);
+                }
+
+                @Test
+                @DisplayName("When request body with not lowercase email field, PUT /api/v1/users/{id} returns 422")
+                @Description("When request body with not lowercase email field, PUT /api/v1/users/{id} returns 422.")
+                void CreateUserWithNonLowerCaseEmailField() {
+                    SetAllureTestSubSuite();
+                    uComponent.addRole(RoleEntity.Type.ADMIN);
+                    lComponent.FirstLogin();
+                    user_to_create.setEmail("Test.Test@example.com");
+                    ValidateUpdateUser(user_to_create.toMap(), HttpStatus.UNPROCESSABLE_ENTITY);
                 }
 
                 @Test

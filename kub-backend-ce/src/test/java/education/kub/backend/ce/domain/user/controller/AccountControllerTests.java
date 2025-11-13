@@ -5,6 +5,7 @@ import education.kub.backend.ce.app.properties.AppAccountRegistrationProperties;
 import education.kub.backend.ce.domain.auth.controller.AuthController;
 import education.kub.backend.ce.domain.auth.service.AuthService;
 import education.kub.backend.ce.domain.user.mapper.UserMapper;
+import education.kub.backend.ce.domain.user.service.UserRoleService;
 import education.kub.backend.ce.domain.user.service.UserService;
 import education.kub.backend.ce.infrastructure.properties.executor.ConnectionProperties;
 import education.kub.backend.ce.infrastructure.providers.allure.SuiteHierarchy;
@@ -70,8 +71,15 @@ public class AccountControllerTests {
         lComponent.executor.mvc = MockMvcProvider.createAndSetupMockMvc(
                 new JwtAuthFilter(jwtTokenProvider, uComponent.tokenStoreService),
                 new UserAccountController(
-                        new UserService(userMapper, uComponent.userRepo, uComponent.roleRepo,emailService,
-                                uComponent.passwordService, uComponent.tokenStoreService, appAccountRegistrationProperties)
+                        new UserService(
+                                uComponent.userRepo,
+                                new UserRoleService(
+                                        uComponent.userRepo, uComponent.roleRepo, userMapper,
+                                        uComponent.lecturerRepo, uComponent.studentRepo,
+                                        uComponent.tokenStoreService
+                                ),
+                                userMapper, emailService, uComponent.passwordService,
+                                uComponent.tokenStoreService, appAccountRegistrationProperties)
                 ),
                 new AuthController(
                         new AuthService(uComponent.userRepo, uComponent.passwordService,
