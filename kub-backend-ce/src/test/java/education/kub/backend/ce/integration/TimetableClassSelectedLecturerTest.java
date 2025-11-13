@@ -189,7 +189,7 @@ public class TimetableClassSelectedLecturerTest {
         room = new RoomEntity();
         room.setLocation("some location");
         room.setCapacity((short)100);
-        room.setDetails("some details");
+        room.setDescription("some description");
         roomRepo.save(room);
 
         // create selected room

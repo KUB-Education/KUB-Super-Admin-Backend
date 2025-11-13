@@ -27,7 +27,7 @@ class RoomRepositoryTest {
         RoomEntity roomExpected = new RoomEntity();
         roomExpected.setLocation("01");
         roomExpected.setCapacity((short)100);
-        roomExpected.setDetails("lecture hall");
+        roomExpected.setDescription("lecture hall");
 
         assertDoesNotThrow(() -> roomRepo.save(roomExpected));
 
@@ -36,7 +36,7 @@ class RoomRepositoryTest {
         assertEquals(roomExpected, roomActual);
         assertEquals(roomExpected.getLocation(), roomActual.getLocation());
         assertEquals(roomExpected.getCapacity(), roomActual.getCapacity());
-        assertEquals(roomExpected.getDetails(), roomActual.getDetails());
+        assertEquals(roomExpected.getDescription(), roomActual.getDescription());
     }
 
     @Test
@@ -44,7 +44,7 @@ class RoomRepositoryTest {
         RoomEntity room = new RoomEntity();
         room.setLocation("       ");
         room.setCapacity((short)100);
-        room.setDetails("lecture hall");
+        room.setDescription("lecture hall");
 
         assertThrows(RuntimeException.class, () -> roomRepo.save(room));
     }
@@ -54,12 +54,12 @@ class RoomRepositoryTest {
         RoomEntity room1 = new RoomEntity();
         room1.setLocation("01");
         room1.setCapacity((short)100);
-        room1.setDetails("lecture hall");
+        room1.setDescription("lecture hall");
 
         RoomEntity room2 = new RoomEntity();
         room2.setLocation(room1.getLocation());
         room2.setCapacity((short)150);
-        room2.setDetails("another lecture hall");
+        room2.setDescription("another lecture hall");
 
         assertDoesNotThrow(() -> roomRepo.save(room1));
         assertThrows(RuntimeException.class, () -> roomRepo.save(room2));
@@ -70,7 +70,7 @@ class RoomRepositoryTest {
         RoomEntity room = new RoomEntity();
         room.setLocation("01");
         room.setCapacity((short)-10);
-        room.setDetails("lecture hall");
+        room.setDescription("lecture hall");
 
         assertThrows(RuntimeException.class, () -> roomRepo.save(room));
     }
@@ -80,7 +80,7 @@ class RoomRepositoryTest {
         RoomEntity room = new RoomEntity();
         room.setLocation("01");
         room.setCapacity((short)100);
-        room.setDetails(null);
+        room.setDescription(null);
 
         assertDoesNotThrow(() -> roomRepo.save(room));
     }
@@ -90,7 +90,7 @@ class RoomRepositoryTest {
         RoomEntity room = new RoomEntity();
         room.setLocation("01");
         room.setCapacity((short)100);
-        room.setDetails("     ");
+        room.setDescription("     ");
 
         assertThrows(RuntimeException.class, () -> roomRepo.save(room));
     }

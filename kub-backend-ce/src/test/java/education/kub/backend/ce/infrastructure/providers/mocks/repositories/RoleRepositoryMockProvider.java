@@ -2,12 +2,12 @@ package education.kub.backend.ce.infrastructure.providers.mocks.repositories;
 
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.role.repository.RoleRepository;
-import education.kub.backend.ce.domain.user.entity.UserEntity;
+
 import org.mockito.Mockito;
 
-import java.util.Optional;
-
 import static org.mockito.ArgumentMatchers.any;
+
+import java.util.Optional;
 
 public class RoleRepositoryMockProvider {
     private static long id_count = 0;
