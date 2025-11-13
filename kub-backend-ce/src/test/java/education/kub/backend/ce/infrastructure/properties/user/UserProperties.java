@@ -24,7 +24,7 @@ public class UserProperties {
     @Builder.Default
     public String middle_name = "Edward";
     @Builder.Default
-    public String email = "Doe.John@example.com";
+    public String email = "doe.john@example.com";
     @Builder.Default
     public String password = "password";
 
