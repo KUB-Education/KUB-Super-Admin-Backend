@@ -1,12 +1,18 @@
 package education.kub.backend.ce.infrastructure.components.user;
 
+import education.kub.backend.ce.domain.lecturer.entity.LecturerEntity;
+import education.kub.backend.ce.domain.lecturer.repository.LecturerRepository;
 import education.kub.backend.ce.domain.role.entity.RoleEntity;
 import education.kub.backend.ce.domain.role.repository.RoleRepository;
+import education.kub.backend.ce.domain.student.entity.StudentEntity;
+import education.kub.backend.ce.domain.student.repository.StudentRepository;
 import education.kub.backend.ce.domain.user.entity.UserEntity;
 import education.kub.backend.ce.domain.user.repository.UserRepository;
 
 import education.kub.backend.ce.infrastructure.properties.user.UserProperties;
+import education.kub.backend.ce.infrastructure.providers.mocks.repositories.LecturerRepositoryMockProvider;
 import education.kub.backend.ce.infrastructure.providers.mocks.repositories.RoleRepositoryMockProvider;
+import education.kub.backend.ce.infrastructure.providers.mocks.repositories.StudentRepositoryMockProvider;
 import education.kub.backend.ce.infrastructure.providers.mocks.services.TokenStoreServiceMockProvider;
 import education.kub.backend.ce.infrastructure.providers.mocks.repositories.UserRepositoryMockProvider;
 
@@ -34,6 +40,10 @@ public class UserComponent {
     public UserRepository userRepo;
     @Autowired
     public RoleRepository roleRepo;
+    @Autowired
+    public LecturerRepository lecturerRepo;
+    @Autowired
+    public StudentRepository studentRepo;
     @Autowired
     public PasswordService passwordService;
 
@@ -63,6 +73,14 @@ public class UserComponent {
         role.getUsers().add(user);
         role = roleRepo.save(role);
         user.addRole(role);
+        if (roleType == RoleEntity.Type.LECTURER) {
+            LecturerEntity lecturer = createLecturer(user);
+            lecturerRepo.save(lecturer);
+        }
+        else if (roleType == RoleEntity.Type.STUDENT) {
+            StudentEntity student = creatStudent(user);
+            studentRepo.save(student);
+        }
         userRepo.save(user);
     }
 
@@ -73,37 +91,51 @@ public class UserComponent {
     public UserEntity initRepos() {
         roleRepo.deleteAll();
         userRepo.deleteAll();
+        lecturerRepo.deleteAll();
+        studentRepo.deleteAll();
+
         UserEntity user = createUser(userData);
+        userRepo.save(user);
 
         for (var role: RoleEntity.Type.values()) {
+            RoleEntity roleEntity = createRole(role);
+            roleRepo.save(roleEntity);
             if (userData.roles.contains(role)) {
-                RoleEntity roleEntity = createRole(user, role);
-                roleEntity = roleRepo.save(roleEntity);
                 user.addRole(roleEntity);
-            }
-            else {
-                RoleEntity roleEntity = createRole(role);
-                roleRepo.save(roleEntity);
+                if (role == RoleEntity.Type.LECTURER) {
+                    LecturerEntity lecturer = createLecturer(user);
+                    lecturerRepo.save(lecturer);
+                }
+                else if (role == RoleEntity.Type.STUDENT) {
+                    StudentEntity student = creatStudent(user);
+                    studentRepo.save(student);
+                }
             }
         }
 
-        userRepo.save(user);
         return user;
     }
 
     public UserEntity mockRepos() {
         UserEntity user = createUser(userData);
+        userRepo = UserRepositoryMockProvider.createUserRepositoryMock(user);
         roleRepo = RoleRepositoryMockProvider.createRoleRepositoryMock();
+        lecturerRepo = LecturerRepositoryMockProvider.createLecturerRepositoryMock();
+        studentRepo = StudentRepositoryMockProvider.createStudentRepositoryMock();
 
         for (var role: RoleEntity.Type.values()) {
+            RoleEntity roleEntity = createRole(user, role);
+            roleEntity = roleRepo.save(roleEntity);
             if (userData.roles.contains(role)) {
-                RoleEntity roleEntity = createRole(user, role);
-                roleEntity = roleRepo.save(roleEntity);
                 user.addRole(roleEntity);
-            }
-            else {
-                RoleEntity roleEntity = createRole(role);
-                roleEntity = roleRepo.save(roleEntity);
+                if (role == RoleEntity.Type.LECTURER) {
+                    LecturerEntity lecturer = createLecturer(user);
+                    lecturerRepo.save(lecturer);
+                }
+                else if (role == RoleEntity.Type.STUDENT) {
+                    StudentEntity student = creatStudent(user);
+                    studentRepo.save(student);
+                }
             }
         }
 
@@ -136,5 +168,17 @@ public class UserComponent {
         user.setPasswordHashed(passwordService.hash(userData.password));
         user.setStatus(ACTIVATED);
         return user;
+    }
+
+    private LecturerEntity createLecturer(UserEntity user) {
+        LecturerEntity lecturer = new LecturerEntity();
+        lecturer.setUser(user);
+        return lecturer;
+    }
+
+    private StudentEntity creatStudent(UserEntity user) {
+        StudentEntity student = new StudentEntity();
+        student.setUser(user);
+        return student;
     }
 }
