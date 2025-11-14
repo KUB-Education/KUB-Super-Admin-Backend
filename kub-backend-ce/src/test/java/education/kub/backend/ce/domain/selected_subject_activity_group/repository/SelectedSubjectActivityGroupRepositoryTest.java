@@ -6,11 +6,7 @@ import education.kub.backend.ce.domain.group.entity.GroupEntity;
 import education.kub.backend.ce.domain.group.repository.GroupRepository;
 import education.kub.backend.ce.domain.selected_subject_activity.entity.SelectedSubjectActivityEntity;
 import education.kub.backend.ce.domain.selected_subject_activity.repository.SelectedSubjectActivityRepository;
-<<<<<<< HEAD
-import education.kub.backend.ce.domain.selected_subject_activity_group.domain.SelectedSubjectActivityGroupEntity;
-=======
 import education.kub.backend.ce.domain.selected_subject_activity_group.entity.SelectedSubjectActivityGroupEntity;
->>>>>>> development
 import education.kub.backend.ce.domain.specialty.entity.SpecialtyEntity;
 import education.kub.backend.ce.domain.specialty.repository.SpecialtyRepository;
 import education.kub.backend.ce.domain.study_field.entity.StudyFieldEntity;

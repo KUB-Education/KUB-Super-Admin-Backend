@@ -58,7 +58,7 @@ class SelectedRoomRepositoryTest {
         room = new RoomEntity();
         room.setCapacity((short) 100);
         room.setLocation("some location");
-        room.setDetails("some details");
+        room.setDescription("some description");
         roomRepo.save(room);
     }
 

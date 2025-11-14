@@ -42,13 +42,13 @@ class RoomServiceTest {
         RoomDto createdRoom = roomService.createRoom(createRequest);
         assertEquals(createRequest.location(), createdRoom.location());
         assertEquals(createRequest.capacity(), createdRoom.capacity());
-        assertEquals(createRequest.details(), createdRoom.details());
+        assertEquals(createRequest.description(), createdRoom.description());
 
         RoomEntity createdRoomFromRepo = roomRepo.findById(createdRoom.id()).get();
         assertEquals(createdRoomFromRepo.getId(), createdRoom.id());
         assertEquals(createdRoomFromRepo.getLocation(), createdRoom.location());
         assertEquals(createdRoomFromRepo.getCapacity(), createdRoom.capacity());
-        assertEquals(createdRoomFromRepo.getDetails(), createdRoom.details());
+        assertEquals(createdRoomFromRepo.getDescription(), createdRoom.description());
     }
 
     @Test
@@ -61,7 +61,7 @@ class RoomServiceTest {
         assertEquals(roomExpected.getId(), roomActual.id());
         assertEquals(roomExpected.getLocation(), roomActual.location());
         assertEquals(roomExpected.getCapacity(), roomActual.capacity());
-        assertEquals(roomExpected.getDetails(), roomActual.details());
+        assertEquals(roomExpected.getDescription(), roomActual.description());
     }
 
     @Test
@@ -80,7 +80,7 @@ class RoomServiceTest {
         assertEquals(room3.getId(), rooms.get(0).id());
         assertEquals(room3.getLocation(), rooms.get(0).location());
         assertEquals(room3.getCapacity(), rooms.get(0).capacity());
-        assertEquals(room3.getDetails(), rooms.get(0).details());
+        assertEquals(room3.getDescription(), rooms.get(0).description());
     }
 
     @Test
@@ -100,7 +100,7 @@ class RoomServiceTest {
         assertEquals(roomExpected.getId(), roomActual.getId());
         assertEquals(roomExpected.getLocation(), roomActual.getLocation());
         assertEquals(roomExpected.getCapacity(), roomActual.getCapacity());
-        assertEquals(roomExpected.getDetails(), roomActual.getDetails());
+        assertEquals(roomExpected.getDescription(), roomActual.getDescription());
     }
 
     @Test

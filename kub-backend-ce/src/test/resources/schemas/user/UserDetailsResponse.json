@@ -4,20 +4,25 @@
     "type": "object",
         "properties": {
             "id": {
-                "type": ["integer", "null"],
+                "type": "integer",
                 "format": "int64"
             },
             "last_name": {
-                "type": ["string", "null"]
+                "type": "string",
+                "minLength": 1
             },
             "first_name": {
-                "type": ["string", "null"]
+                "type": "string",
+                "minLength": 1
             },
             "middle_name": {
-                "type": ["string", "null"]
+                "type": ["string", "null"],
+                "minLength": 1
             },
             "email": {
-                "type": ["string", "null"]
+                "type": "string",
+                "minLength": 1,
+                "format": "email"
             },
             "status": {
                 "type": ["string", "null"],
@@ -30,11 +35,12 @@
                 ]
             },
             "roles": {
-                "type": ["array","null"],
+                "type": "array",
                 "items": {
                   "$ref": "RoleDto.json"
                 }
             }
       },
-      "required": ["id", "last_name", "first_name", "middle_name", "email", "status", "roles"]
+      "required": ["id", "last_name", "first_name", "email", "status", "roles"],
+      "additionalProperties": false
 }

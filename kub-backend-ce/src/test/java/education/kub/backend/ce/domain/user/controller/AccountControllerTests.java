@@ -5,6 +5,7 @@ import education.kub.backend.ce.app.properties.AppAccountRegistrationProperties;
 import education.kub.backend.ce.domain.auth.controller.AuthController;
 import education.kub.backend.ce.domain.auth.service.AuthService;
 import education.kub.backend.ce.domain.user.mapper.UserMapper;
+import education.kub.backend.ce.domain.user.service.UserRoleService;
 import education.kub.backend.ce.domain.user.service.UserService;
 import education.kub.backend.ce.infrastructure.properties.executor.ConnectionProperties;
 import education.kub.backend.ce.infrastructure.providers.allure.SuiteHierarchy;
@@ -16,6 +17,7 @@ import education.kub.backend.ce.infrastructure.components.user.UserComponent;
 import education.kub.backend.ce.infrastructure.providers.mocks.WebMvc.MockMvcProvider;
 import education.kub.backend.ce.infrastructure.email.service.EmailService;
 
+import education.kub.backend.ce.infrastructure.token.provider.JwtTokenProvider;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
@@ -43,16 +45,17 @@ import java.util.Map;
 @EnableJpaRepositories(basePackages={"education"})
 @TestPropertySource(locations = {"classpath:test.application.properties"})
 public class AccountControllerTests {
-    @Autowired
-    private ConnectionProperties conn;
 
     private final LoginProperties loginData = new LoginProperties();
-    @Autowired
-    private UserComponent uComponent;
-
+    private final LoginComponent lComponent = new LoginComponent();
     private final AccountRequestProperties params = new AccountRequestProperties();
 
-    private final LoginComponent lComponent = new LoginComponent();
+    @Autowired
+    private ConnectionProperties conn;
+    @Autowired
+    private UserComponent uComponent;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -61,19 +64,26 @@ public class AccountControllerTests {
     private AppAccountRegistrationProperties appAccountRegistrationProperties;
 
     void initMocks() {
-        loginData.executor.setConn(conn);
+        lComponent.executor.setConn(conn);
         lComponent.setLoginData(loginData);
-        uComponent.setLoginData(loginData);
+        uComponent.setUserData(loginData.user);
         uComponent.mockRepos();
-        loginData.executor.mvc = MockMvcProvider.createAndSetupMockMvc(
-                new JwtAuthFilter(uComponent.jwtTokenProvider, uComponent.tokenStoreService),
+        lComponent.executor.mvc = MockMvcProvider.createAndSetupMockMvc(
+                new JwtAuthFilter(jwtTokenProvider, uComponent.tokenStoreService),
                 new UserAccountController(
-                        new UserService(userMapper, uComponent.userRepo, uComponent.roleRepo,emailService,
-                                uComponent.passwordService, uComponent.tokenStoreService, appAccountRegistrationProperties)
+                        new UserService(
+                                uComponent.userRepo,
+                                new UserRoleService(
+                                        uComponent.userRepo, uComponent.roleRepo, userMapper,
+                                        uComponent.lecturerRepo, uComponent.studentRepo,
+                                        uComponent.tokenStoreService
+                                ),
+                                userMapper, emailService, uComponent.passwordService,
+                                uComponent.tokenStoreService, appAccountRegistrationProperties)
                 ),
                 new AuthController(
                         new AuthService(uComponent.userRepo, uComponent.passwordService,
-                                uComponent.tokenStoreService, uComponent.jwtTokenProvider
+                                uComponent.tokenStoreService, jwtTokenProvider
                         )
                 )
         );
@@ -89,17 +99,17 @@ public class AccountControllerTests {
 
     @Step("Get account info")
     void ValidateUserAccountInfoResponse(HttpStatusCode expectedStatusCode) {
-        AccountProvider.GetUserAccountInfo(loginData, expectedStatusCode);
+        AccountProvider.GetUserAccountInfo(lComponent.executor, loginData, expectedStatusCode);
     }
 
     @Step("Change password")
     void ValidateChangePasswordResponse(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
-        AccountProvider.ChangePassword(loginData, request_body, expectedStatusCode);
+        AccountProvider.ChangePassword(lComponent.executor, loginData, request_body, expectedStatusCode);
     }
 
     @Step("Recover password")
     void ValidateRecoverPasswordResponse(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
-        AccountProvider.RecoverPassword(loginData, request_body, expectedStatusCode);
+        AccountProvider.RecoverPassword(lComponent.executor, loginData, request_body, expectedStatusCode);
     }
 
     @Nested
@@ -150,7 +160,7 @@ public class AccountControllerTests {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
             ValidateChangePasswordResponse(
-                    Map.of("old_password", loginData.password, "new_password", params.new_password),
+                    Map.of("old_password", loginData.user.password, "new_password", params.new_password),
                     HttpStatus.NO_CONTENT
             );
         }
@@ -188,7 +198,7 @@ public class AccountControllerTests {
         public void ChangePasswordWithoutNewPassword() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
-            ValidateChangePasswordResponse(Map.of("old_password", loginData.password), HttpStatus.BAD_REQUEST);
+            ValidateChangePasswordResponse(Map.of("old_password", loginData.user.password), HttpStatus.BAD_REQUEST);
         }
 
         @Test
@@ -197,7 +207,7 @@ public class AccountControllerTests {
         public void ChangePasswordWithEmptyNewPassword() {
             SetAllureTestSubSuite();
             lComponent.FirstLogin();
-            ValidateChangePasswordResponse(Map.of("old_password", loginData.password, "new_password", ""),
+            ValidateChangePasswordResponse(Map.of("old_password", loginData.user.password, "new_password", ""),
                     HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
@@ -217,7 +227,7 @@ public class AccountControllerTests {
         public void ChangePasswordWithoutToken() {
             SetAllureTestSubSuite();
             ValidateChangePasswordResponse(
-                    Map.of("old_password", loginData.password, "new_password", params.new_password),
+                    Map.of("old_password", loginData.user.password, "new_password", params.new_password),
                     HttpStatus.UNAUTHORIZED
             );
         }
@@ -229,7 +239,7 @@ public class AccountControllerTests {
             SetAllureTestSubSuite();
             loginData.accessToken = "gdagddfgadg";
             ValidateChangePasswordResponse(
-                    Map.of("old_password", loginData.password, "new_password", params.new_password),
+                    Map.of("old_password", loginData.user.password, "new_password", params.new_password),
                     HttpStatus.UNAUTHORIZED
             );
         }
@@ -247,7 +257,7 @@ public class AccountControllerTests {
         @Description("When request is valid, POST /api/v1/account/recovery-password returns 204 and valid response.")
         public void RecoverPasswordSuccess() {
             SetAllureTestSubSuite();
-            ValidateRecoverPasswordResponse(Map.of("email", loginData.email), HttpStatus.NO_CONTENT);
+            ValidateRecoverPasswordResponse(Map.of("email", loginData.user.email), HttpStatus.NO_CONTENT);
         }
 
         @Test
