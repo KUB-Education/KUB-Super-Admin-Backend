@@ -15,7 +15,7 @@ public class RequestProperties {
     public String url;
     @Builder.Default
     public Method method = Method.POST;
-    public Map<String,String> body;
+    public Map<String,Object> body;
     public Map<String,String> headers;
     @Builder.Default
     public String contentType = "application/json";

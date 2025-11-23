@@ -39,7 +39,6 @@ import static education.kub.backend.ce.infrastructure.providers.request_wrappers
 @EnableJpaRepositories(basePackages={"education"})
 @TestPropertySource(locations = {"classpath:test.application.properties"})
 public class AuthControllerTests {
-
     private final LoginProperties loginData = new LoginProperties();
     private final LoginComponent lComponent = new LoginComponent();
     @Autowired
@@ -71,7 +70,7 @@ public class AuthControllerTests {
     }
 
     @Step("Login")
-    public void ValidateLogin(Map<String, String> request_map, String bearer_token, HttpStatusCode expectedStatusCode) {
+    public void ValidateLogin(Map<String, Object> request_map, String bearer_token, HttpStatusCode expectedStatusCode) {
         LoginProvider.ValidateLogin(lComponent.executor, request_map, bearer_token, expectedStatusCode);
     }
 
@@ -85,7 +84,7 @@ public class AuthControllerTests {
     }
 
     @Step("Refresh")
-    public void ValidateRefresh(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
+    public void ValidateRefresh(Map<String, Object> request_body, HttpStatusCode expectedStatusCode) {
         AuthProvider.Refresh(lComponent.executor, request_body, expectedStatusCode,
                 "schemas/auth/RefreshResponse.json");
     }
