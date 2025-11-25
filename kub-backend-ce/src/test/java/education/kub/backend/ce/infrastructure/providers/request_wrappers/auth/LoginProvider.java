@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @TestPropertySource(locations = {"classpath:test.application.properties"})
 public class LoginProvider {
 
-    static String Login(ExecutorProperties executor, Map<String, String> request_map,
+    static String Login(ExecutorProperties executor, Map<String, Object> request_map,
                         String bearer_token, HttpStatusCode expectedStatusCode) {
         RequestProperties request_params = RequestProperties.builder()
                 .body(request_map)
@@ -33,7 +33,7 @@ public class LoginProvider {
         return AuthProvider.Login(executor, request_params, validation);
     }
 
-    public static void ValidateLogin(ExecutorProperties executor, Map<String, String> request_map,
+    public static void ValidateLogin(ExecutorProperties executor, Map<String, Object> request_map,
                                      String bearer_token, HttpStatusCode expectedStatusCode) {
         Login(executor, request_map, bearer_token, expectedStatusCode);
     }

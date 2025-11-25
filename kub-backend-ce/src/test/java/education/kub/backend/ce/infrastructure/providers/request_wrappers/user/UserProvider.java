@@ -15,7 +15,7 @@ import static education.kub.backend.ce.infrastructure.providers.request_wrappers
 
 public class UserProvider {
     public static String CreateUser(ExecutorProperties executor, LoginProperties loginData,
-                                    Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
+                                    Map<String, Object> request_body, HttpStatusCode expectedStatusCode) {
         RequestProperties request_params = RequestProperties.builder()
                 .url(executor.conn.base_url + "/api/v1/users")
                 .headers(BearerTokenToMap(loginData.accessToken))
@@ -61,7 +61,7 @@ public class UserProvider {
         return RequestExecutor.ExecuteRequest(executor.mvc, request_params, validation);
     }
 
-    public static String UpdateUser(ExecutorProperties executor, LoginProperties loginData, Map<String, String> request_body,
+    public static String UpdateUser(ExecutorProperties executor, LoginProperties loginData, Map<String, Object> request_body,
                                     UserRequestUrlParameters urlParams,
                                     HttpStatusCode expectedStatusCode) {
         RequestProperties request_params = RequestProperties.builder()

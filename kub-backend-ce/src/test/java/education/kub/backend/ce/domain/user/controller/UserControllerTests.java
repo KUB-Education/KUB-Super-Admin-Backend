@@ -182,7 +182,7 @@ public class UserControllerTests {
     }
 
     @Step("Create user")
-    void ValidateCreateUser(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
+    void ValidateCreateUser(Map<String, Object> request_body, HttpStatusCode expectedStatusCode) {
         UserProvider.CreateUser(lComponent.executor, loginData, request_body, expectedStatusCode);
     }
 
@@ -202,12 +202,12 @@ public class UserControllerTests {
     }
 
     @Step("Update user")
-    void ValidateUpdateUser(Map<String, String> request_body, UserRequestUrlParameters urlParams, HttpStatusCode expectedStatusCode) {
+    void ValidateUpdateUser(Map<String, Object> request_body, UserRequestUrlParameters urlParams, HttpStatusCode expectedStatusCode) {
         UserProvider.UpdateUser(lComponent.executor, loginData, request_body, urlParams, expectedStatusCode);
     }
 
     @Step("Update user")
-    void ValidateUpdateUser(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
+    void ValidateUpdateUser(Map<String, Object> request_body, HttpStatusCode expectedStatusCode) {
         UserProvider.UpdateUser(lComponent.executor, loginData, request_body, loginData.getUser().toUrlProperties(), expectedStatusCode);
     }
 
@@ -289,8 +289,8 @@ public class UserControllerTests {
 
             @ParameterizedTest
             @MethodSource("education.kub.backend.ce.domain.user.controller.UserControllerTests#PrivilegedRoleTypes")
-            @DisplayName("When request is valid, POST /api/v1/users returns 200 and valid response")
-            @Description("When request is valid, POST /api/v1/users returns 200 and valid response.")
+            @DisplayName("When request is valid, POST /api/v1/users returns 201 and valid response")
+            @Description("When request is valid, POST /api/v1/users returns 201 and valid response.")
             void CreateUserSuccessWithAllowedRoles(RoleEntity.Type user_creator_role) {
                 SetAllureTestSubSuite();
                 Allure.parameter("Role of creator", user_creator_role);
@@ -300,8 +300,8 @@ public class UserControllerTests {
             }
 
             @Test
-            @DisplayName("When valid request body without middle name field, POST /api/v1/users returns 200 and valid response")
-            @Description("When valid request body without middle name field, POST /api/v1/users returns 200 and valid response.")
+            @DisplayName("When valid request body without middle name field, POST /api/v1/users returns 201 and valid response")
+            @Description("When valid request body without middle name field, POST /api/v1/users returns 201 and valid response.")
             void CreateUserSuccessOnUserWithoutMiddleName() {
                 SetAllureTestSubSuite();
                 uComponent.addRole(RoleEntity.Type.ADMIN);
@@ -345,7 +345,7 @@ public class UserControllerTests {
 
                 var field_names = List.of("first_name", "last_name", "middle_name", "email");
                 var values = List.of("Ada", "Lovelace", "Byron", "ada.lovelace@kub.education");
-                Map<String,String> request_body = IntStream.range(0, values.size()).boxed()
+                Map<String, Object> request_body = IntStream.range(0, values.size()).boxed()
                         .collect(Collectors.toMap(field_names::get, values::get));
                 request_body.remove(request_field);
 
@@ -365,7 +365,7 @@ public class UserControllerTests {
 
                 var field_names = List.of("first_name", "last_name", "middle_name", "email");
                 var values = List.of("Ada", "Lovelace", "Byron", "ada.lovelace@kub.education");
-                Map<String,String> request_body = IntStream.range(0, values.size()).boxed()
+                Map<String, Object> request_body = IntStream.range(0, values.size()).boxed()
                         .collect(Collectors.toMap(field_names::get, values::get));
                 request_body.put(request_field, "");
 

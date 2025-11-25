@@ -2,45 +2,52 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "UserDetailsResponse",
     "type": "object",
-        "properties": {
-            "id": {
-                "type": "integer",
-                "format": "int64"
-            },
-            "last_name": {
-                "type": "string",
-                "minLength": 1
-            },
-            "first_name": {
-                "type": "string",
-                "minLength": 1
-            },
-            "middle_name": {
-                "type": ["string", "null"],
-                "minLength": 1
-            },
-            "email": {
-                "type": "string",
-                "minLength": 1,
-                "format": "email"
-            },
-            "status": {
-                "type": ["string", "null"],
-                "enum": [
-                  "EMAIL_SENDING_FAILURE",
-                  "ACTIVATION_PENDING",
-                  "ACTIVATION_EXPIRED",
-                  "ACTIVATED",
-                  "RECOVERY_PENDING"
-                ]
-            },
-            "roles": {
-                "type": "array",
-                "items": {
-                  "$ref": "RoleDto.json"
-                }
+    "properties": {
+        "id": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+        },
+        "last_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+        },
+        "first_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+        },
+        "email": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "format": "email"
+        },
+        "status": {
+            "type": ["string", "null"],
+            "enum": [
+              "EMAIL_SENDING_FAILURE",
+              "ACTIVATION_PENDING",
+              "ACTIVATION_EXPIRED",
+              "ACTIVATED",
+              "RECOVERY_PENDING"
+            ]
+        },
+        "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "RoleDto.json"
             }
+        }
       },
+    "patternProperties": {
+        "middle_name": {
+            "type": ["string", "null"],
+            "minLength": 1,
+            "maxLength": 32
+        }
+    },
       "required": ["id", "last_name", "first_name", "email", "status", "roles"],
       "additionalProperties": false
 }
