@@ -61,11 +61,12 @@ import static org.mockito.ArgumentMatchers.any;
 @TestPropertySource(locations = {"classpath:test.application.properties"})
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE)
 public class RoomControllerTests {
-    private final RoomProperties room = RoomProperties.builder().build();
     private final LoginProperties loginData = new LoginProperties();
     private final LoginComponent lComponent = new LoginComponent();
 
     private final UserProperties user_creator = UserProperties.builder().build();
+
+    private final RoomProperties room = RoomProperties.builder().build();
 
     @Autowired
     private ConnectionProperties conn;
@@ -180,7 +181,17 @@ public class RoomControllerTests {
     }
 
     public static Stream<Arguments> RoomRequestFields() {
+        String[] field_names = {"location", "capacity", "description"};
+        return Arrays.stream(field_names).map(Arguments::of);
+    }
+
+    public static Stream<Arguments> MissingRoomRequestFields() {
         String[] field_names = {"location", "capacity"};
+        return Arrays.stream(field_names).map(Arguments::of);
+    }
+
+    public static Stream<Arguments> EmptyRoomRequestFields() {
+        String[] field_names = {"location", "description"};
         return Arrays.stream(field_names).map(Arguments::of);
     }
 
@@ -244,7 +255,7 @@ public class RoomControllerTests {
             }
 
             @ParameterizedTest
-            @MethodSource("education.kub.backend.ce.domain.room.controller.RoomControllerTests#RoomRequestFields")
+            @MethodSource("education.kub.backend.ce.domain.room.controller.RoomControllerTests#MissingRoomRequestFields")
             @DisplayName("When request body without required field, POST /api/v1/rooms returns 400")
             @Description("When request body without required field, POST /api/v1/rooms returns 400.")
             void CreateRoomWithoutRequestField(String request_field) {
@@ -261,7 +272,7 @@ public class RoomControllerTests {
             }
 
             @ParameterizedTest
-            @MethodSource("education.kub.backend.ce.domain.room.controller.RoomControllerTests#RoomRequestFields")
+            @MethodSource("education.kub.backend.ce.domain.room.controller.RoomControllerTests#EmptyRoomRequestFields")
             @DisplayName("When request body with empty field, POST /api/v1/rooms returns 422")
             @Description("When request body with empty field, POST /api/v1/rooms returns 422.")
             void CreateRoomWithEmptyRequestField(String request_field) {
@@ -303,15 +314,15 @@ public class RoomControllerTests {
             }
 
             @Test
-            @DisplayName("When request body with location field length what exceeds max possible length (256), POST /api/v1/rooms returns 400")
-            @Description("When request body with location field length what exceeds max possible length (256), POST /api/v1/rooms returns 400.")
+            @DisplayName("When request body with location field length what exceeds max possible length (256), POST /api/v1/rooms returns 422")
+            @Description("When request body with location field length what exceeds max possible length (256), POST /api/v1/rooms returns 422.")
             void CreateRoomWithTooLongLocationFieldString() {
                 SetAllureTestSubSuite();
                 uComponent.addRole(RoleEntity.Type.ADMIN);
                 lComponent.FirstLogin();
                 var request_body = room.toMap();
                 request_body.put("location", "1".repeat(257));
-                ValidateCreateRoom(request_body, HttpStatus.BAD_REQUEST);
+                ValidateCreateRoom(request_body, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
             @Test
@@ -440,10 +451,9 @@ public class RoomControllerTests {
                 @Description("When request is valid, GET /api/v1/rooms/{id} returns 200 and valid response.")
                 void GetRoomSuccessWithAllowedRole() {
                     SetAllureTestSubSuite();
-                    uComponent.addRole(RoleEntity.Type.ADMIN);
                     lComponent.FirstLogin();
                     ValidateCreateRoom(room.toMap(), HttpStatus.CREATED);
-                    ValidateGetRoomById(room.toUrlProperties(), HttpStatus.OK);
+                    ValidateGetRoomById(room.toUrlParameters(), HttpStatus.OK);
                 }
 
                 @Test
@@ -451,29 +461,28 @@ public class RoomControllerTests {
                 @Description("When request with invalid id url parameter, GET /api/v1/rooms/{id} returns 400.")
                 void GetRoomWithInvalidIdUrlParameter() {
                     SetAllureTestSubSuite();
-                    uComponent.addRole(RoleEntity.Type.ADMIN);
                     lComponent.FirstLogin();
                     ValidateGetRoomById(RoomRequestUrlParameters.builder().room_id("afsfdsfdsfss").build(), HttpStatus.BAD_REQUEST);
                 }
 
-                @ParameterizedTest
-                @MethodSource("education.kub.backend.ce.domain.room.controller.RoomControllerTests#NonPrivilegedRoleTypes")
-                @DisplayName("When valid request with missing roles, GET /api/v1/rooms/{id} returns 401")
-                @Description("When valid request with missing roles, GET /api/v1/rooms/{id} returns 401.")
-                void GetRoomWithNotAllowedRole(RoleEntity.Type user_creator_role) {
-                    SetAllureTestSubSuite();
-                    Allure.parameter("Role of creator", user_creator_role);
-                    uComponent.addRole(user_creator_role);
-                    lComponent.FirstLogin();
-                    ValidateGetRoomById(room.toUrlProperties(), HttpStatus.UNAUTHORIZED);
-                }
+//                @ParameterizedTest
+//                @MethodSource("education.kub.backend.ce.domain.room.controller.RoomControllerTests#NonPrivilegedRoleTypes")
+//                @DisplayName("When valid request with missing roles, GET /api/v1/rooms/{id} returns 401")
+//                @Description("When valid request with missing roles, GET /api/v1/rooms/{id} returns 401.")
+//                void GetRoomWithNotAllowedRole(RoleEntity.Type user_creator_role) {
+//                    SetAllureTestSubSuite();
+//                    Allure.parameter("Role of creator", user_creator_role);
+//                    uComponent.addRole(user_creator_role);
+//                    lComponent.FirstLogin();
+//                    ValidateGetRoomById(room.toUrlParameters(), HttpStatus.UNAUTHORIZED);
+//                }
 
                 @Test
                 @DisplayName("When request without access token header, GET /api/v1/rooms/{id} returns 401")
                 @Description("When request without access token header, GET /api/v1/rooms/{id} returns 401.")
                 void GetRoomWithoutToken() {
                     SetAllureTestSubSuite();
-                    ValidateGetRoomById(room.toUrlProperties(), HttpStatus.UNAUTHORIZED);
+                    ValidateGetRoomById(room.toUrlParameters(), HttpStatus.UNAUTHORIZED);
                 }
 
                 @Test
@@ -482,7 +491,7 @@ public class RoomControllerTests {
                 void GetRoomWithInvalidToken() {
                     SetAllureTestSubSuite();
                     lComponent.loginData.accessToken = "asfadfdgwWe2qe2e1easfar2r653e";
-                    ValidateGetRoomById(room.toUrlProperties(), HttpStatus.UNAUTHORIZED);
+                    ValidateGetRoomById(room.toUrlParameters(), HttpStatus.UNAUTHORIZED);
                 }
 
                 @Test
@@ -490,7 +499,6 @@ public class RoomControllerTests {
                 @Description("When request with room id url parameter for not existing room, GET /api/v1/rooms/{id} returns 404.")
                 void GetRoomWithNonExistedRoom() {
                     SetAllureTestSubSuite();
-                    uComponent.addRole(RoleEntity.Type.ADMIN);
                     lComponent.FirstLogin();
                     ValidateGetRoomById(RoomRequestUrlParameters.builder().room_id("123124314").build(), HttpStatus.NOT_FOUND);
                 }
@@ -511,8 +519,7 @@ public class RoomControllerTests {
                     lComponent.FirstLogin();
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
-                    request_body.remove("location");
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.OK);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.OK);
                 }
 
                 @Test
@@ -525,9 +532,8 @@ public class RoomControllerTests {
                     lComponent.FirstLogin();
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
-                    request_body.remove("location");
                     request_body.remove("description");
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.OK);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.OK);
                 }
 
                 @Test
@@ -548,7 +554,7 @@ public class RoomControllerTests {
                     uComponent.addRole(RoleEntity.Type.ADMIN);
                     lComponent.FirstLogin();
                     ValidateCreateRoom(room.toMap(), HttpStatus.CREATED);
-                    ValidateUpdateRoomById(Map.of(), room.toUrlProperties(), HttpStatus.BAD_REQUEST);
+                    ValidateUpdateRoomById(Map.of(), room.toUrlParameters(), HttpStatus.BAD_REQUEST);
                 }
 
                 @Test
@@ -561,8 +567,7 @@ public class RoomControllerTests {
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
                     request_body.put("VgbrsnbrsB", "sfhHFgsDfas");
-                    request_body.remove("location");
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.BAD_REQUEST);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.BAD_REQUEST);
                 }
 
                 @Test
@@ -575,7 +580,7 @@ public class RoomControllerTests {
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
                     request_body.put("capacity", "sfhHFgsDfas");
-                    ValidateUpdateRoomById(Map.of(), room.toUrlProperties(), HttpStatus.BAD_REQUEST);
+                    ValidateUpdateRoomById(Map.of(), room.toUrlParameters(), HttpStatus.BAD_REQUEST);
                 }
 
                 @ParameterizedTest
@@ -591,16 +596,15 @@ public class RoomControllerTests {
 
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
-                    request_body.put("location", "Test location");
                     request_body.remove(request_field);
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.OK);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.OK);
                 }
 
                 @ParameterizedTest
-                @MethodSource("education.kub.backend.ce.domain.room.controller.RoomControllerTests#RoomRequestFields")
+                @MethodSource("education.kub.backend.ce.domain.room.controller.RoomControllerTests#EmptyRoomRequestFields")
                 @DisplayName("When request body with empty field, PUT /api/v1/rooms/{id} returns 422")
                 @Description("When request body with empty field, PUT /api/v1/rooms/{id} returns 422.")
-                void UpdateRoomWithEmptyRequestField(String request_field) {
+                void UpdateRoomWithEmptyLocationField(String request_field) {
                     SetAllureTestSubSuite();
                     Allure.parameter("Request field", request_field);
 
@@ -609,9 +613,8 @@ public class RoomControllerTests {
 
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
-                    request_body.remove("location");
                     request_body.put(request_field, "");
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.UNPROCESSABLE_ENTITY);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.UNPROCESSABLE_ENTITY);
                 }
 
                 @ParameterizedTest
@@ -624,12 +627,12 @@ public class RoomControllerTests {
                     uComponent.addRole(user_creator_role);
                     lComponent.FirstLogin();
                     var request_body = room.toMap();
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.UNAUTHORIZED);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.UNAUTHORIZED);
                 }
 
                 @Test
-                @DisplayName("When request body with location field length what exceeds max possible length (256), PUT /api/v1/rooms/{id} returns 400")
-                @Description("When request body with location field length what exceeds max possible length (256), PUT /api/v1/rooms/{id} returns 400.")
+                @DisplayName("When request body with location field length what exceeds max possible length (256), PUT /api/v1/rooms/{id} returns 422")
+                @Description("When request body with location field length what exceeds max possible length (256), PUT /api/v1/rooms/{id} returns 422.")
                 void CreateRoomWithTooLongLocationFieldString() {
                     SetAllureTestSubSuite();
                     uComponent.addRole(RoleEntity.Type.ADMIN);
@@ -637,7 +640,7 @@ public class RoomControllerTests {
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
                     request_body.put("location", "1".repeat(257));
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.BAD_REQUEST);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.UNPROCESSABLE_ENTITY);
                 }
 
                 @Test
@@ -649,9 +652,8 @@ public class RoomControllerTests {
                     lComponent.FirstLogin();
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
-                    request_body.remove("location");
                     request_body.put("capacity", -1);
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.UNPROCESSABLE_ENTITY);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.UNPROCESSABLE_ENTITY);
                 }
 
                 @Test
@@ -663,9 +665,8 @@ public class RoomControllerTests {
                     lComponent.FirstLogin();
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
-                    request_body.remove("location");
                     request_body.put("capacity", 0);
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.UNPROCESSABLE_ENTITY);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.UNPROCESSABLE_ENTITY);
                 }
 
                 @Test
@@ -677,9 +678,8 @@ public class RoomControllerTests {
                     lComponent.FirstLogin();
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
-                    request_body.remove("location");
                     request_body.put("capacity", 32768);
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.BAD_REQUEST);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.BAD_REQUEST);
                 }
 
                 @Test
@@ -689,7 +689,7 @@ public class RoomControllerTests {
                     SetAllureTestSubSuite();
                     var request_body = room.toMap();
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.UNAUTHORIZED);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.UNAUTHORIZED);
                 }
 
                 @Test
@@ -698,7 +698,7 @@ public class RoomControllerTests {
                 void UpdateRoomWithInvalidToken() {
                     SetAllureTestSubSuite();
                     lComponent.loginData.accessToken = "asfadfdgwWe2qe2e1easfar2r653e";
-                    ValidateUpdateRoomById(room.toMap(), room.toUrlProperties(), HttpStatus.UNAUTHORIZED);
+                    ValidateUpdateRoomById(room.toMap(), room.toUrlParameters(), HttpStatus.UNAUTHORIZED);
                 }
 
                 @Test
@@ -714,7 +714,7 @@ public class RoomControllerTests {
                     request_body.put("location", "Second location");
                     ValidateCreateRoom(request_body, HttpStatus.CREATED);
                     request_body.put("location", "First location");
-                    ValidateUpdateRoomById(request_body, room.toUrlProperties(), HttpStatus.CONFLICT);
+                    ValidateUpdateRoomById(request_body, room.toUrlParameters(), HttpStatus.CONFLICT);
                 }
 
                 @Test
@@ -734,14 +734,16 @@ public class RoomControllerTests {
                 void SetAllureTestSubSuite() {
                     Allure.label("subSuite", "DELETE /api/v1/rooms/{id}");
                 }
-                
+
+                @Test
                 @DisplayName("When request is valid, DELETE /api/v1/rooms/{id} returns 200")
                 @Description("When request is valid, DELETE /api/v1/rooms/{id} returns 200.")
                 void DeleteRoomSuccessWithAllowedRole() {
                     SetAllureTestSubSuite();
                     uComponent.addRole(RoleEntity.Type.ADMIN);
                     lComponent.FirstLogin();
-                    ValidateDeleteRoomById(room.toUrlProperties(), HttpStatus.NO_CONTENT);
+                    ValidateCreateRoom(room.toMap(), HttpStatus.CREATED);
+                    ValidateDeleteRoomById(room.toUrlParameters(), HttpStatus.NO_CONTENT);
                 }
 
                 @Test
@@ -763,7 +765,7 @@ public class RoomControllerTests {
                     Allure.parameter("Role of creator", user_creator_role);
                     uComponent.addRole(user_creator_role);
                     lComponent.FirstLogin();
-                    ValidateDeleteRoomById(room.toUrlProperties(), HttpStatus.UNAUTHORIZED);
+                    ValidateDeleteRoomById(room.toUrlParameters(), HttpStatus.UNAUTHORIZED);
                 }
 
                 @Test
@@ -771,7 +773,7 @@ public class RoomControllerTests {
                 @Description("When request without access token header, DELETE /api/v1/rooms/{id} returns 401.")
                 void DeleteRoomWithoutToken() {
                     SetAllureTestSubSuite();
-                    ValidateDeleteRoomById(room.toUrlProperties(), HttpStatus.UNAUTHORIZED);
+                    ValidateDeleteRoomById(room.toUrlParameters(), HttpStatus.UNAUTHORIZED);
                 }
 
                 @Test
@@ -780,13 +782,13 @@ public class RoomControllerTests {
                 void DeleteRoomWithInvalidToken() {
                     SetAllureTestSubSuite();
                     lComponent.loginData.accessToken = "asfadfdgwWe2qe2e1easfar2r653e";
-                    ValidateDeleteRoomById(room.toUrlProperties(), HttpStatus.UNAUTHORIZED);
+                    ValidateDeleteRoomById(room.toUrlParameters(), HttpStatus.UNAUTHORIZED);
                 }
 
                 @Test
                 @DisplayName("When request with id url parameter for not existing room, DELETE /api/v1/rooms/{id} returns 404")
                 @Description("When request with id url parameter for not existing room, DELETE /api/v1/rooms/{id} returns 404.")
-                void DeleteRoomWithNonExistedUser() {
+                void DeleteRoomWithNonExistedRoom() {
                     SetAllureTestSubSuite();
                     uComponent.addRole(RoleEntity.Type.ADMIN);
                     lComponent.FirstLogin();

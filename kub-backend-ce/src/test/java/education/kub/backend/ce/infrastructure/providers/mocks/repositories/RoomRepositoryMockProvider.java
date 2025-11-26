@@ -16,8 +16,19 @@ public class RoomRepositoryMockProvider {
 
     private static void saveRoom(RoomRepository mock, RoomEntity room) {
         Mockito.lenient().doReturn(Optional.of(room)).when(mock).findById(room.getId());
+        Mockito.lenient().doReturn(true).when(mock).existsById(room.getId());
         Mockito.lenient().doReturn(true).when(mock).existsByLocation(room.getLocation());
-        Mockito.lenient().doReturn(true).when(mock).existsByLocationAndIdNot(room.getLocation(), room.getId());
+        Mockito.lenient().doAnswer(invocation -> {
+            var location = invocation.getArgument(0, String.class);
+            var id = invocation.getArgument(1, Long.class);
+            var conflicts = rooms.stream().filter(roomEntity -> {
+                return !roomEntity.getId().equals(id) && roomEntity.getLocation().equals(location);
+            }).count();
+            if (conflicts == 0) {
+                return false;
+            }
+            return true;
+        }).when(mock).existsByLocationAndIdNot(any(String.class), any(Long.class));
         rooms.add(room);
     }
 

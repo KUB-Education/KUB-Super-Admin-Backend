@@ -20,7 +20,7 @@ public class RoomProperties {
     @Builder.Default
     private String description = "Test";
 
-    public RoomRequestUrlParameters toUrlProperties() {
+    public RoomRequestUrlParameters toUrlParameters() {
         return RoomRequestUrlParameters.builder().room_id(id.toString()).build();
     }
 
