@@ -32,7 +32,7 @@ public class AccountProvider  {
         return RequestExecutor.ExecuteRequest(executor.mvc, request_params, validation);
     }
 
-    public static void ChangePassword(ExecutorProperties executor, LoginProperties loginData, Map<String,String> request_body,
+    public static void ChangePassword(ExecutorProperties executor, LoginProperties loginData, Map<String, Object> request_body,
                                       HttpStatusCode expectedStatusCode) {
         RequestProperties request_params = RequestProperties.builder()
                 .url(executor.conn.base_url + "/api/v1/account/change-password")
@@ -47,7 +47,7 @@ public class AccountProvider  {
         RequestExecutor.ExecuteRequest(executor.mvc, request_params, validation);
     }
 
-    public static void RecoverPassword(ExecutorProperties executor, LoginProperties loginData, Map<String,String> request_body,
+    public static void RecoverPassword(ExecutorProperties executor, LoginProperties loginData, Map<String, Object> request_body,
                                        HttpStatusCode expectedStatusCode) {
         RequestProperties request_params = RequestProperties.builder()
                 .url(executor.conn.base_url + "/api/v1/account/recovery-password")

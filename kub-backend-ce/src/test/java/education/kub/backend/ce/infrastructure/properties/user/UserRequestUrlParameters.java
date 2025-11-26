@@ -12,4 +12,11 @@ public class UserRequestUrlParameters {
     public String user_id = "0";
     @Builder.Default
     public String role_id = "0";
+
+    public String toUrlRequestParametersSubstring() {
+        if (role_id == null) {
+            return user_id;
+        }
+        return user_id + "/" + role_id;
+    }
 }

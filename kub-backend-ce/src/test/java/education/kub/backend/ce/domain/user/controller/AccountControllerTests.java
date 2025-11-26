@@ -45,7 +45,6 @@ import java.util.Map;
 @EnableJpaRepositories(basePackages={"education"})
 @TestPropertySource(locations = {"classpath:test.application.properties"})
 public class AccountControllerTests {
-
     private final LoginProperties loginData = new LoginProperties();
     private final LoginComponent lComponent = new LoginComponent();
     private final AccountRequestProperties params = new AccountRequestProperties();
@@ -103,12 +102,12 @@ public class AccountControllerTests {
     }
 
     @Step("Change password")
-    void ValidateChangePasswordResponse(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
+    void ValidateChangePasswordResponse(Map<String, Object> request_body, HttpStatusCode expectedStatusCode) {
         AccountProvider.ChangePassword(lComponent.executor, loginData, request_body, expectedStatusCode);
     }
 
     @Step("Recover password")
-    void ValidateRecoverPasswordResponse(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
+    void ValidateRecoverPasswordResponse(Map<String, Object> request_body, HttpStatusCode expectedStatusCode) {
         AccountProvider.RecoverPassword(lComponent.executor, loginData, request_body, expectedStatusCode);
     }
 

@@ -182,7 +182,7 @@ public class UserControllerTests {
     }
 
     @Step("Create user")
-    void ValidateCreateUser(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
+    void ValidateCreateUser(Map<String, Object> request_body, HttpStatusCode expectedStatusCode) {
         UserProvider.CreateUser(lComponent.executor, loginData, request_body, expectedStatusCode);
     }
 
@@ -202,12 +202,12 @@ public class UserControllerTests {
     }
 
     @Step("Update user")
-    void ValidateUpdateUser(Map<String, String> request_body, UserRequestUrlParameters urlParams, HttpStatusCode expectedStatusCode) {
+    void ValidateUpdateUser(Map<String, Object> request_body, UserRequestUrlParameters urlParams, HttpStatusCode expectedStatusCode) {
         UserProvider.UpdateUser(lComponent.executor, loginData, request_body, urlParams, expectedStatusCode);
     }
 
     @Step("Update user")
-    void ValidateUpdateUser(Map<String, String> request_body, HttpStatusCode expectedStatusCode) {
+    void ValidateUpdateUser(Map<String, Object> request_body, HttpStatusCode expectedStatusCode) {
         UserProvider.UpdateUser(lComponent.executor, loginData, request_body, loginData.getUser().toUrlProperties(), expectedStatusCode);
     }
 
@@ -279,6 +279,16 @@ public class UserControllerTests {
         return Arrays.stream(field_names).map(Arguments::of);
     }
 
+    public static Stream<Arguments> RequiredUserRequestFields() {
+        String[] field_names = {"first_name", "last_name", "email"};
+        return Arrays.stream(field_names).map(Arguments::of);
+    }
+
+    public static Stream<Arguments> NonEmailUserRequestFields() {
+        String[] field_names = {"first_name", "last_name", "middle_name"};
+        return Arrays.stream(field_names).map(Arguments::of);
+    }
+
     @Nested
     public class UsersTests {
         @Nested
@@ -289,8 +299,8 @@ public class UserControllerTests {
 
             @ParameterizedTest
             @MethodSource("education.kub.backend.ce.domain.user.controller.UserControllerTests#PrivilegedRoleTypes")
-            @DisplayName("When request is valid, POST /api/v1/users returns 200 and valid response")
-            @Description("When request is valid, POST /api/v1/users returns 200 and valid response.")
+            @DisplayName("When request is valid, POST /api/v1/users returns 201 and valid response")
+            @Description("When request is valid, POST /api/v1/users returns 201 and valid response.")
             void CreateUserSuccessWithAllowedRoles(RoleEntity.Type user_creator_role) {
                 SetAllureTestSubSuite();
                 Allure.parameter("Role of creator", user_creator_role);
@@ -300,8 +310,8 @@ public class UserControllerTests {
             }
 
             @Test
-            @DisplayName("When valid request body without middle name field, POST /api/v1/users returns 200 and valid response")
-            @Description("When valid request body without middle name field, POST /api/v1/users returns 200 and valid response.")
+            @DisplayName("When valid request body without middle name field, POST /api/v1/users returns 201 and valid response")
+            @Description("When valid request body without middle name field, POST /api/v1/users returns 201 and valid response.")
             void CreateUserSuccessOnUserWithoutMiddleName() {
                 SetAllureTestSubSuite();
                 uComponent.addRole(RoleEntity.Type.ADMIN);
@@ -333,7 +343,7 @@ public class UserControllerTests {
             }
 
             @ParameterizedTest
-            @MethodSource("education.kub.backend.ce.domain.user.controller.UserControllerTests#UserRequestFields")
+            @MethodSource("education.kub.backend.ce.domain.user.controller.UserControllerTests#RequiredUserRequestFields")
             @DisplayName("When request body without required field, POST /api/v1/users returns 400")
             @Description("When request body without required field, POST /api/v1/users returns 400.")
             void CreateUserWithoutRequestField(String request_field) {
@@ -343,9 +353,9 @@ public class UserControllerTests {
                 uComponent.addRole(RoleEntity.Type.ADMIN);
                 lComponent.FirstLogin();
 
-                var field_names = List.of("first_name", "last_name", "middle_name", "email");
-                var values = List.of("Ada", "Lovelace", "Byron", "ada.lovelace@kub.education");
-                Map<String,String> request_body = IntStream.range(0, values.size()).boxed()
+                var field_names = List.of("first_name", "last_name", "email");
+                var values = List.of("Ada", "Lovelace", "ada.lovelace@kub.education");
+                Map<String, Object> request_body = IntStream.range(0, values.size()).boxed()
                         .collect(Collectors.toMap(field_names::get, values::get));
                 request_body.remove(request_field);
 
@@ -365,7 +375,7 @@ public class UserControllerTests {
 
                 var field_names = List.of("first_name", "last_name", "middle_name", "email");
                 var values = List.of("Ada", "Lovelace", "Byron", "ada.lovelace@kub.education");
-                Map<String,String> request_body = IntStream.range(0, values.size()).boxed()
+                Map<String, Object> request_body = IntStream.range(0, values.size()).boxed()
                         .collect(Collectors.toMap(field_names::get, values::get));
                 request_body.put(request_field, "");
 
@@ -393,6 +403,32 @@ public class UserControllerTests {
                 lComponent.FirstLogin();
                 user_to_create.setEmail("Test.Test@example.com");
                 ValidateCreateUser(user_to_create.toMap(), HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+
+            @ParameterizedTest
+            @MethodSource("education.kub.backend.ce.domain.user.controller.UserControllerTests#UserRequestFields")
+            @DisplayName("When request body with not email field length what exceeds max possible length (32), POST /api/v1/users returns 400")
+            @Description("When request body with not email field length what exceeds max possible length (32), POST /api/v1/users returns 400.")
+            void CreateUserWithTooLongNotEmailField(String request_field) {
+                SetAllureTestSubSuite();
+                Allure.parameter("Request field", request_field);
+
+                uComponent.addRole(RoleEntity.Type.ADMIN);
+                lComponent.FirstLogin();
+                var request_body = user_to_create.toMap();
+                request_body.put(request_field, "1".repeat(33));
+                ValidateCreateUser(request_body, HttpStatus.BAD_REQUEST);
+            }
+
+            @Test
+            @DisplayName("When request body with email field length what exceeds max possible length (64), POST /api/v1/users returns 400")
+            @Description("When request body with email field length what exceeds max possible length (64), POST /api/v1/users returns 400.")
+            void CreateUserWithTooLongEmailField() {
+                SetAllureTestSubSuite();
+                uComponent.addRole(RoleEntity.Type.ADMIN);
+                lComponent.FirstLogin();
+                user_to_create.setEmail("1".repeat(65));
+                ValidateCreateUser(user_to_create.toMap(), HttpStatus.BAD_REQUEST);
             }
 
             @Test
@@ -622,6 +658,35 @@ public class UserControllerTests {
                     user_creator_request_map.replace(request_field, "");
 
                     ValidateUpdateUser(user_creator_request_map, HttpStatus.UNPROCESSABLE_ENTITY);
+                }
+
+                @ParameterizedTest
+                @MethodSource("education.kub.backend.ce.domain.user.controller.UserControllerTests#UserRequestFields")
+                @DisplayName("When request body with not email field length what exceeds max possible length (32), POST /api/v1/users returns 422")
+                @Description("When request body with not email field length what exceeds max possible length (32), POST /api/v1/users returns 422.")
+                void UpdateUserWithTooLongNotEmailField(String request_field) {
+                    SetAllureTestSubSuite();
+                    Allure.parameter("Request field", request_field);
+
+                    uComponent.addRole(RoleEntity.Type.ADMIN);
+                    lComponent.FirstLogin();
+                    var request_body = user_to_create.toMap();
+                    ValidateCreateUser(request_body, HttpStatus.CREATED);
+                    request_body.put(request_field, "1".repeat(33));
+                    ValidateUpdateUser(request_body, HttpStatus.UNPROCESSABLE_ENTITY);
+                }
+
+                @Test
+                @DisplayName("When request body with email field length what exceeds max possible length (64), POST /api/v1/users returns 422")
+                @Description("When request body with email field length what exceeds max possible length (64), POST /api/v1/users returns 422.")
+                void CreateUserWithTooLongEmailField() {
+                    SetAllureTestSubSuite();
+                    uComponent.addRole(RoleEntity.Type.ADMIN);
+                    lComponent.FirstLogin();
+                    var request_body = user_to_create.toMap();
+                    ValidateCreateUser(request_body, HttpStatus.CREATED);
+                    request_body.put("email", "t".repeat(53) + "@example.com");
+                    ValidateCreateUser(user_to_create.toMap(), HttpStatus.UNPROCESSABLE_ENTITY);
                 }
 
                 @ParameterizedTest

@@ -32,8 +32,8 @@ public class UserProperties {
         return UserRequestUrlParameters.builder().user_id(Long.toString(id)).build();
     }
 
-    public Map<String,String> toMap() {
-        var map = new HashMap<String, String>();
+    public Map<String, Object> toMap() {
+        var map = new HashMap<String, Object>();
         if (first_name != null) {
             map.put("first_name", first_name);
         }

@@ -15,7 +15,7 @@ public class AuthProvider {
         return (bearerToken != null) ? Map.of("Authorization", "Bearer " + bearerToken): null;
     }
 
-    public static Map<String, String> RefreshTokenToMap(String refreshToken) {
+    public static Map<String, Object> RefreshTokenToMap(String refreshToken) {
         return (refreshToken != null) ? Map.of("refresh_token", refreshToken): null;
     }
 
@@ -39,7 +39,7 @@ public class AuthProvider {
         RequestExecutor.ExecuteRequest(executor.mvc, request_params, validation);
     }
 
-    public static void Refresh(ExecutorProperties executor, Map<String, String> request_body,
+    public static void Refresh(ExecutorProperties executor, Map<String, Object> request_body,
                                HttpStatusCode expectedStatusCode, String JsonValidationSchema) {
         RequestProperties request_params = RequestProperties.builder()
                 .url(executor.conn.base_url + "/api/v1/auth/refresh")
