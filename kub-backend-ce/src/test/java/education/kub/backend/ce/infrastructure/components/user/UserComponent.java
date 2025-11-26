@@ -67,7 +67,15 @@ public class UserComponent {
     }
 
     private void addRole(long user_id, RoleEntity.Type roleType) {
-        var user = userRepo.findById(user_id).get();
+        var optional_user = userRepo.findById(user_id);
+        UserEntity user;
+        if (optional_user.isEmpty()) {
+            user = createUser(userData);
+            userRepo.save(user);
+        }
+        else {
+            user  = optional_user.get();
+        }
         var saved_role = roleRepo.findByType(roleType);
         var role = saved_role.orElseGet(() -> createRole(user, roleType));
         role.getUsers().add(user);
@@ -124,7 +132,7 @@ public class UserComponent {
         studentRepo = StudentRepositoryMockProvider.createStudentRepositoryMock();
 
         for (var role: RoleEntity.Type.values()) {
-            RoleEntity roleEntity = createRole(user, role);
+            RoleEntity roleEntity = createRole(role);
             roleEntity = roleRepo.save(roleEntity);
             if (userData.roles.contains(role)) {
                 user.addRole(roleEntity);
