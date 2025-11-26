@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EducationalProgramDetailsResponse",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "specialty_id": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "name": {
+      "type": "string"
+    },
+    "degree_type": {
+      "type": "string",
+      "enum": [
+        "BACHELOR",
+        "MASTER",
+        "POSTGRADUATE"
+      ]
+    },
+    "study_form": {
+      "type": "string",
+      "enum": [
+        "FULL_TIME",
+        "PART_TIME",
+        "ONLINE"
+      ]
+    },
+    "duration": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1,
+      "maximum": 32767
+    }
+  },
+  "required":  ["id", "specialty_id", "name", "degree_type", "study_form", "duration"],
+  "additionalProperties": false
+}
